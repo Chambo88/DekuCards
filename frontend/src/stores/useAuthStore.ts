@@ -1,13 +1,16 @@
 import { create } from "zustand";
+import { User } from "../models/user";
 
-interface BearState {
-  bears: number;
-  increase: (by: number) => void;
+interface UserState {
+  user: User | null;
+  setUser: (user: User) => void;
+  signOut: () => void;
 }
 
-const useTestStore = create<BearState>()((set) => ({
-  bears: 0,
-  increase: (by) => set((state) => ({ bears: state.bears + by })),
+const useAuthStore = create<UserState>()((set) => ({
+  user: null,
+  setUser: (user) => set({ user }),
+  signOut: () => set({ user: null }),
 }));
 
-export default useTestStore;
+export default useAuthStore;

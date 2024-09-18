@@ -1,7 +1,7 @@
 import { RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
-import useAuthService from "./services/authService";
+import useAuthService from "./services/useAuthService";
 import router from "./components/router/router";
 import { useEffect } from "react";
 
@@ -11,7 +11,7 @@ const App = () => {
   useAuthService();
 
   useEffect(() => {
-    // I've added this here for demonstration purposes
+    // TODO THIS IS TEMP USER WILL SET THIS FROM A BUTTON
     localStorage.setItem("theme", "dark");
 
     const selectedTheme = localStorage.getItem("theme");
@@ -23,8 +23,6 @@ const App = () => {
     } else {
       document.body.classList.add("light");
     }
-
-    // Else use light theme
   }, []);
 
   return (

@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import SignUp from "../../pages/Login";
 import useAuthStore from "../../stores/useAuthStore";
-import useAuthService from "../../services/authService";
+import useAuthService from "../../services/useAuthService";
 
 const AuthProtectedRoute = () => {
   const { user } = useAuthStore();

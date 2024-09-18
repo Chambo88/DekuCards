@@ -4,13 +4,15 @@ import {
   AuthChangeEvent,
   User as SupabaseUser,
 } from "@supabase/supabase-js";
+import logger from "./logger";
 import { supabase } from "./supabaseClient";
 import useAuthStore from "../stores/useAuthStore";
 import { User } from "../models/user";
 
 const useAuthService = () => {
-  const { setUser, signOut } = useAuthStore();
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Add loading state
+  const setUser = useAuthStore((state) => state.setUser);
+  const signOut = useAuthStore((state) => state.signOut);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const setUserWrapper = (supaUser: SupabaseUser) => {
     const user: User = {
@@ -24,6 +26,9 @@ const useAuthService = () => {
   };
 
   useEffect(() => {
+    logger.debug(
+      "useAuthService useEffect: Checking session and adding listener for auth changes."
+    );
     const checkSession = async () => {
       const { data: session } = await supabase.auth.getSession();
       if (session?.session) {

@@ -15,24 +15,30 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate", // Auto-updates the service worker when new content is available
+      devOptions: {
+        enabled: true,
+      },
       manifest: {
         name: "My Progressive Web App",
         short_name: "MyPWA",
         description: "An awesome PWA!",
         display: "standalone",
-        start_url: "/",
-        // icons: [
-        //   {
-        //     src: 'icon-192x192.png',
-        //     sizes: '192x192',
-        //     type: 'image/png',
-        //   },
-        //   {
-        //     src: 'icon-512x512.png',
-        //     sizes: '512x512',
-        //     type: 'image/png',
-        //   },
-        // ],
+        start_url: ".",
+        theme_color: "#000000",
+        background_color: "#ffffff",
+
+        icons: [
+          {
+            src: "/manifest-icon-192.maskable.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "/manifest-icon-512.maskable.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+        ],
       },
     }),
   ],

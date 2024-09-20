@@ -83,3 +83,5 @@ _ReSharper*/
 *.log
 *.tlog
 *.log*
+
+frontend/dev-dist/

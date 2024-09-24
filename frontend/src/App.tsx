@@ -1,9 +1,9 @@
 import { RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
-import useAuthService from "./services/useAuthService";
 import router from "./components/router/router";
 import { useEffect } from "react";
+import useAuthService from "./services/useAuthService";
 
 const queryClient = new QueryClient();
 
@@ -20,8 +20,6 @@ const App = () => {
       document.body.classList.add(selectedTheme);
     } else if (window.matchMedia("(prefers-color-scheme: dark").matches) {
       document.body.classList.add("dark");
-    } else {
-      document.body.classList.add("light");
     }
   }, []);
 

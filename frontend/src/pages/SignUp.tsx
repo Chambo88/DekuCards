@@ -1,5 +1,7 @@
 import React, { useState, FormEvent } from "react";
 import { supabase } from "../services/supabaseClient";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../stores/useAuthStore";
 import {
   Session,
   AuthError,
@@ -8,15 +10,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom"; // Use React Router's Link
+import { Link } from "react-router-dom";
 
-const Login: React.FC = () => {
+const SignUp: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  // const setUser = useAuthStore((state) => state.setUser);
 
-  const handleLogin = async (e: FormEvent) => {
+  // Your signup function
+  const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -27,15 +32,16 @@ const Login: React.FC = () => {
     }: {
       data: { user: SupabaseUser | null; session: Session | null };
       error: AuthError | null;
-    } = await supabase.auth.signInWithPassword({
+    } = await supabase.auth.signUp({
       email,
       password,
     });
 
     if (error) {
       setError(error.message);
+    } else if (data.user) {
+      navigate("/"); // Navigate to the homepage or dashboard
     }
-
     setLoading(false);
   };
 
@@ -44,9 +50,9 @@ const Login: React.FC = () => {
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold">Login</h1>
+            <h1 className="text-3xl font-bold">Sign Up</h1>
           </div>
-          <form onSubmit={handleLogin} className="grid gap-4">
+          <form onSubmit={handleSignUp} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -69,20 +75,22 @@ const Login: React.FC = () => {
               />
             </div>
 
+            {/* Display errors */}
             {error && <div className="text-red-500">{error}</div>}
 
+            {/* Loading state */}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Signing up..." : "Sign Up"}
             </Button>
 
             <Button variant="outline" className="w-full">
-              Login with Google
+              Sign Up with Google
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link to="/signup" className="underline">
-              Sign up
+            Already have an account?{" "}
+            <Link to="/login" className="underline">
+              Login
             </Link>
           </div>
         </div>
@@ -94,4 +102,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default SignUp;

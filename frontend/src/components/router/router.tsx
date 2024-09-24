@@ -1,32 +1,47 @@
-import { createBrowserRouter } from "react-router-dom";
-import Home from "../../pages/Home.tsx";
-import Login from "../../pages/Login.tsx";
-import AuthProtectedRoute from "./AuthProtectedRoute.tsx";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import Home from "../../pages/Home";
+import Login from "../../pages/Login";
+import SignUp from "../../pages/SignUp";
+import AuthProtectedRoute from "./AuthProtectedRoute";
+import AuthCheck from "./AuthCheck";
 
 const router = createBrowserRouter([
+  // Protected Routes (accessible only when logged in)
   {
     path: "/",
+    element: <AuthProtectedRoute />,
+    children: [
+      {
+        path: "/", // Home page
+        element: <Home />,
+      },
+    ],
+  },
+  // Public Routes (accessible only when not logged in)
+  {
+    path: "/login",
+    element: <AuthCheck />,
     children: [
       {
         path: "/login",
         element: <Login />,
       },
-      // Auth Protected routes
-      {
-        path: "/",
-        element: <AuthProtectedRoute />,
-        children: [
-          {
-            path: "/",
-            element: <Home />,
-          },
-        ],
-      },
     ],
   },
   {
+    path: "/signup",
+    element: <AuthCheck />,
+    children: [
+      {
+        path: "/signup",
+        element: <SignUp />,
+      },
+    ],
+  },
+  // Catch-all route to redirect unknown paths
+  {
     path: "*",
-    element: <Login />,
+    element: <Navigate to="/" replace />,
   },
 ]);
 

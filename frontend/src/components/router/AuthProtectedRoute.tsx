@@ -1,22 +1,20 @@
-import { Outlet } from "react-router-dom";
-import SignUp from "../../pages/Login";
+import { Outlet, Navigate } from "react-router-dom";
 import useAuthStore from "../../stores/useAuthStore";
-import useAuthService from "../../services/useAuthService";
 
 const AuthProtectedRoute = () => {
   const { user } = useAuthStore();
-  const { isLoading } = useAuthService(); // Get loading state from the hook
 
-  if (isLoading) {
-    return <div className="bg-green-500">Loading...</div>;
+  if (user === undefined) {
+    // If user state is not yet determined, you might want to show a loading indicator
+    return <div>Loadingv ...</div>;
   }
 
   if (!user) {
-    console.log("We have no user!");
-    return <SignUp />;
+    // User is not authenticated, redirect to SignUp
+    return <Navigate to="/signup" replace />;
   }
 
-  console.log("We have a user!");
+  // User is authenticated, render the protected component
   return <Outlet />;
 };
 

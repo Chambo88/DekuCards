@@ -8,8 +8,8 @@ export default defineConfig({
   //TODO for dev only
   server: {
     https: {
-      key: "C:/Certbot/live/benchamberlainlocal.homes/privkey.pem",
-      cert: "C:/Certbot/live/benchamberlainlocal.homes/fullchain.pem",
+      key: "../certs/privkey.pem",
+      cert: "../certs/fullchain.pem",
     },
   },
   plugins: [

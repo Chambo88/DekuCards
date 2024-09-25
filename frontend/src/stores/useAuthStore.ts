@@ -7,7 +7,7 @@ interface UserState {
   signOut: () => void;
 }
 
-const useAuthStore = create<UserState>()((set, get) => ({
+const useAuthStore = create<UserState>()((set) => ({
   user: undefined,
   setUser: (user) => set({ user }),
   signOut: () => set({ user: null }),

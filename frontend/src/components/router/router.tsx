@@ -4,6 +4,8 @@ import Login from "../../pages/Login";
 import SignUp from "../../pages/SignUp";
 import AuthProtectedRoute from "./AuthProtectedRoute";
 import AuthCheck from "./AuthCheck";
+import CardUI from "../../pages/CardUI";
+import ProtectedLayout from "./ProtectedLayout";
 
 const router = createBrowserRouter([
   // Protected Routes (accessible only when logged in)
@@ -12,8 +14,19 @@ const router = createBrowserRouter([
     element: <AuthProtectedRoute />,
     children: [
       {
-        path: "/", // Home page
-        element: <Home />,
+        element: <ProtectedLayout />,
+        children: [
+          // Routes with NavBar
+          {
+            path: "/",
+            element: <Home />,
+          },
+          {
+            path: "/edit",
+            element: <CardUI />,
+          },
+          // ... other routes with NavBar
+        ],
       },
     ],
   },

@@ -85,3 +85,5 @@ _ReSharper*/
 *.log*
 
 frontend/dev-dist/
+
+certs/

@@ -6,14 +6,14 @@ import useAuthStore from "../stores/useAuthStore";
 const Home: React.FC = () => {
   const signOut = useAuthStore((state) => state.signOut);
 
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error signing out:", error.message);
-    } else {
-      signOut();
-    }
-  };
+  // const handleSignOut = async () => {
+  //   const { error } = await supabase.auth.signOut();
+  //   if (error) {
+  //     console.error("Error signing out:", error.message);
+  //   } else {
+  //     signOut();
+  //   }
+  // };
 
   return (
     <div className="relative mx-auto w-full max-w-sm border-2 border-border rounded-lg bg-card p-8">
@@ -31,12 +31,12 @@ const Home: React.FC = () => {
         Sign Up
       </button>
 
-      <Button
+      {/* <Button
         onClick={handleSignOut}
         className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-md"
       >
         Sign Out
-      </Button>
+      </Button> */}
     </div>
   );
 };

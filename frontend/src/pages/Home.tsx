@@ -1,42 +1,11 @@
 import React from "react";
-import { supabase } from "../services/supabaseClient";
 import { Button } from "@/components/ui/button";
-import useAuthStore from "../stores/useAuthStore";
 
 const Home: React.FC = () => {
-  const signOut = useAuthStore((state) => state.signOut);
-
-  // const handleSignOut = async () => {
-  //   const { error } = await supabase.auth.signOut();
-  //   if (error) {
-  //     console.error("Error signing out:", error.message);
-  //   } else {
-  //     signOut();
-  //   }
-  // };
-
   return (
-    <div className="relative mx-auto w-full max-w-sm border-2 border-border rounded-lg bg-card p-8">
-      <h4 className="mb-4 mt-2 w-full text-3xl font-bold text-copy-primary">
-        Dark Mode
-      </h4>
-      <p className="text-copy-secondary">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est ipsum sed
-        blanditiis iste molestias nemo nobis repellendus nisi dolorum itaque
-        optio impedit cum voluptatem facilis minima, quasi laborum. Nihil,
-        quaerat.
-      </p>
-
-      <button className="bg-cta hover:bg-cta-active transition-colors text-cta-text font-semibold w-full py-2 rounded-md mt-8">
-        Sign Up
-      </button>
-
-      {/* <Button
-        onClick={handleSignOut}
-        className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-md"
-      >
-        Sign Out
-      </Button> */}
+    <div className="relative flex min-h-screen flex-col justify-end gap-20 overflow-hidden">
+      <Button>Button</Button>
+      <Button variant="outline">Outline</Button>
     </div>
   );
 };

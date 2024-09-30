@@ -4,11 +4,9 @@ import NavBar from "../NavBar";
 
 const ProtectedLayout: React.FC = () => {
   return (
-    <div>
+    <div className="relative">
       <NavBar />
-      <div className="pt-[64px]">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 };

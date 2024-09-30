@@ -39,14 +39,15 @@ const SignUp: React.FC = () => {
 
     if (error) {
       setError(error.message);
-    } else if (data.user) {
-      navigate("/"); // Navigate to the homepage or dashboard
     }
+    // else if (data.user) {
+    //   navigate("/"); // Navigate to the homepage or dashboard
+    // }
     setLoading(false);
   };
 
   return (
-    <div className="w-full h-full lg:grid lg:min-h-[600px] lg:grid-cols-2">
+    <div className="h-full w-full lg:grid lg:min-h-[600px] lg:grid-cols-2">
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">

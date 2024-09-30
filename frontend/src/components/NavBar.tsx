@@ -1,11 +1,66 @@
-import React from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../services/supabaseClient";
-import { Button } from "@/components/ui/button"; // Adjust the import path as needed
+import { Button } from "@/components/ui/button";
 import useAuthStore from "../stores/useAuthStore";
-import { Link } from "react-router-dom"; // For navigation links
+import { Link } from "react-router-dom";
+import {
+  Bars3Icon,
+  ArrowRightStartOnRectangleIcon,
+  MoonIcon,
+  SunIcon,
+} from "@heroicons/react/24/outline";
 
 const NavBar: React.FC = () => {
   const signOut = useAuthStore((state) => state.signOut);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const barsIconRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const bodyClassList = document.body.classList;
+    if (bodyClassList.contains("dark")) {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  }, []);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        barsIconRef.current &&
+        !barsIconRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false); // Close the dropdown
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+
+    document.body.classList.remove(theme);
+    document.body.classList.add(newTheme);
+  };
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -17,16 +72,68 @@ const NavBar: React.FC = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
-      <div className="container mx-auto flex items-center justify-between p-4">
-        <Link to="/" className="text-xl font-bold">
-          DekuCards
-        </Link>
-        <Button onClick={handleSignOut} variant="destructive">
-          Sign Out
-        </Button>
-      </div>
-    </nav>
+    <div className="z-100 absolute">
+      <nav className="fixed left-0 right-0 top-0 z-50">
+        <div className="container mx-auto flex items-center justify-between p-4">
+          <Link to="/" className="text-xl font-bold">
+            DekuCards
+          </Link>
+          {/* Menu Icon with Dropdown */}
+          <div className="relative">
+            <Button
+              onClick={toggleDropdown}
+              ref={barsIconRef}
+              className="rounded-md p-2"
+              variant="outline"
+              size="icon"
+            >
+              <Bars3Icon className="h-6 w-6" />
+            </Button>
+
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div
+                ref={dropdownRef}
+                className="absolute right-0 w-48 rounded-md border"
+              >
+                <div className="flex flex-col">
+                  <Button
+                    className="hover:card dark:hover:card w-full rounded-none px-4 py-2 text-left"
+                    variant="ghost"
+                    onClick={toggleTheme}
+                  >
+                    {theme === "light" ? (
+                      <>
+                        <MoonIcon className="mr-2 h-4 w-4" />
+                        Dark Mode
+                      </>
+                    ) : (
+                      <>
+                        <SunIcon className="mr-2 h-4 w-4" />
+                        Light Mode
+                      </>
+                    )}
+                  </Button>
+                  <div className="border-b"></div>
+
+                  {/* Sign Out Button */}
+                  <Button
+                    className="w-full rounded-none px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600"
+                    variant="ghost"
+                    onClick={handleSignOut}
+                  >
+                    <ArrowRightStartOnRectangleIcon className="mr-2 h-4 w-4" />{" "}
+                    Sign Out
+                  </Button>
+
+                  {/* Add More Buttons Here */}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
+    </div>
   );
 };
 

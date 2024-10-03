@@ -6,9 +6,10 @@ import AuthProtectedRoute from "./AuthProtectedRoute";
 import AuthCheck from "./AuthCheck";
 import CardUI from "../../pages/CardUI";
 import ProtectedLayout from "./ProtectedLayout";
+import RoutesWithAnimation from "./RoutesWithAnimation";
+import PageTransition from "./PageTransition";
 
 const router = createBrowserRouter([
-  // Protected Routes (accessible only when logged in)
   {
     path: "/",
     element: <AuthProtectedRoute />,
@@ -16,21 +17,31 @@ const router = createBrowserRouter([
       {
         element: <ProtectedLayout />,
         children: [
-          // Routes with NavBar
           {
-            path: "/",
-            element: <Home />,
+            element: <RoutesWithAnimation />,
+            children: [
+              {
+                path: "/",
+                element: (
+                  <PageTransition>
+                    <Home />
+                  </PageTransition>
+                ),
+              },
+              {
+                path: "/edit",
+                element: (
+                  <PageTransition>
+                    <CardUI />
+                  </PageTransition>
+                ),
+              },
+            ],
           },
-          {
-            path: "/edit",
-            element: <CardUI />,
-          },
-          // ... other routes with NavBar
         ],
       },
     ],
   },
-  // Public Routes (accessible only when not logged in)
   {
     path: "/login",
     element: <AuthCheck />,
@@ -51,7 +62,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-  // Catch-all route to redirect unknown paths
   {
     path: "*",
     element: <Navigate to="/" replace />,

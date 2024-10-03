@@ -1,7 +1,13 @@
-import React from "react";
+import { Link } from "react-router-dom";
 
-const CardUI: React.FC = () => {
-  return <div className="w-full h-full bg-slate-300">Test</div>;
+const CardUI = () => {
+  return (
+    <div className="flex h-full w-full items-center justify-center bg-green-400">
+      <Link to="/" className="btn">
+        Go to Home
+      </Link>
+    </div>
+  );
 };
 
 export default CardUI;

@@ -4,7 +4,7 @@ import NavBar from "../NavBar";
 
 const ProtectedLayout: React.FC = () => {
   return (
-    <div className="relative">
+    <div className="relative h-full w-full overflow-hidden">
       <NavBar />
       <Outlet />
     </div>

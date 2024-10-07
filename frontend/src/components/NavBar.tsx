@@ -38,7 +38,7 @@ const NavBar: React.FC = () => {
         barsIconRef.current &&
         !barsIconRef.current.contains(event.target as Node)
       ) {
-        setIsDropdownOpen(false); // Close the dropdown
+        setIsDropdownOpen(false);
       }
     };
 
@@ -72,14 +72,11 @@ const NavBar: React.FC = () => {
   };
 
   return (
-    <div className="z-100 absolute">
-      <nav className="fixed left-0 right-0 top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between p-4">
-          <Link to="/" className="text-xl font-bold">
-            DekuCards
-          </Link>
+    <div className="pointer-events-none absolute z-10">
+      <nav className="fixed left-0 right-0 top-0 z-10">
+        <div className="container mx-auto flex items-center justify-end p-4">
           {/* Menu Icon with Dropdown */}
-          <div className="relative">
+          <div className="pointer-events-auto relative">
             <Button
               onClick={toggleDropdown}
               ref={barsIconRef}

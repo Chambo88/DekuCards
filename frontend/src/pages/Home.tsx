@@ -8,10 +8,10 @@ const Home: React.FC = () => {
     <AnimatedLayout>
       <div className="dark:bg-blue-1000 bg- relative flex min-h-screen items-end justify-center overflow-hidden">
         <div className="mb-16 flex flex-col gap-4 md:flex-row">
-          <Button className="w-56">Button</Button>
+          <Button className="w-56">Learn</Button>
           <Link to="/edit">
             <Button variant="outline" className="w-56">
-              Outline
+              Edit
             </Button>
           </Link>
         </div>

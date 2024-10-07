@@ -3,9 +3,13 @@ import { useLocation } from "react-router-dom";
 
 interface AnimatedLayoutProps {
   children: React.ReactNode;
+  onAnimationComplete?: () => void;
 }
 
-const AnimatedLayout: React.FC<AnimatedLayoutProps> = ({ children }) => {
+const AnimatedLayout: React.FC<AnimatedLayoutProps> = ({
+  children,
+  onAnimationComplete,
+}) => {
   const location = useLocation();
 
   const getVariants = () => {
@@ -37,6 +41,7 @@ const AnimatedLayout: React.FC<AnimatedLayoutProps> = ({ children }) => {
       animate="animate"
       exit="exit"
       transition={{ duration: 0.6, ease: "easeInOut" }}
+      onAnimationComplete={onAnimationComplete}
     >
       {children}
     </motion.div>

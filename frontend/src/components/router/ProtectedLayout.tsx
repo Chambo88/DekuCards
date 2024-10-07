@@ -1,12 +1,12 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
 import NavBar from "../NavBar";
+import AnimatedOutlet from "./AnimatedOutlet";
 
 const ProtectedLayout: React.FC = () => {
   return (
     <div className="relative h-full w-full overflow-hidden">
       <NavBar />
-      <Outlet />
+      <AnimatedOutlet />
     </div>
   );
 };

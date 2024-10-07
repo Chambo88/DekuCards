@@ -6,8 +6,6 @@ import AuthProtectedRoute from "./AuthProtectedRoute";
 import AuthCheck from "./AuthCheck";
 import CardUI from "../../pages/CardUI";
 import ProtectedLayout from "./ProtectedLayout";
-import RoutesWithAnimation from "./RoutesWithAnimation";
-import PageTransition from "./PageTransition";
 
 const router = createBrowserRouter([
   {
@@ -18,25 +16,12 @@ const router = createBrowserRouter([
         element: <ProtectedLayout />,
         children: [
           {
-            element: <RoutesWithAnimation />,
-            children: [
-              {
-                path: "/",
-                element: (
-                  <PageTransition>
-                    <Home />
-                  </PageTransition>
-                ),
-              },
-              {
-                path: "/edit",
-                element: (
-                  <PageTransition>
-                    <CardUI />
-                  </PageTransition>
-                ),
-              },
-            ],
+            path: "/",
+            element: <Home />,
+          },
+          {
+            path: "/edit",
+            element: <CardUI />,
           },
         ],
       },

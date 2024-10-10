@@ -152,7 +152,7 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
       cy={(cy: Core) => {
         cyRef.current = cy;
       }}
-      style={{ width: "100vw", height: "100vh" }}
+      style={{ width: "100%", height: "100vh" }}
     />
   );
 });

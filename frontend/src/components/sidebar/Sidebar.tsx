@@ -39,7 +39,7 @@ const Sidebar = () => {
     <TooltipProvider delayDuration={200}>
       <div className="flex h-screen w-full">
         {/* Left Icon Bar */}
-        <div className="flex w-14 flex-col items-center border-r bg-card py-4">
+        <div className="flex w-14 flex-col items-center border-r border-t bg-card py-4">
           {tabs.map((tab) => (
             <Tooltip key={tab.id}>
               <TooltipTrigger asChild>
@@ -95,6 +95,7 @@ export default Sidebar;
 const useResizable = (initialWidth = 250, minWidth = 100, maxWidth = 500) => {
   const [width, setWidth] = useState(initialWidth);
   const isResizing = useRef(false);
+  const iconBarWidth = 60;
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
@@ -104,7 +105,7 @@ const useResizable = (initialWidth = 250, minWidth = 100, maxWidth = 500) => {
   const handleMouseMove = (e: MouseEvent) => {
     if (!isResizing.current) return;
 
-    const newWidth = e.clientX - 60;
+    const newWidth = e.clientX - iconBarWidth;
     if (newWidth >= minWidth && newWidth <= maxWidth) {
       setWidth(newWidth);
     }

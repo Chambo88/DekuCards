@@ -18,11 +18,15 @@ import ReactFlow, {
 } from "reactflow";
 import dagre from "dagre";
 import "reactflow/dist/style.css";
-import CustomNode from "./CustomNode"; // Import the custom node component
+import CustomNode from "./CustomNode";
 
 export interface GraphComponentHandle {
   resize: () => void;
 }
+
+const nodeTypes = {
+  custom: CustomNode,
+};
 
 const nodeWidth = 172;
 const nodeHeight = 60;
@@ -97,6 +101,10 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
           animated: false,
           style: { stroke: "#A9A9A9" },
         });
+      } else {
+        console.warn(
+          `Skipping edge creation: child1 (${child1}) exceeds numNodes`,
+        );
       }
 
       if (child2 <= numNodes) {
@@ -108,6 +116,10 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
           animated: false,
           style: { stroke: "#A9A9A9" },
         });
+      } else {
+        console.warn(
+          `Skipping edge creation: child2 (${child2}) exceeds numNodes`,
+        );
       }
     }
 
@@ -145,10 +157,6 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
         return n;
       }),
     );
-  };
-
-  const nodeTypes = {
-    custom: CustomNode, // Register the custom node type
   };
 
   return (

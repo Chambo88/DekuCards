@@ -1,6 +1,7 @@
-import { NodeProps } from "reactflow";
+import { NodeProps, Handle, Position } from "reactflow";
 import { Button } from "./../ui/button";
-import { DialogTrigger } from "@radix-ui/react-dialog";
+import FlashCardEditor from "../FlashCardEditor";
+import { mockCardSet } from "@/models/cardSet";
 
 const CustomNode = ({ data }: NodeProps) => {
   return (
@@ -14,15 +15,18 @@ const CustomNode = ({ data }: NodeProps) => {
         width: "150px",
       }}
     >
+      {/* Add Handles */}
+      <Handle type="target" position={Position.Top} />
+      <Handle type="source" position={Position.Bottom} />
+
       {/* Node label */}
       <div>{data.label}</div>
 
-      {/* Button at the bottom */}
-      <DialogTrigger asChild>
+      <FlashCardEditor cardSet={mockCardSet}>
         <Button variant="secondary" size="sm" className="mt-2">
           Edit {data.label}
         </Button>
-      </DialogTrigger>
+      </FlashCardEditor>
     </div>
   );
 };

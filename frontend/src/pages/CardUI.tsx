@@ -19,27 +19,25 @@ const CardUI = () => {
 
   return (
     <AnimatedLayout onAnimationComplete={handleAnimationComplete}>
-      <FlashCardEditor cardSet={mockCardSet}>
-        <div className="relative h-screen w-screen">
-          <div className="absolute left-2/4 z-10 mt-5">
-            <Link to="/">
-              <Button
-                variant="outline"
-                className="rounded-full bg-transparent p-1"
-              >
-                <ChevronUpIcon className="h-8 w-8 text-white" />
-              </Button>
-            </Link>
-          </div>
-          <div className="absolute z-20 w-full"></div>
-          <div className="flex">
-            <div className="h-full">
-              <Sidebar />
-            </div>
-            <GraphComponent ref={graphRef} />
-          </div>
+      <div className="relative h-screen w-screen">
+        <div className="absolute left-2/4 z-10 mt-5">
+          <Link to="/">
+            <Button
+              variant="outline"
+              className="rounded-full bg-transparent p-1"
+            >
+              <ChevronUpIcon className="h-8 w-8 text-white" />
+            </Button>
+          </Link>
         </div>
-      </FlashCardEditor>
+        <div className="absolute z-20 w-full"></div>
+        <div className="flex">
+          <div className="h-full">
+            <Sidebar />
+          </div>
+          <GraphComponent ref={graphRef} />
+        </div>
+      </div>
     </AnimatedLayout>
   );
 };

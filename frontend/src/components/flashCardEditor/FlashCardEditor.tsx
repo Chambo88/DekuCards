@@ -7,11 +7,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
+} from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
 import { CardSet, Card } from "@/models/cardSet";
+import { PrerequisitesForm } from "./PrerequisitesForm";
 
 interface FlashCardEditorProps {
   cardSet: CardSet;
@@ -25,6 +26,7 @@ const FlashCardEditor: React.FC<FlashCardEditorProps> = ({
   const [editingCardSet, setEditingCardSet] = useState(cardSet);
   const [isTitleEditable, setIsTitleEditable] = useState(false);
   const [isDescEditable, setIsDescEditable] = useState(false);
+  const [isPrerequisitesEditable, setIsPrerequisitesEditable] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // State to control dialog open state
 
   // Handlers for changing title, description, and cards
@@ -80,7 +82,6 @@ const FlashCardEditor: React.FC<FlashCardEditorProps> = ({
         style={{ height: "100vh" }}
       >
         <DialogHeader>
-          {/* Editable Title */}
           {isTitleEditable ? (
             <Input
               className="mb-1 text-xl font-bold"
@@ -98,7 +99,7 @@ const FlashCardEditor: React.FC<FlashCardEditorProps> = ({
           ) : (
             <DialogTitle
               onClick={() => setIsTitleEditable(true)}
-              className="cursor-text p-3 text-xl font-bold hover:bg-muted"
+              className="cursor-text p-4 text-xl font-bold hover:bg-muted"
             >
               {editingCardSet.title || "Untitled"}
             </DialogTitle>
@@ -124,7 +125,7 @@ const FlashCardEditor: React.FC<FlashCardEditorProps> = ({
           />
         ) : (
           <p
-            className="cursor-text text-wrap p-3 text-sm hover:bg-muted"
+            className="cursor-text text-wrap p-4 text-sm hover:bg-muted"
             style={{ overflowWrap: "anywhere" }}
             onClick={() => setIsDescEditable(true)}
           >
@@ -132,17 +133,33 @@ const FlashCardEditor: React.FC<FlashCardEditorProps> = ({
           </p>
         )}
 
-        {/* Description */}
-
         {/* Prerequisites */}
-        <div className="mb-4">
-          <h3 className="font-semibold">Prerequisites</h3>
-          <ul className="list-disc pl-5">
-            {editingCardSet.prerequisites.map((prereq, index) => (
-              <li key={index}>{prereq}</li>
-            ))}
-          </ul>
-        </div>
+        {isPrerequisitesEditable ? (
+          <div className="mb-4 p-4">
+            <h3 className="font-semibold">Prerequisites</h3>
+            <PrerequisitesForm
+              initialData={editingCardSet.prerequisites}
+              onCancel={() => {
+                console.log("cancel");
+              }}
+              onSave={(data) => {
+                console.log("save");
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            className="mb-4 cursor-text p-4 hover:bg-muted"
+            onClick={() => setIsPrerequisitesEditable(true)}
+          >
+            <h3 className="mb-2 font-semibold">Prerequisites</h3>
+            <ul className="list-disc pl-5">
+              {editingCardSet.prerequisites.map((prereq, index) => (
+                <li key={index}>{prereq.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Cards */}
         <div>

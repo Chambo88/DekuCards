@@ -9,15 +9,23 @@ export interface Card {
 export interface CardSet {
   title: string;
   desc?: string;
-  prerequisites: string[];
+  prerequisites: Prerequisite[];
   cards: Card[];
   img_url: string;
 }
 
-export const mockCardSet = {
+export interface Prerequisite {
+  name: string;
+  link?: string | undefined;
+}
+
+export const mockCardSet: CardSet = {
   title: "Physics Fundamentals",
   desc: "A set of flashcards covering the basic principles of physics. Use this set to brush up on essential physics concepts.",
-  prerequisites: ["Basic mathematics", "Understanding of Newton's Laws"],
+  prerequisites: [
+    { name: "Basic mathematics", link: "google.com" },
+    { name: "Newtons laws", link: "google.com" },
+  ],
   cards: [
     {
       title: "Newton's First Law",

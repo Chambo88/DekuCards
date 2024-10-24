@@ -5,7 +5,7 @@ import { ChevronUpIcon } from "@heroicons/react/24/outline";
 import GraphComponent, { GraphComponentHandle } from "@/components/graph/Graph";
 import { useRef } from "react";
 import Sidebar from "@/components/sidebar/Sidebar";
-import FlashCardEditor from "@/components/flashCardEditor/FlashCardEditor";
+import FlashCardDialog from "@/components/flashCardEditor/FlashCardDialog";
 import { mockCardSet } from "@/models/cardSet";
 
 const CardUI = () => {

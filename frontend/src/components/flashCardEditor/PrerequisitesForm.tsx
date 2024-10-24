@@ -65,9 +65,9 @@ export function PrerequisitesForm({
   return (
     <Form {...form}>
       <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="space-y-4">
+        <div className="mt-4 space-y-4">
           {fields.map((field, index) => (
-            <div className="flex items-center space-x-2" key={field.id}>
+            <div className="flex items-end space-x-2" key={field.id}>
               {/* Name Field */}
               <FormField
                 control={form.control}
@@ -121,8 +121,10 @@ export function PrerequisitesForm({
         </div>
         {/* Save and Cancel Buttons */}
         <div className="mt-6 flex justify-end space-x-2">
-          <Button type="submit">Save</Button>
-          <Button variant="secondary" onClick={onCancel}>
+          <Button type="submit" className="w-20">
+            Save
+          </Button>
+          <Button variant="secondary" className="w-20" onClick={onCancel}>
             Cancel
           </Button>
         </div>

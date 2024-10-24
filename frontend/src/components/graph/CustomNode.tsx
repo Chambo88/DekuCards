@@ -1,6 +1,6 @@
 import { NodeProps, Handle, Position } from "reactflow";
 import { Button } from "./../ui/button";
-import FlashCardEditor from "../flashCardEditor/FlashCardEditor";
+import FlashCardDialog from "../flashCardEditor/FlashCardDialog";
 import { mockCardSet } from "@/models/cardSet";
 
 const CustomNode = ({ data }: NodeProps) => {
@@ -22,11 +22,11 @@ const CustomNode = ({ data }: NodeProps) => {
       {/* Node label */}
       <div>{data.label}</div>
 
-      <FlashCardEditor cardSet={mockCardSet}>
+      <FlashCardDialog initialData={mockCardSet}>
         <Button variant="secondary" size="sm" className="mt-2">
           Edit {data.label}
         </Button>
-      </FlashCardEditor>
+      </FlashCardDialog>
     </div>
   );
 };

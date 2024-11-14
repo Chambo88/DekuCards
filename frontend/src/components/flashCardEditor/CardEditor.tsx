@@ -2,16 +2,18 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Input } from "../ui/input";
 import { EditorProps } from "./FlashCardDialog";
 import { Textarea } from "../ui/textarea";
-import { Card } from "@/models/cardSet";
+import { FlashCard } from "@/models/models";
 import { Button } from "../ui/button";
 import { PlusCircleIcon } from "lucide-react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { v4 as uuidv4 } from "uuid";
+import CardTags from "./CardTags";
 
 const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [newCardAdded, setNewCardAdded] = useState(false);
   const lastCardFrontRef = useRef<HTMLTextAreaElement>(null);
   const lastCardBackRef = useRef<HTMLTextAreaElement>(null);
+  const prevNumOfCards = useRef(cardSet.cards.length);
 
   const filteredCards = useMemo(() => {
     if (!searchTerm.trim()) {
@@ -30,7 +32,7 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
 
   const handleCardChange = (
     index: number,
-    field: keyof Card,
+    field: keyof FlashCard,
     value: string,
   ) => {
     const updatedCards = [...cardSet.cards];
@@ -39,16 +41,24 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   };
 
   const handleAddCard = () => {
-    const newCard: Card = { front: "", back: "" };
+    const newCard: FlashCard = {
+      front: "",
+      back: "",
+      enabled: true,
+      selected: false,
+      id: uuidv4(),
+    };
     setCardSet((prevCardSet) => ({
       ...prevCardSet,
       cards: [...prevCardSet.cards, newCard],
     }));
-    setNewCardAdded(true);
   };
 
   useEffect(() => {
-    if (newCardAdded && lastCardFrontRef.current) {
+    if (
+      prevNumOfCards.current < cardSet.cards.length &&
+      lastCardFrontRef.current
+    ) {
       lastCardFrontRef.current.scrollIntoView({ behavior: "smooth" });
 
       const observer = new IntersectionObserver(
@@ -64,10 +74,10 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
       );
 
       observer.observe(lastCardFrontRef.current);
-
-      setNewCardAdded(false);
     }
-  }, [cardSet.cards, newCardAdded]);
+
+    prevNumOfCards.current = cardSet.cards.length;
+  }, [cardSet.cards.length]);
 
   useEffect(() => {
     const handleTabPress = (event: KeyboardEvent) => {
@@ -109,12 +119,17 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
       {filteredCards.map(({ card, index }) => {
         const isLastCard = index === cardSet.cards.length - 1;
         return (
-          <div key={index} className="mb-6">
+          <div
+            key={index}
+            className={`pb-3 pt-3 ${card.selected ? "bg-secondary" : ""} `}
+          >
             <div className="flex items-stretch space-x-4">
               {/* TODO make the hover on this have the different levels of colours*/}
-              <div className="w-2 bg-green-500"></div>
+              <div
+                className={`w-2 ${card.enabled ? "bg-green-500" : "bg-muted"}`}
+              ></div>
               <Textarea
-                className="aspect-[3/2] w-1/2 resize-none border p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary"
+                className={`aspect-[3/2] w-1/2 resize-none border p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
                 value={card.front}
                 onChange={(e) =>
                   handleCardChange(index, "front", e.target.value)
@@ -123,7 +138,7 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
                 ref={isLastCard ? lastCardFrontRef : null}
               />
               <Textarea
-                className="aspect-[3/2] w-1/2 resize-none border p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary"
+                className={`aspect-[3/2] w-1/2 resize-none border p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
                 value={card.back}
                 onChange={(e) =>
                   handleCardChange(index, "back", e.target.value)
@@ -131,7 +146,13 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
                 placeholder="Back of the card"
                 ref={isLastCard ? lastCardBackRef : null}
               />
-              <div className="w-2"></div>
+              <div className="flex flex-col gap-2">
+                <CardTags
+                  setCardSet={setCardSet}
+                  cardSet={cardSet}
+                  card={card}
+                />
+              </div>
             </div>
           </div>
         );

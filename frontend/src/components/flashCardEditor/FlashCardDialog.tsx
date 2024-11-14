@@ -7,19 +7,19 @@ import {
   DialogFooter,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { CardSet } from "@/models/cardSet";
+import { FlashCardSet } from "@/models/models";
 import PrerequisiteEditor from "./PrerequisiteEditor";
 import TitleEditor from "./TitleEditor";
 import DescriptionEditor from "./DescriptionEditor";
 import CardEditor from "./CardEditor";
 
 export interface EditorProps {
-  cardSet: CardSet;
-  setCardSet: React.Dispatch<React.SetStateAction<CardSet>>;
+  cardSet: FlashCardSet;
+  setCardSet: React.Dispatch<React.SetStateAction<FlashCardSet>>;
 }
 
 interface FlashCardDialogProps {
-  initialData: CardSet;
+  initialData: FlashCardSet;
   children: React.ReactNode;
 }
 

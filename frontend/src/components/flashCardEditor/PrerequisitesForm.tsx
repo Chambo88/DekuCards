@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -102,7 +102,7 @@ export function PrerequisitesForm({
                 variant="ghost"
                 onClick={() => remove(index)}
               >
-                <Trash className="h-5 w-5 text-red-500" />
+                <Trash className="h-5 w-5 text-destructive" />
               </Button>
             </div>
           ))}

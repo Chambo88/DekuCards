@@ -6,7 +6,7 @@ import GraphComponent, { GraphComponentHandle } from "@/components/graph/Graph";
 import { useRef } from "react";
 import Sidebar from "@/components/sidebar/Sidebar";
 import FlashCardDialog from "@/components/flashCardEditor/FlashCardDialog";
-import { mockCardSet } from "@/models/cardSet";
+import { mockCardSet } from "@/models/models";
 
 const CardUI = () => {
   const graphRef = useRef<GraphComponentHandle>(null);

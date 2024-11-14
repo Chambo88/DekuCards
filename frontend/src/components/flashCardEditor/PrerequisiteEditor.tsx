@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PrerequisitesForm } from "./PrerequisitesForm";
-import { Prerequisite } from "@/models/cardSet";
+import { Prerequisite } from "@/models/models";
 import { EditorProps } from "./FlashCardDialog";
 
 const PrerequisiteEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {

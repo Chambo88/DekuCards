@@ -1,7 +1,7 @@
 import { NodeProps, Handle, Position } from "reactflow";
 import { Button } from "./../ui/button";
 import FlashCardDialog from "../flashCardEditor/FlashCardDialog";
-import { mockCardSet } from "@/models/cardSet";
+import { mockCardSet } from "@/models/models";
 
 const CustomNode = ({ data }: NodeProps) => {
   return (

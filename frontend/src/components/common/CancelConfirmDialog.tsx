@@ -3,19 +3,24 @@ import {
   Dialog,
   DialogTrigger,
   DialogContent,
-  DialogHeader,
+  DialogTitle,
   DialogFooter,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface CancelConfirmDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   title: string;
   desc: string;
   destructive?: boolean;
   primaryText?: string;
   secondaryText?: string;
   confirm: () => void;
+}
+
+interface CancelConfirmDialogContentProps extends CancelConfirmDialogProps {
+  cancel: () => void;
 }
 
 const CancelConfirmDialog: React.FC<CancelConfirmDialogProps> = ({
@@ -34,34 +39,60 @@ const CancelConfirmDialog: React.FC<CancelConfirmDialogProps> = ({
     setIsOpen(false);
   };
 
+  const handleCancel = () => {
+    setIsOpen(false);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className="flex flex-col bg-background">
-        <DialogHeader>
-          <div className="m-4 text-lg font-bold">{title}</div>
-        </DialogHeader>
-        <p className="mx-4 mb-4">{desc}</p>
-
-        <DialogFooter className="bg-background p-4 shadow-lg">
-          <Button
-            onClick={handleConfirm}
-            className="min-w-20"
-            variant={destructive ? "destructive" : "default"}
-          >
-            {primaryText}
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => setIsOpen(false)}
-            className="ml-2 min-w-20"
-          >
-            {secondaryText}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+      <CancelConfirmDialogContent
+        title={title}
+        desc={desc}
+        primaryText={primaryText}
+        secondaryText={secondaryText}
+        destructive={destructive}
+        confirm={handleConfirm}
+        cancel={handleCancel}
+      />
     </Dialog>
+  );
+};
+
+export const CancelConfirmDialogContent: React.FC<
+  CancelConfirmDialogContentProps
+> = ({
+  title,
+  desc,
+  primaryText = "Confirm",
+  secondaryText = "Cancel",
+  destructive = false,
+  confirm,
+  cancel,
+}) => {
+  return (
+    <DialogContent className="flex flex-col bg-background">
+      <DialogTitle>
+        <div className="m-4 text-lg">{title}</div>
+      </DialogTitle>
+      <DialogDescription>
+        <p className="mx-4 mb-4">{desc}</p>
+      </DialogDescription>
+
+      <DialogFooter className="bg-background p-4 shadow-lg">
+        <Button
+          onClick={confirm}
+          className="min-w-20"
+          variant={destructive ? "destructive" : "default"}
+        >
+          {primaryText}
+        </Button>
+        <Button variant="secondary" onClick={cancel} className="ml-2 min-w-20">
+          {secondaryText}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { EditorProps } from "./FlashCardDialog";
+import EditIcon from "../common/EditIcon";
 
 const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const [isTitleEditable, setIsTitleEditable] = useState(false);
@@ -27,12 +28,16 @@ const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
       />
     </div>
   ) : (
-    <DialogTitle
-      onClick={() => setIsTitleEditable(true)}
-      className="mx-5 mt-8 cursor-text p-4 text-xl font-bold hover:bg-muted"
-    >
-      {cardSet.title || "Untitled"}
-    </DialogTitle>
+    <div className="mt-8">
+      <EditIcon>
+        <DialogTitle
+          onClick={() => setIsTitleEditable(true)}
+          className="mx-5 cursor-text p-4 text-xl font-bold hover:bg-muted"
+        >
+          {cardSet.title || "Untitled"}
+        </DialogTitle>
+      </EditIcon>
+    </div>
   );
 };
 

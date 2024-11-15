@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { EditorProps } from "./FlashCardDialog";
+import EditIcon from "../common/EditIcon";
 
 const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const [isDescEditable, setIsDescEditable] = useState(false);
@@ -44,13 +45,15 @@ const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
           />
         </div>
       ) : (
-        <div
-          className="mx-4 cursor-text text-wrap p-4 hover:bg-muted"
-          style={{ overflowWrap: "anywhere" }}
-          onClick={() => setIsDescEditable(true)}
-        >
-          <p className="px-4 text-sm">{cardSet.desc}</p>
-        </div>
+        <EditIcon>
+          <div
+            className="mx-4 cursor-text text-wrap p-4 hover:bg-muted"
+            style={{ overflowWrap: "anywhere" }}
+            onClick={() => setIsDescEditable(true)}
+          >
+            <p className="px-4 text-sm">{cardSet.desc}</p>
+          </div>
+        </EditIcon>
       )}
     </>
   );

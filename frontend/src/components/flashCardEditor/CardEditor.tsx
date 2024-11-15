@@ -8,6 +8,8 @@ import { PlusCircleIcon } from "lucide-react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { v4 as uuidv4 } from "uuid";
 import CardTags from "./CardTags";
+import JsonDialog from "./JsonDialog";
+import { MAX_FLASHCARD_CHAR } from "@/constants";
 
 const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -112,6 +114,12 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="mb-8 w-96"
         />
+        <JsonDialog setCardSet={setCardSet}>
+          <Button variant="secondary">
+            <PlusCircleIcon className="mr-2 h-4 w-4" /> Add cards via AI/JSON
+          </Button>
+        </JsonDialog>
+
         <Button variant="secondary" onClick={handleAddCard}>
           <PlusCircleIcon className="mr-2 h-4 w-4" /> Add card
         </Button>
@@ -121,31 +129,49 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
         return (
           <div
             key={index}
-            className={`pb-3 pt-3 ${card.selected ? "bg-secondary" : ""} `}
+            className={`${card.front.length == MAX_FLASHCARD_CHAR || card.back.length == MAX_FLASHCARD_CHAR ? "pb-8" : "pb-3"} pt-3 ${card.selected ? "bg-secondary" : ""} `}
           >
             <div className="flex items-stretch space-x-4">
               {/* TODO make the hover on this have the different levels of colours*/}
               <div
                 className={`w-2 ${card.enabled ? "bg-green-500" : "bg-muted"}`}
               ></div>
-              <Textarea
-                className={`aspect-[3/2] w-1/2 resize-none border p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
-                value={card.front}
-                onChange={(e) =>
-                  handleCardChange(index, "front", e.target.value)
-                }
-                placeholder="Front of the card"
-                ref={isLastCard ? lastCardFrontRef : null}
-              />
-              <Textarea
-                className={`aspect-[3/2] w-1/2 resize-none border p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
-                value={card.back}
-                onChange={(e) =>
-                  handleCardChange(index, "back", e.target.value)
-                }
-                placeholder="Back of the card"
-                ref={isLastCard ? lastCardBackRef : null}
-              />
+
+              <div className="relative flex aspect-[3/2] w-1/2 flex-col">
+                <Textarea
+                  className={`h-full resize-none border ${card.selected ? "border-bg" : ""} p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
+                  value={card.front}
+                  onChange={(e) =>
+                    handleCardChange(index, "front", e.target.value)
+                  }
+                  placeholder="Front of the card"
+                  ref={isLastCard ? lastCardFrontRef : null}
+                  maxLength={MAX_FLASHCARD_CHAR}
+                />
+                {card.front.length == MAX_FLASHCARD_CHAR && (
+                  <div className="text-destructive-bright absolute -bottom-6 left-1 text-sm">
+                    Char limit reached
+                  </div>
+                )}
+              </div>
+
+              <div className="relative flex aspect-[3/2] w-1/2 flex-col">
+                <Textarea
+                  className={`h-full resize-none border ${card.selected ? "border-background" : ""} p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
+                  value={card.back}
+                  onChange={(e) =>
+                    handleCardChange(index, "back", e.target.value)
+                  }
+                  placeholder="Back of the card"
+                  ref={isLastCard ? lastCardBackRef : null}
+                  maxLength={MAX_FLASHCARD_CHAR}
+                />
+                {card.back.length == MAX_FLASHCARD_CHAR && (
+                  <div className="absolute -bottom-6 left-1 text-sm text-red-500">
+                    Char limit reached
+                  </div>
+                )}
+              </div>
               <div className="flex flex-col gap-2">
                 <CardTags
                   setCardSet={setCardSet}

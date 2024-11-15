@@ -88,7 +88,7 @@ const CardTags: React.FC<CardTagsProps> = ({ setCardSet, card }) => {
         confirm={handleDelete}
       >
         <Tag
-          icon={<TrashIcon className="h-6 w-6 text-destructive" />}
+          icon={<TrashIcon className="h-6 w-6 text-red-500" />}
           tooltip="Delete card"
         />
       </CancelConfirmDialog>

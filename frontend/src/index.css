@@ -39,6 +39,7 @@ body {
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
+    --code: 0 0% 96%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 92%;
@@ -74,6 +75,7 @@ body {
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
+    --code: 0 0% 2%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 8%;

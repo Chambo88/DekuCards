@@ -11,6 +11,7 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				code: 'hsl(var(--code))',
 				'copy-primary': 'rgba(var(--copy-primary))',
 				'copy-secondary': 'rgba(var(--copy-secondary))',
 				cta: 'rgba(var(--cta))',

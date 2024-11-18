@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 export interface FlashCard {
   id: string;
   enabled: boolean;
@@ -5,6 +7,20 @@ export interface FlashCard {
   back: string;
   selected: boolean;
 }
+
+export const createFlashCard = (
+  front: string,
+  back: string,
+  enabled = true,
+  selected = false,
+  id: string = uuidv4(),
+): FlashCard => ({
+  id,
+  front,
+  back,
+  enabled,
+  selected,
+});
 
 export interface FlashCardSet {
   id: string;

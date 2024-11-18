@@ -14,7 +14,7 @@ const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   return isTitleEditable ? (
     <div className="mx-8 mt-11">
       <Input
-        className="mb-1 px-4 text-xl font-bold"
+        className="mb-2 px-4 text-xl font-bold"
         value={cardSet.title}
         onChange={handleTitleChange}
         onBlur={() => setIsTitleEditable(false)}

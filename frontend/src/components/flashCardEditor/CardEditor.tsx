@@ -114,7 +114,7 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="mb-8 w-96"
         />
-        <JsonDialog setCardSet={setCardSet}>
+        <JsonDialog setCardSet={setCardSet} cardSet={cardSet}>
           <Button variant="secondary">
             <PlusCircleIcon className="mr-2 h-4 w-4" /> Add cards via AI/JSON
           </Button>

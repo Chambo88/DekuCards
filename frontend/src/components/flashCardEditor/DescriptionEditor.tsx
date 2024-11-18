@@ -26,7 +26,7 @@ const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   return (
     <>
       {isDescEditable ? (
-        <div className="mx-8 mb-4">
+        <div className="mx-8 mb-2 mt-1">
           <Textarea
             ref={textareaRef}
             className="resize-none overflow-hidden"
@@ -51,7 +51,7 @@ const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
             style={{ overflowWrap: "anywhere" }}
             onClick={() => setIsDescEditable(true)}
           >
-            <p className="px-4 text-sm">{cardSet.desc}</p>
+            <p className="pl-4 pr-7 text-sm">{cardSet.desc}</p>
           </div>
         </EditIcon>
       )}

@@ -114,15 +114,17 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="mb-8 w-96"
         />
-        <JsonDialog setCardSet={setCardSet} cardSet={cardSet}>
-          <Button variant="secondary">
-            <PlusCircleIcon className="mr-2 h-4 w-4" /> Add cards via AI/JSON
-          </Button>
-        </JsonDialog>
+        <div>
+          <JsonDialog setCardSet={setCardSet} cardSet={cardSet}>
+            <Button variant="secondary" className="mr-2">
+              <PlusCircleIcon className="mr-2 h-4 w-4" /> Add cards via AI/JSON
+            </Button>
+          </JsonDialog>
 
-        <Button variant="secondary" onClick={handleAddCard}>
-          <PlusCircleIcon className="mr-2 h-4 w-4" /> Add card
-        </Button>
+          <Button variant="secondary" onClick={handleAddCard}>
+            <PlusCircleIcon className="mr-2 h-4 w-4" /> Add card
+          </Button>
+        </div>
       </div>
       {filteredCards.map(({ card, index }) => {
         const isLastCard = index === cardSet.cards.length - 1;

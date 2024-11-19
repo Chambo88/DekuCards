@@ -13,7 +13,7 @@ const useAuthService = () => {
 
   useEffect(() => {
     logger.info(
-      "useAuthService: Checking session and adding listener for auth changes."
+      "useAuthService: Checking session and adding listener for auth changes.",
     );
 
     const checkSession = async () => {
@@ -21,12 +21,12 @@ const useAuthService = () => {
       if (session?.session) {
         const user: User = {
           ...session.session.user,
-          cardSets: [],
           firstName: "",
           lastName: "",
           id: session.session.user.id,
         };
         setUser(user);
+        // TODO fetch cards
       } else {
         signOut();
       }
@@ -38,16 +38,16 @@ const useAuthService = () => {
         if (session) {
           const user: User = {
             ...session.user,
-            cardSets: [],
             firstName: "",
             lastName: "",
             id: session.user.id,
           };
+          // TODO fetch cards
           setUser(user);
         } else {
           signOut();
         }
-      }
+      },
     );
 
     return () => {

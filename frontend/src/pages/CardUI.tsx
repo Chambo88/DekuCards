@@ -24,7 +24,7 @@ const CardUI = () => {
           <Link to="/">
             <Button
               variant="outline"
-              className="rounded-full bg-transparent p-1"
+              className="rounded-full bg-background p-1"
             >
               <ChevronUpIcon className="h-8 w-8 text-white" />
             </Button>

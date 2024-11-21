@@ -13,15 +13,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Trash } from "lucide-react"; // Import icons
+import { PlusCircle, Trash } from "lucide-react";
 
-// Define the schema for a single prerequisite
 const prerequisiteSchema = z.object({
   name: z.string().nonempty("Name is required"),
   link: z.string().optional(),
 });
 
-// Define the schema for the form data
 const formSchema = z.object({
   prerequisites: z.array(prerequisiteSchema),
 });
@@ -53,9 +51,7 @@ export function PrerequisitesForm({
     name: "prerequisites",
   });
 
-  // Submit handler
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Remove empty rows (if any)
     const filteredData = values.prerequisites.filter(
       (item) => item.name.trim() !== "" || item.link?.trim() !== "",
     );
@@ -68,7 +64,6 @@ export function PrerequisitesForm({
         <div className="mt-4 space-y-4">
           {fields.map((field, index) => (
             <div className="flex items-end space-x-2" key={field.id}>
-              {/* Name Field */}
               <FormField
                 control={form.control}
                 name={`prerequisites.${index}.name`}
@@ -82,7 +77,6 @@ export function PrerequisitesForm({
                   </FormItem>
                 )}
               />
-              {/* Link Field */}
               <FormField
                 control={form.control}
                 name={`prerequisites.${index}.link`}
@@ -96,7 +90,6 @@ export function PrerequisitesForm({
                   </FormItem>
                 )}
               />
-              {/* Delete Icon */}
               <Button
                 type="button"
                 variant="ghost"
@@ -107,7 +100,6 @@ export function PrerequisitesForm({
             </div>
           ))}
 
-          {/* Add Button */}
           <div className="mt-4 flex justify-center">
             <Button
               type="button"
@@ -119,7 +111,6 @@ export function PrerequisitesForm({
             </Button>
           </div>
         </div>
-        {/* Save and Cancel Buttons */}
         <div className="mt-6 flex justify-end space-x-2">
           <Button type="submit" className="w-20">
             Save

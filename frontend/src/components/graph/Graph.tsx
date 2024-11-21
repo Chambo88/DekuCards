@@ -29,14 +29,18 @@ const nodeTypes = {
 };
 
 const nodeWidth = 172;
-const nodeHeight = 60;
+const nodeHeight = 80;
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const isHorizontal = false;
-  dagreGraph.setGraph({ rankdir: isHorizontal ? "TB" : "LR" });
+  const isHorizontal = true; // For Top-to-Bottom layout
+  dagreGraph.setGraph({
+    rankdir: isHorizontal ? "TB" : "LR",
+    ranksep: 150,
+    nodesep: 25,
+  });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -70,24 +74,22 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
 
-  const numNodes = 15; // Set the number of nodes here
+  const numNodes = 15;
 
   const generateElements = (numNodes: number) => {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
 
-    // Create nodes
     for (let i = 1; i <= numNodes; i++) {
       nodes.push({
         id: `${i}`,
         data: { label: `Node ${i}`, selected: false },
         position: { x: 0, y: 0 },
-        draggable: false, // Disable node dragging
-        type: "custom", // Use the custom node type
+        draggable: false,
+        type: "custom",
       });
     }
 
-    // Create edges based on parent-child relationships
     for (let i = 1; i <= Math.floor(numNodes / 2); i++) {
       const child1 = 2 * i;
       const child2 = 2 * i + 1;
@@ -164,7 +166,7 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        nodeTypes={nodeTypes} // Pass the custom node type
+        nodeTypes={nodeTypes}
         onNodesChange={(changes) =>
           setNodes((nds) => applyNodeChanges(changes, nds))
         }
@@ -172,7 +174,7 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
           setEdges((eds) => applyEdgeChanges(changes, eds))
         }
         onNodeClick={onNodeClick}
-        nodesDraggable={false} // Disable node dragging
+        nodesDraggable={false}
         nodesConnectable={false}
         elementsSelectable={false}
         zoomOnScroll={true}

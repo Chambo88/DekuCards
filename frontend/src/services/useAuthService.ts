@@ -1,5 +1,3 @@
-// services/useAuthService.js
-
 import { useEffect } from "react";
 import { Session, AuthChangeEvent } from "@supabase/supabase-js";
 import logger from "./logger";

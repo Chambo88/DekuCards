@@ -53,7 +53,6 @@ const CardTags: React.FC<CardTagsProps> = ({ setCardSet, card }) => {
 
   return (
     <>
-      {/* Select Tag */}
       <Tag
         icon={
           card.selected ? (
@@ -66,7 +65,6 @@ const CardTags: React.FC<CardTagsProps> = ({ setCardSet, card }) => {
         onClick={handleSelect}
       />
 
-      {/* Enable/Disable Tag */}
       <Tag
         icon={
           card.enabled ? (
@@ -79,7 +77,6 @@ const CardTags: React.FC<CardTagsProps> = ({ setCardSet, card }) => {
         onClick={handleEnable}
       />
 
-      {/* Delete Tag */}
       <CancelConfirmDialog
         title="Delete"
         desc="Are you sure you want to remove this card?"

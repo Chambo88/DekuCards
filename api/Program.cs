@@ -3,6 +3,7 @@ using DotNetEnv;
 using Supabase;
 using api.Services;
 using Npgsql;
+using Microsoft.VisualBasic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<SetService>();
+builder.Services.AddScoped<CardService>();
+builder.Services.AddScoped<UserSetService>();
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -37,7 +43,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

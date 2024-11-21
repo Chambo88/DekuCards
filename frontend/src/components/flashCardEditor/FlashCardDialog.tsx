@@ -96,7 +96,6 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
             <CardEditor cardSet={cardSet} setCardSet={setCardSet} />
           </div>
 
-          {/* Cancel Dialog */}
           <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
             <CancelConfirmDialogContent
               title="Discard Changes"

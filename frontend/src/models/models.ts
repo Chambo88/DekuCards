@@ -96,5 +96,5 @@ export const mockCardSet: FlashCardSet = {
       id: "7",
     },
   ],
-  img_url: "https://example.com/physics-fundamentals-image.jpg", // Replace with a real image URL
+  img_url: "https://example.com/physics-fundamentals-image.jpg", 
 };

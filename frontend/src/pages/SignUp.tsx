@@ -20,7 +20,6 @@ const SignUp: React.FC = () => {
   const navigate = useNavigate();
   // const setUser = useAuthStore((state) => state.setUser);
 
-  // Your signup function
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -41,7 +40,7 @@ const SignUp: React.FC = () => {
       setError(error.message);
     }
     // else if (data.user) {
-    //   navigate("/"); // Navigate to the homepage or dashboard
+    //   navigate("/");
     // }
     setLoading(false);
   };
@@ -76,10 +75,8 @@ const SignUp: React.FC = () => {
               />
             </div>
 
-            {/* Display errors */}
             {error && <div className="text-red-500">{error}</div>}
 
-            {/* Loading state */}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing up..." : "Sign Up"}
             </Button>

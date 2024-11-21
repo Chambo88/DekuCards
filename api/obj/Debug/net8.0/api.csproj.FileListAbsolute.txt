@@ -131,3 +131,4 @@ D:\Dev\DekuCards\api\obj\Debug\net8.0\refint\api.dll
 D:\Dev\DekuCards\api\obj\Debug\net8.0\api.pdb
 D:\Dev\DekuCards\api\obj\Debug\net8.0\api.genruntimeconfig.cache
 D:\Dev\DekuCards\api\obj\Debug\net8.0\ref\api.dll
+D:\Dev\DekuCards\api\obj\Debug\net8.0\api.sourcelink.json

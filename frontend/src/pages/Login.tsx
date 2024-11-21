@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom"; // Use React Router's Link
+import { Link } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -40,7 +40,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full lg:grid lg:min-h-[600px] lg:grid-cols-2">
+    <div className="h-full w-full lg:grid lg:min-h-[600px] lg:grid-cols-2">
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">

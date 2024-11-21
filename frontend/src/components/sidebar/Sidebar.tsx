@@ -14,7 +14,7 @@ import {
 } from "../ui/tooltip";
 
 const Sidebar = () => {
-  const [activeTab, setActiveTab] = useState("explorer");
+  const [activeTab, setActiveTab] = useState("manager");
   const { width, handleMouseDown } = useResizable(250, 100, 500);
 
   const tabs = [
@@ -38,7 +38,6 @@ const Sidebar = () => {
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex h-screen w-full">
-        {/* Left Icon Bar */}
         <div className="flex w-14 flex-col items-center border-r border-t bg-card py-4">
           {tabs.map((tab) => (
             <Tooltip key={tab.id}>
@@ -69,17 +68,18 @@ const Sidebar = () => {
           ))}
         </div>
 
-        {/* Main Sidebar */}
-        <div
-          className="border-t bg-background"
-          style={{ width: `${width}px` }} // Dynamic sidebar width
-        >
-          {activeTab === "manager" && <div>Manager Content</div>}
-          {activeTab === "community" && <div>Community Content</div>}
+        <div className="border-t bg-background" style={{ width: `${width}px` }}>
+          {activeTab === "manager" && (
+            <div className="h-full w-full bg-[url('src/assets/example_2.png')] bg-cover">
+              Manager Content
+            </div>
+          )}
+          {activeTab === "community" && (
+            <div className="h-full w-full bg-[url('src/assets/example.png')] bg-cover"></div>
+          )}
           {activeTab === "analytics" && <div>Analytics Content</div>}
         </div>
 
-        {/* Resizer */}
         <div
           onMouseDown={handleMouseDown}
           className="flex cursor-col-resize justify-center px-1 transition-all duration-300 ease-in-out hover:bg-border"

@@ -63,13 +63,12 @@ export function PrerequisitesForm({
       <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)}>
         <div className="mt-4 space-y-4">
           {fields.map((field, index) => (
-            <div className="flex items-end space-x-2" key={field.id}>
+            <div className="flex space-x-2" key={field.id}>
               <FormField
                 control={form.control}
                 name={`prerequisites.${index}.name`}
                 render={({ field }) => (
                   <FormItem className="w-1/2">
-                    {index === 0 && <FormLabel>Name</FormLabel>}
                     <FormControl>
                       <Input placeholder="Name" {...field} />
                     </FormControl>
@@ -82,7 +81,6 @@ export function PrerequisitesForm({
                 name={`prerequisites.${index}.link`}
                 render={({ field }) => (
                   <FormItem className="w-1/2">
-                    {index === 0 && <FormLabel>Link</FormLabel>}
                     <FormControl>
                       <Input placeholder="Link (optional)" {...field} />
                     </FormControl>

@@ -34,6 +34,13 @@ const PrerequisiteEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
             onClick={() => setIsPrerequisitesEditable(true)}
           >
             <h3 className="mb-4 font-semibold">Prerequisites</h3>
+            {cardSet.prerequisites.length == 0 ? (
+              <div className="ml-3 text-sm italic text-muted-foreground">
+                {"(None)"}
+              </div>
+            ) : (
+              <></>
+            )}
             <ul className="ml-3 list-disc pl-5">
               {cardSet.prerequisites.map((prereq, index) => (
                 <li key={index} className="text-sm">

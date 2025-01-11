@@ -49,7 +49,7 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
   const handleCancel = (event: any) => {
     event.preventDefault();
     if (isEqual(initialData, cardSet)) {
-      setIsOpen(true);
+      setIsOpen(false);
     } else {
       setCancelDialogOpen(true);
     }
@@ -84,8 +84,9 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
         <DialogTrigger asChild>{children}</DialogTrigger>
 
         <DialogContent
+          tabIndex={-1}
           onInteractOutside={handleCancel}
-          className="flex h-screen max-w-[1000px] flex-col bg-background"
+          className="flex h-screen max-w-[1000px] flex-col rounded-none border-none bg-background outline-none"
         >
           <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary">
             <DialogHeader>

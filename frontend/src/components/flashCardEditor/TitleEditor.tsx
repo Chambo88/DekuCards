@@ -7,6 +7,8 @@ import EditIcon from "../common/EditIcon";
 const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const [isTitleEditable, setIsTitleEditable] = useState(false);
 
+  //TODO Add validation for when saving
+
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCardSet({ ...cardSet, title: e.target.value });
   };
@@ -24,6 +26,7 @@ const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
             setIsTitleEditable(false);
           }
         }}
+        maxLength={128}
         autoFocus
       />
     </div>

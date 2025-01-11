@@ -17,6 +17,8 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const lastCardBackRef = useRef<HTMLTextAreaElement>(null);
   const prevNumOfCards = useRef(cardSet.cards.length);
 
+  //TODO Add validatino for no emtpy fronts or backs
+
   const filteredCards = useMemo(() => {
     if (!searchTerm.trim()) {
       return cardSet.cards.map((card, index) => ({ card, index }));
@@ -131,9 +133,9 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
         return (
           <div
             key={index}
-            className={`${card.front.length == MAX_FLASHCARD_CHAR || card.back.length == MAX_FLASHCARD_CHAR ? "pb-8" : "pb-3"} pt-3 ${card.selected ? "bg-secondary" : ""} `}
+            className={`${card.front.length == MAX_FLASHCARD_CHAR || card.back.length == MAX_FLASHCARD_CHAR ? "pb-8" : "pb-3"} pt-3 ${card.selected ? "bg-popover" : ""} `}
           >
-            <div className="flex items-stretch space-x-4">
+            <div className="mr-2 flex items-stretch space-x-4">
               {/* TODO make the hover on this have the different levels of colours*/}
               <div
                 className={`w-2 ${card.enabled ? "bg-green-500" : "bg-muted"}`}
@@ -174,7 +176,7 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
                   </div>
                 )}
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="mr-5 flex flex-col gap-2">
                 <CardTags
                   setCardSet={setCardSet}
                   cardSet={cardSet}

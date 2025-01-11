@@ -100,7 +100,7 @@ const Tag: React.FC<TagProps> = ({ icon, tooltip, onClick }) => {
         <TooltipTrigger>
           <div
             onClick={onClick}
-            className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded bg-popover text-secondary-foreground hover:bg-secondary/80`}
+            className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded bg-secondary text-secondary-foreground hover:bg-secondary/80`}
           >
             {icon}
           </div>

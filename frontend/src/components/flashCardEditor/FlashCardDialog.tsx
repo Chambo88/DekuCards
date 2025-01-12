@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { z } from "zod";
 import isEqual from "lodash/isEqual";
 import {
   Dialog,
@@ -17,6 +18,17 @@ import { CancelConfirmDialogContent } from "../common/CancelConfirmDialog";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { SquareArrowRightIcon } from "lucide-react";
 import useCardEditService from "@/services/useCardEditService";
+import { useToast } from "@/hooks/use-toast";
+
+const cardSchema = z.object({
+  front: z.string().trim().min(1, "A card has an empty front."),
+  back: z.string().trim().min(1, "A card has an empty Back."),
+});
+
+const cardSetSchema = z.object({
+  title: z.string().trim().min(1, "Title is empty."),
+  cards: z.array(cardSchema),
+});
 
 export interface EditorProps {
   cardSet: FlashCardSet;
@@ -36,14 +48,25 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectDeleteOpen, setSelectDeleteOpen] = useState(false);
+  const { toast } = useToast();
   const { moveCards } = useCardEditService();
+
   const selectedIds = new Set(
     cardSet.cards.filter((card) => card.selected).map((card) => card.id),
   );
+  const parseResult = cardSetSchema.safeParse(cardSet);
 
   const handleSave = () => {
-    console.log("saved");
-    setIsOpen(false);
+    // TODO Handle save properly
+    if (!parseResult.success) {
+      toast({
+        variant: "destructive",
+        title: "Couldn't save! missing fields",
+        description: `Reason: ${parseResult.error.errors[0].message}`,
+      });
+    } else {
+      setIsOpen(false);
+    }
   };
 
   const handleCancel = (event: any) => {
@@ -139,7 +162,12 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
                 )}
               </div>
             </div>
-            <Button onClick={handleSave}>Save changes</Button>
+            <Button
+              className={parseResult.success ? "" : "opacity-50"}
+              onClick={handleSave}
+            >
+              Save changes
+            </Button>
             <Button variant="secondary" onClick={handleCancel} className="ml-2">
               Cancel
             </Button>

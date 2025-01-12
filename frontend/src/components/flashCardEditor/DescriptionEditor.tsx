@@ -4,6 +4,7 @@ import { EditorProps } from "./FlashCardDialog";
 import EditIcon from "../common/EditIcon";
 import { Button } from "../ui/button";
 import { CheckIcon } from "@heroicons/react/24/outline";
+
 const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const [isDescEditable, setIsDescEditable] = useState(false);
 

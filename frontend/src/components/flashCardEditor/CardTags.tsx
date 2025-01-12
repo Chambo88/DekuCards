@@ -97,7 +97,7 @@ const Tag: React.FC<TagProps> = ({ icon, tooltip, onClick }) => {
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger tabIndex={-1}>
           <div
             onClick={onClick}
             className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded bg-secondary text-secondary-foreground hover:bg-secondary/80`}

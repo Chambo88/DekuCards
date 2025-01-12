@@ -16,8 +16,7 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const lastCardFrontRef = useRef<HTMLTextAreaElement>(null);
   const lastCardBackRef = useRef<HTMLTextAreaElement>(null);
   const prevNumOfCards = useRef(cardSet.cards.length);
-
-  //TODO Add validatino for no emtpy fronts or backs
+  const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
   const filteredCards = useMemo(() => {
     if (!searchTerm.trim()) {
@@ -129,51 +128,72 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
         </div>
       </div>
       {filteredCards.map(({ card, index }) => {
-        const isLastCard = index === cardSet.cards.length - 1;
+        const isFrontFocused =
+          textareaRefs.current[index * 2] == document.activeElement;
+        const isBackFocused =
+          textareaRefs.current[index * 2 + 1] == document.activeElement;
+        const displayFrontEmpty =
+          !isFrontFocused && card.front.trim().length == 0;
+        const displayBackEmpty =
+          !isFrontFocused && !isBackFocused && card.back.trim().length == 0;
+
         return (
           <div
             key={index}
-            className={`${card.front.length == MAX_FLASHCARD_CHAR || card.back.length == MAX_FLASHCARD_CHAR ? "pb-8" : "pb-3"} pt-3 ${card.selected ? "bg-popover" : ""} `}
+            className={`pb-7 pt-3 ${card.selected ? "bg-popover" : card.enabled ? "" : "bg-code"} `}
           >
             <div className="mr-2 flex items-stretch space-x-4">
-              {/* TODO make the hover on this have the different levels of colours*/}
               <div
                 className={`w-2 ${card.enabled ? "bg-green-500" : "bg-muted"}`}
               ></div>
 
               <div className="relative flex aspect-[3/2] w-1/2 flex-col">
                 <Textarea
-                  className={`h-full resize-none border ${card.selected ? "border-bg" : ""} p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
+                  className={`h-full resize-none border ${displayFrontEmpty ? "border-destructive" : ""} p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
                   value={card.front}
                   onChange={(e) =>
                     handleCardChange(index, "front", e.target.value)
                   }
                   placeholder="Front of the card"
-                  ref={isLastCard ? lastCardFrontRef : null}
+                  ref={(el) => (textareaRefs.current[index * 2] = el)}
                   maxLength={MAX_FLASHCARD_CHAR}
                 />
-                {card.front.length == MAX_FLASHCARD_CHAR && (
-                  <div className="text-destructive-bright absolute -bottom-6 left-1 text-sm">
-                    Char limit reached
-                  </div>
+                {isFrontFocused && (
+                  <p className="absolute -bottom-6 right-1 mt-2 text-sm text-muted-foreground">
+                    {card.front.length} / {MAX_FLASHCARD_CHAR}
+                  </p>
+                )}
+
+                {displayFrontEmpty && (
+                  <p className="absolute -bottom-6 left-1 mt-2 text-sm text-red-500">
+                    Card needs content
+                  </p>
                 )}
               </div>
 
               <div className="relative flex aspect-[3/2] w-1/2 flex-col">
                 <Textarea
-                  className={`h-full resize-none border ${card.selected ? "border-background" : ""} p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
+                  className={`h-full resize-none border ${displayBackEmpty ? "border-destructive" : ""} p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
                   value={card.back}
                   onChange={(e) =>
                     handleCardChange(index, "back", e.target.value)
                   }
                   placeholder="Back of the card"
-                  ref={isLastCard ? lastCardBackRef : null}
+                  ref={(el) => (textareaRefs.current[index * 2 + 1] = el)}
                   maxLength={MAX_FLASHCARD_CHAR}
                 />
-                {card.back.length == MAX_FLASHCARD_CHAR && (
-                  <div className="absolute -bottom-6 left-1 text-sm text-red-500">
-                    Char limit reached
-                  </div>
+                {isBackFocused && (
+                  <p
+                    className="absolute -bottom-6 right-1 mt-2 text-sm text-muted-foreground"
+                    tabIndex={-1}
+                  >
+                    {card.back.length} / {MAX_FLASHCARD_CHAR}
+                  </p>
+                )}
+                {displayBackEmpty && (
+                  <p className="absolute -bottom-6 left-1 mt-2 text-sm text-red-500">
+                    Card needs content
+                  </p>
                 )}
               </div>
               <div className="mr-5 flex flex-col gap-2">
@@ -187,7 +207,7 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
           </div>
         );
       })}
-      <div className="mb-10 flex w-full justify-center">
+      <div className="mb-10 mt-4 flex w-full justify-center">
         <div
           onClick={handleAddCard}
           className="flex aspect-[3/2] w-1/2 flex-col items-center justify-center rounded-md border ring-offset-background hover:cursor-pointer hover:outline-none hover:ring-2 hover:ring-ring hover:ring-offset-2"

@@ -3,6 +3,8 @@ import { Input } from "../ui/input";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { EditorProps } from "./FlashCardDialog";
 import EditIcon from "../common/EditIcon";
+import { Button } from "../ui/button";
+import { CheckIcon } from "@heroicons/react/24/outline";
 
 const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const [isTitleEditable, setIsTitleEditable] = useState(false);
@@ -14,7 +16,7 @@ const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   };
 
   return isTitleEditable ? (
-    <div className="mx-8 mt-11">
+    <div className="relative mx-8 mt-11">
       <Input
         className="mb-2 px-4 text-xl font-bold"
         value={cardSet.title}
@@ -29,6 +31,12 @@ const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
         maxLength={128}
         autoFocus
       />
+      <Button
+        className="absolute bottom-2 right-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-none rounded-tl-lg rounded-tr-lg bg-secondary p-0 text-secondary-foreground hover:bg-secondary/80"
+        onClick={() => setIsTitleEditable(false)}
+      >
+        <CheckIcon className="h-5 w-5" />
+      </Button>
     </div>
   ) : (
     <div className="mt-8">

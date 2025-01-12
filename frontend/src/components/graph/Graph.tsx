@@ -31,6 +31,22 @@ const nodeTypes = {
 const nodeWidth = 172;
 const nodeHeight = 80;
 
+//TODO right click add dialog thing on background (OnPaneContextMenu)
+//TODO right click on node opens menu
+//TODO button on node opens menu
+//TODO Create child node from menu
+//TODO Set parent in menu
+//TODO Create new node
+//TODO Delete node
+//TODO Merge node (menu + drag and drop)
+//TODO Node ui
+//TODO save x, y
+//TODO set parent (Drag from connector to another node)
+//TODO draggable
+//TODO enable disable moved to menu
+//TODO default parent
+//TODO expirement with dark mode
+
 const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));

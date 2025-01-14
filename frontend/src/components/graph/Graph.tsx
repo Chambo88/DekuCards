@@ -18,6 +18,7 @@ import ReactFlow, {
 } from "reactflow";
 import dagre from "dagre";
 import "reactflow/dist/style.css";
+import RightClickMenu from "./RightClickMenu";
 import CustomNode from "./CustomNode";
 
 export interface GraphComponentHandle {
@@ -89,6 +90,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
+  const [menuType, setMenuType] = useState<"node" | "pane" | null>(null);
 
   const numNodes = 15;
 
@@ -177,30 +179,42 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
     );
   };
 
+  const handlePaneContextMenu = (event: React.MouseEvent) => {
+    setMenuType("pane");
+  };
+
+  const handleNodeContextMenu = (event: React.MouseEvent, node: any) => {
+    setMenuType("node");
+  };
+
   return (
     <div style={{ width: "100%", height: "100vh" }} ref={reactFlowWrapper}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={(changes) =>
-          setNodes((nds) => applyNodeChanges(changes, nds))
-        }
-        onEdgesChange={(changes) =>
-          setEdges((eds) => applyEdgeChanges(changes, eds))
-        }
-        onNodeClick={onNodeClick}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        elementsSelectable={false}
-        zoomOnScroll={true}
-        panOnDrag={true}
-        fitView
-        onInit={setRfInstance}
-      >
-        <Background />
-        <Controls />
-      </ReactFlow>
+      <RightClickMenu menuType={menuType}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodesChange={(changes) =>
+            setNodes((nds) => applyNodeChanges(changes, nds))
+          }
+          onEdgesChange={(changes) =>
+            setEdges((eds) => applyEdgeChanges(changes, eds))
+          }
+          onPaneContextMenu={handlePaneContextMenu}
+          onNodeContextMenu={handleNodeContextMenu}
+          onNodeClick={onNodeClick}
+          nodesDraggable={true}
+          nodesConnectable={false}
+          elementsSelectable={false}
+          zoomOnScroll={true}
+          panOnDrag={true}
+          fitView
+          onInit={setRfInstance}
+        >
+          <Background />
+          <Controls />
+        </ReactFlow>
+      </RightClickMenu>
     </div>
   );
 });

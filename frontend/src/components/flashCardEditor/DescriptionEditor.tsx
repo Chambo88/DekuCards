@@ -63,7 +63,7 @@ const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
           >
             {cardSet.desc == undefined || cardSet.desc.trim().length == 0 ? (
               <div className="ml-3 text-sm italic text-muted-foreground">
-                {"(None)"}
+                {"Description.."}
               </div>
             ) : (
               <p className="pl-4 pr-7 text-sm">{cardSet.desc}</p>

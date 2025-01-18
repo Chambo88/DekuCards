@@ -13,6 +13,8 @@ import ReactFlow, {
   Node,
   Edge,
   ConnectionLineType,
+  useNodesState,
+  useEdgesState,
   Position,
   ReactFlowInstance,
 } from "reactflow";
@@ -32,8 +34,6 @@ const nodeTypes = {
 const nodeWidth = 172;
 const nodeHeight = 80;
 
-//TODO right click add dialog thing on background (OnPaneContextMenu)
-//TODO right click on node opens menu
 //TODO button on node opens menu
 //TODO Create child node from menu
 //TODO Set parent in menu
@@ -87,67 +87,68 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
   return { nodes, edges };
 };
 
+const generateElements = (numNodes: number) => {
+  const nodes: Node[] = [];
+  const edges: Edge[] = [];
+
+  for (let i = 1; i <= numNodes; i++) {
+    nodes.push({
+      id: `${i}`,
+      data: { label: `Node ${i}`, selected: false },
+      position: { x: 0, y: 0 },
+      draggable: true,
+      type: "custom",
+    });
+  }
+
+  for (let i = 1; i <= Math.floor(numNodes / 2); i++) {
+    const child1 = 2 * i;
+    const child2 = 2 * i + 1;
+
+    if (child1 <= numNodes) {
+      edges.push({
+        id: `e${i}-${child1}`,
+        source: `${i}`,
+        target: `${child1}`,
+        type: "smoothstep",
+        animated: false,
+        style: { stroke: "#A9A9A9" },
+      });
+    } else {
+      console.warn(
+        `Skipping edge creation: child1 (${child1}) exceeds numNodes`,
+      );
+    }
+
+    if (child2 <= numNodes) {
+      edges.push({
+        id: `e${i}-${child2}`,
+        source: `${i}`,
+        target: `${child2}`,
+        type: "smoothstep",
+        animated: false,
+        style: { stroke: "#A9A9A9" },
+      });
+    } else {
+      console.warn(
+        `Skipping edge creation: child2 (${child2}) exceeds numNodes`,
+      );
+    }
+  }
+
+  return getLayoutedElements(nodes, edges);
+};
+
 const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
   const [menuType, setMenuType] = useState<"node" | "pane" | null>(null);
-
-  const numNodes = 15;
-
-  const generateElements = (numNodes: number) => {
-    const nodes: Node[] = [];
-    const edges: Edge[] = [];
-
-    for (let i = 1; i <= numNodes; i++) {
-      nodes.push({
-        id: `${i}`,
-        data: { label: `Node ${i}`, selected: false },
-        position: { x: 0, y: 0 },
-        draggable: false,
-        type: "custom",
-      });
-    }
-
-    for (let i = 1; i <= Math.floor(numNodes / 2); i++) {
-      const child1 = 2 * i;
-      const child2 = 2 * i + 1;
-
-      if (child1 <= numNodes) {
-        edges.push({
-          id: `e${i}-${child1}`,
-          source: `${i}`,
-          target: `${child1}`,
-          type: "smoothstep",
-          animated: false,
-          style: { stroke: "#A9A9A9" },
-        });
-      } else {
-        console.warn(
-          `Skipping edge creation: child1 (${child1}) exceeds numNodes`,
-        );
-      }
-
-      if (child2 <= numNodes) {
-        edges.push({
-          id: `e${i}-${child2}`,
-          source: `${i}`,
-          target: `${child2}`,
-          type: "smoothstep",
-          animated: false,
-          style: { stroke: "#A9A9A9" },
-        });
-      } else {
-        console.warn(
-          `Skipping edge creation: child2 (${child2}) exceeds numNodes`,
-        );
-      }
-    }
-
-    return getLayoutedElements(nodes, edges);
-  };
-
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(
+    generateElements(10).nodes,
+  );
+  const [edges, setEdges, onEdgesChange] = useEdgesState(
+    generateElements(10).edges,
+  );
 
   useImperativeHandle(ref, () => ({
     resize() {
@@ -156,28 +157,6 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
       }
     },
   }));
-
-  useEffect(() => {
-    const { nodes: layoutedNodes, edges: layoutedEdges } =
-      generateElements(numNodes);
-    setNodes(layoutedNodes);
-    setEdges(layoutedEdges);
-  }, []);
-
-  const onNodeClick = (event: React.MouseEvent, node: Node) => {
-    setNodes((nds) =>
-      nds.map((n) => {
-        if (n.id === node.id) {
-          const selected = n.data.selected;
-          n.data = {
-            ...n.data,
-            selected: !selected,
-          };
-        }
-        return n;
-      }),
-    );
-  };
 
   const handlePaneContextMenu = (event: React.MouseEvent) => {
     setMenuType("pane");
@@ -193,21 +172,13 @@ const GraphComponent = forwardRef<GraphComponentHandle>((props, ref) => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           nodeTypes={nodeTypes}
-          onNodesChange={(changes) =>
-            setNodes((nds) => applyNodeChanges(changes, nds))
-          }
-          onEdgesChange={(changes) =>
-            setEdges((eds) => applyEdgeChanges(changes, eds))
-          }
           onPaneContextMenu={handlePaneContextMenu}
           onNodeContextMenu={handleNodeContextMenu}
-          onNodeClick={onNodeClick}
-          nodesDraggable={true}
           nodesConnectable={false}
-          elementsSelectable={false}
           zoomOnScroll={true}
-          panOnDrag={true}
           fitView
           onInit={setRfInstance}
         >

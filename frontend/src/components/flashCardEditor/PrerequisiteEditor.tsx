@@ -6,6 +6,7 @@ import EditIcon from "../common/EditIcon";
 
 const PrerequisiteEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const [isPrerequisitesEditable, setIsPrerequisitesEditable] = useState(false);
+  //TODO Make prereq hyperlinks clickable
 
   const handleSave = (data: Prerequisite[]) => {
     setCardSet({ ...cardSet, prerequisites: data });
@@ -36,7 +37,7 @@ const PrerequisiteEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
             <h3 className="mb-4 font-semibold">Prerequisites</h3>
             {cardSet.prerequisites.length == 0 ? (
               <div className="ml-3 text-sm italic text-muted-foreground">
-                {"(None)"}
+                {"None"}
               </div>
             ) : (
               <></>

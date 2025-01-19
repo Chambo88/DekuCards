@@ -9,7 +9,6 @@ const CustomNode = ({ data }: NodeProps) => {
 
   const handleLeftClick = (e: React.MouseEvent) => {
     if (divRef.current) {
-      // Create and dispatch the contextmenu event
       const event = new MouseEvent("contextmenu", {
         bubbles: true,
         cancelable: true,

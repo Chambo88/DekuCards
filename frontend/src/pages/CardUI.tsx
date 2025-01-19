@@ -35,7 +35,7 @@ const CardUI = () => {
           <div className="h-full">
             <Sidebar />
           </div>
-          <GraphComponent ref={graphRef} />
+          <GraphComponent data={mockCardSet} ref={graphRef} />
         </div>
       </div>
     </AnimatedLayout>

@@ -24,6 +24,7 @@ import "reactflow/dist/style.css";
 import RightClickMenu from "./RightClickMenu";
 import CustomNode from "./CustomNode";
 import { FlashCardSet } from "@/models/models";
+import { generateElements } from "./graphFunctions";
 
 export interface GraphComponentHandle {
   resize: () => void;
@@ -53,38 +54,6 @@ const nodeHeight = 80;
 //TODO default parent
 //TODO expirement with dark mode
 
-const generateElements = (cardSets: FlashCardSet[]) => {
-  const nodes: Node[] = [];
-  const edges: Edge[] = [];
-
-  for (const cardSet of cardSets) {
-    nodes.push({
-      id: cardSet.id,
-      data: {
-        cardSet: cardSet,
-        selected: false,
-      },
-      position: { x: cardSet.position_x, y: cardSet.position_y },
-      draggable: true,
-      type: "custom",
-      targetPosition: Position.Top,
-      sourcePosition: Position.Bottom,
-    });
-
-    if (cardSet.parent_id) {
-      edges.push({
-        id: `edge-${cardSet.parent_id}-${cardSet.id}`,
-        source: cardSet.parent_id,
-        target: cardSet.id,
-      });
-    }
-  }
-
-  console.log("reran");
-
-  return { nodes, edges };
-};
-
 const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
   ({ data }, ref) => {
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -100,6 +69,10 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
 
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [menuCoords, setMenuCoords] = useState<{
+      x: number;
+      y: number;
+    } | null>(null);
 
     useImperativeHandle(ref, () => ({
       resize() {
@@ -111,6 +84,20 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
 
     const handlePaneContextMenu = (event: React.MouseEvent) => {
       setMenuType("pane");
+
+      if (rfInstance) {
+        // Get the mouse position in the viewport
+        const { clientX, clientY } = event;
+
+        // Convert the mouse position to graph coordinates
+        const { x, y } = rfInstance.screenToFlowPosition({
+          x: clientX,
+          y: clientY,
+        });
+
+        // Update the coordinates for the context menu in the graph's space
+        setMenuCoords({ x: x - 15, y: y - 15 });
+      }
     };
 
     const handleNodeContextMenu = (event: React.MouseEvent, node: any) => {
@@ -119,7 +106,12 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
 
     return (
       <div style={{ width: "100%", height: "100vh" }} ref={reactFlowWrapper}>
-        <RightClickMenu menuType={menuType}>
+        <RightClickMenu
+          menuType={menuType}
+          cardSets={data}
+          setNodes={setNodes}
+          menuCoords={menuCoords}
+        >
           <ReactFlow
             nodes={nodes}
             edges={edges}

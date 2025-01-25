@@ -34,12 +34,17 @@ const CancelConfirmDialog: React.FC<CancelConfirmDialogProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log(isOpen);
+
   const handleConfirm = () => {
     confirm();
+    console.log("configm");
     setIsOpen(false);
   };
 
   const handleCancel = () => {
+    console.log("cancel");
+
     setIsOpen(false);
   };
 
@@ -73,12 +78,8 @@ export const CancelConfirmDialogContent: React.FC<
 }) => {
   return (
     <DialogContent className="flex flex-col bg-background">
-      <DialogTitle>
-        <div className="m-4 text-lg">{title}</div>
-      </DialogTitle>
-      <DialogDescription>
-        <p className="mx-4 mb-4">{desc}</p>
-      </DialogDescription>
+      <DialogTitle className="m-4 text-lg">{title}</DialogTitle>
+      <DialogDescription className="mx-4 mb-4">{desc}</DialogDescription>
 
       <DialogFooter className="bg-background p-4 shadow-lg">
         <Button

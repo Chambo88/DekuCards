@@ -43,7 +43,6 @@ const nodeHeight = 80;
 
 //TODO Create child node from menu
 //TODO Set parent in menu
-//TODO Create new node
 //TODO Delete node
 //TODO Merge node (menu + drag and drop)
 //TODO Node ui
@@ -73,6 +72,7 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
       x: number;
       y: number;
     } | null>(null);
+    const [clickedNode, setClickedNode] = useState<Node | null>(null);
 
     useImperativeHandle(ref, () => ({
       resize() {
@@ -83,24 +83,24 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
     }));
 
     const handlePaneContextMenu = (event: React.MouseEvent) => {
+      setClickedNode(null);
       setMenuType("pane");
 
       if (rfInstance) {
-        // Get the mouse position in the viewport
         const { clientX, clientY } = event;
-
-        // Convert the mouse position to graph coordinates
         const { x, y } = rfInstance.screenToFlowPosition({
           x: clientX,
           y: clientY,
         });
 
-        // Update the coordinates for the context menu in the graph's space
+        // TODO Change the values here to reflect the middle of the new created node
+        // Need to have the flow design complete befor doing this
         setMenuCoords({ x: x - 15, y: y - 15 });
       }
     };
 
-    const handleNodeContextMenu = (event: React.MouseEvent, node: any) => {
+    const handleNodeContextMenu = (event: React.MouseEvent, node: Node) => {
+      setClickedNode(node);
       setMenuType("node");
     };
 
@@ -110,7 +110,9 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
           menuType={menuType}
           cardSets={data}
           setNodes={setNodes}
+          setEdges={setEdges}
           menuCoords={menuCoords}
+          clickedNode={clickedNode}
         >
           <ReactFlow
             nodes={nodes}

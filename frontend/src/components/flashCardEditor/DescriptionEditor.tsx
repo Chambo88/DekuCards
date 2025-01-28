@@ -33,7 +33,7 @@ const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
             ref={textareaRef}
             className="resize-none overflow-hidden"
             style={{ overflowWrap: "anywhere" }}
-            value={cardSet.desc}
+            value={cardSet.desc ?? ""}
             onChange={(e) => {
               handleDescriptionChange(e);
               const textarea = e.target;

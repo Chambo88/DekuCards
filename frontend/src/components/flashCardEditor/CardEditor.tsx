@@ -60,9 +60,11 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   useEffect(() => {
     if (
       prevNumOfCards.current < cardSet.cards.length &&
-      lastCardFrontRef.current
+      textareaRefs.current[textareaRefs.current.length - 1]
     ) {
-      lastCardFrontRef.current.scrollIntoView({ behavior: "smooth" });
+      textareaRefs.current[textareaRefs.current.length - 1]!.scrollIntoView({
+        behavior: "smooth",
+      });
 
       const observer = new IntersectionObserver(
         (entries) => {
@@ -76,7 +78,7 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
         },
       );
 
-      observer.observe(lastCardFrontRef.current);
+      observer.observe(textareaRefs.current[textareaRefs.current.length - 1]!);
     }
 
     prevNumOfCards.current = cardSet.cards.length;
@@ -84,25 +86,33 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
 
   useEffect(() => {
     const handleTabPress = (event: KeyboardEvent) => {
+      if (event.key === "tab") {
+      }
       if (
         event.key === "Tab" &&
-        lastCardBackRef.current === document.activeElement
+        textareaRefs.current[textareaRefs.current.length - 1] ===
+          document.activeElement
       ) {
         event.preventDefault();
         handleAddCard();
       }
     };
 
-    if (lastCardBackRef.current) {
-      lastCardBackRef.current.addEventListener("keydown", handleTabPress);
+    if (textareaRefs.current[textareaRefs.current.length - 1]) {
+      textareaRefs.current[textareaRefs.current.length - 1]!.addEventListener(
+        "keydown",
+        handleTabPress,
+      );
     }
 
     return () => {
-      if (lastCardBackRef.current) {
-        lastCardBackRef.current.removeEventListener("keydown", handleTabPress);
+      if (textareaRefs.current[textareaRefs.current.length - 1]) {
+        textareaRefs.current[
+          textareaRefs.current.length - 1
+        ]!.removeEventListener("keydown", handleTabPress);
       }
     };
-  }, [lastCardBackRef.current]);
+  }, [textareaRefs]);
 
   return (
     <div>

@@ -41,14 +41,10 @@ const nodeTypes = {
 const nodeWidth = 172;
 const nodeHeight = 80;
 
-//TODO Create child node from menu
 //TODO Set parent in menu
-//TODO Delete node
 //TODO Merge node (menu + drag and drop)
 //TODO Node ui
-//TODO save x, y
 //TODO set parent (Drag from connector to another node)
-//TODO draggable
 //TODO enable disable moved to menu
 //TODO default parent
 //TODO expirement with dark mode

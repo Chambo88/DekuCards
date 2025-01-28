@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -22,6 +22,7 @@ import CancelConfirmDialog, {
 } from "../common/CancelConfirmDialog";
 import { Dialog } from "../ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
+import FlashCardDialog from "../flashCardEditor/FlashCardDialog";
 
 const RightClickMenu: React.FC<{
   children: React.ReactNode;
@@ -82,7 +83,7 @@ const RightClickMenu: React.FC<{
 
   const deleteCardSet = () => {
     let newCardSets = cardSets.filter(
-      (cardSet) => cardSet.id != clickedNode?.data.Id,
+      (cardSet) => cardSet.id != clickedNode?.data.cardSet.Id,
     );
 
     newCardSets.forEach((cardSet) => {
@@ -90,81 +91,71 @@ const RightClickMenu: React.FC<{
     });
     setNodes(generateElements(newCardSets).nodes);
     setEdges(generateElements(newCardSets).edges);
+
+    setIsDeleteOpen(false);
   };
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const editorDataRef = useRef<FlashCardSet | null>(null);
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isEditorOpen}>
+        <FlashCardDialog
+          initialData={
+            clickedNode?.data.cardSet ??
+            createFlashCardSet({
+              title: "Error",
+              parent_id: clickedNode?.data.cardSet.id ?? null,
+              position_x: menuCoords?.x ?? 0,
+              position_y: menuCoords?.y ?? 0,
+            })
+          }
+          setIsOpen={setIsEditorOpen}
+        />
+      </Dialog>
+
+      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <CancelConfirmDialogContent
-          title={""}
-          desc={"desc"}
-          primaryText={"primaryText"}
-          secondaryText={"secondaryText"}
+          title={"Delete"}
+          desc={`Are you sure you want to delete the cardset: ${clickedNode?.data.cardSet.title}`}
+          primaryText={"Delete"}
+          secondaryText={"Cancel"}
           destructive={true}
           confirm={deleteCardSet}
-          cancel={() => setIsOpen(false)}
+          cancel={() => setIsDeleteOpen(false)}
         />
-
-        <ContextMenu>
-          <ContextMenuTrigger>{children}</ContextMenuTrigger>
-          <ContextMenuContent className="w-64">
-            {menuType === "node" && (
-              <>
-                <DialogTrigger asChild>
-                  <ContextMenuItem>Delete set</ContextMenuItem>
-                </DialogTrigger>
-
-                <ContextMenuItem onSelect={handleCreateCardSet}>
-                  Create child set
-                </ContextMenuItem>
-              </>
-            )}
-            <ContextMenuItem onSelect={handleCreateCardSet}>
-              Create card set
-            </ContextMenuItem>
-            <ContextMenuItem inset disabled>
-              NOOOOODE
-              <ContextMenuShortcut>⌘]</ContextMenuShortcut>
-            </ContextMenuItem>
-            <ContextMenuItem inset>
-              Reload
-              <ContextMenuShortcut>⌘R</ContextMenuShortcut>
-            </ContextMenuItem>
-            <ContextMenuSub>
-              <ContextMenuSubTrigger inset>More Tools</ContextMenuSubTrigger>
-              <ContextMenuSubContent className="w-48">
-                <ContextMenuItem>
-                  Save Page As...
-                  <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
-                </ContextMenuItem>
-                <ContextMenuItem>Create Shortcut...</ContextMenuItem>
-                <ContextMenuItem>Name Window...</ContextMenuItem>
-                <ContextMenuSeparator />
-                <ContextMenuItem>Developer Tools</ContextMenuItem>
-              </ContextMenuSubContent>
-            </ContextMenuSub>
-            <ContextMenuSeparator />
-            <ContextMenuCheckboxItem checked>
-              Show Bookmarks Bar
-              <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
-            </ContextMenuCheckboxItem>
-            <ContextMenuCheckboxItem>Show Full URLs</ContextMenuCheckboxItem>
-            <ContextMenuSeparator />
-            <ContextMenuRadioGroup value="pedro">
-              <ContextMenuLabel inset>People</ContextMenuLabel>
-              <ContextMenuSeparator />
-              <ContextMenuRadioItem value="pedro">
-                Pedro Duarte
-              </ContextMenuRadioItem>
-              <ContextMenuRadioItem value="colm">
-                Colm Tuite
-              </ContextMenuRadioItem>
-            </ContextMenuRadioGroup>
-          </ContextMenuContent>
-        </ContextMenu>
       </Dialog>
+
+      <ContextMenu>
+        <ContextMenuTrigger>{children}</ContextMenuTrigger>
+        <ContextMenuContent className="w-64">
+          {menuType === "node" && (
+            <>
+              <ContextMenuItem
+                onSelect={() => {
+                  editorDataRef.current = clickedNode?.data.cardSet;
+                  setIsEditorOpen(true);
+                }}
+              >
+                Edit Set
+              </ContextMenuItem>
+
+              <ContextMenuItem onSelect={() => setIsDeleteOpen(true)}>
+                Delete Set
+              </ContextMenuItem>
+
+              <ContextMenuItem onSelect={handleCreateCardSet}>
+                Create child set
+              </ContextMenuItem>
+            </>
+          )}
+          <ContextMenuItem onSelect={handleCreateCardSet}>
+            Create card set
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </>
   );
 };

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { FlashCardSet } from "@/models/models";
+import { mockCardSetsById } from "@/models/mockdata";
 
 interface CardSetState {
   cardSetsById: Record<string, FlashCardSet>;
@@ -7,7 +8,7 @@ interface CardSetState {
 }
 
 export const useCardSetStore = create<CardSetState>((set) => ({
-  cardSetsById: {},
+  cardSetsById: mockCardSetsById,
   setCardSet: (id, updates) =>
     set((state) => ({
       cardSetsById: {

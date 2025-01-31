@@ -1,11 +1,11 @@
 import { FlashCardSet } from "@/models/models";
 import { Edge, Node, Position } from "reactflow";
 
-export const generateElements = (cardSets: FlashCardSet[]) => {
+export const generateElements = (cardSets: Record<string, FlashCardSet>) => {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  for (const cardSet of cardSets) {
+  for (const cardSet of Object.values(cardSets)) {
     nodes.push({
       id: cardSet.id,
       data: {

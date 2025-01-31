@@ -1,11 +1,14 @@
 import { useToast } from "@/hooks/use-toast";
-import { FlashCard, FlashCardSet } from "@/models/models";
+import { createFlashCardSet, FlashCard, FlashCardSet } from "@/models/models";
 import useCardSetStore from "@/stores/useCardStore";
 
 const useCardEditService = () => {
   const { toast } = useToast();
   const setCardSet = useCardSetStore((state) => state.setCardSet);
-  const cardSetsById = useCardSetStore((state) => state.cardSetsById);
+
+  const getCurrentState = () => {
+    return useCardSetStore.getState().cardSetsById;
+  };
 
   const moveCards = (
     sourceSetId: string,
@@ -13,8 +16,8 @@ const useCardEditService = () => {
     targetTitle: string,
     cardIds: string[],
   ) => {
-    const sourceSet = cardSetsById[sourceSetId];
-    const targetSet = cardSetsById[targetSetId];
+    const sourceSet = getCurrentState()[sourceSetId];
+    const targetSet = getCurrentState()[targetSetId];
 
     if (!sourceSet || !targetSet) {
       toast({
@@ -43,7 +46,7 @@ const useCardEditService = () => {
   };
 
   const updateSet = (setId: string, updates: Partial<FlashCardSet>) => {
-    if (!cardSetsById[setId]) {
+    if (!getCurrentState()[setId]) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -60,8 +63,68 @@ const useCardEditService = () => {
     });
   };
 
+  const getNewTitle = () => {
+    let count = 0;
+    let newTitle = "";
+    let titleCreated = false;
+
+    while (!titleCreated) {
+      let alreadyMade = false;
+      let newPotentialTitle = "New Card set " + (count === 0 ? "" : count);
+
+      for (const cardSet of Object.values(getCurrentState())) {
+        if (cardSet.title === newPotentialTitle) {
+          count += 1;
+          alreadyMade = true;
+          break;
+        }
+      }
+
+      if (!alreadyMade) {
+        newTitle = newPotentialTitle;
+        titleCreated = true;
+      }
+    }
+
+    return newTitle;
+  };
+
+  const createSet = ({
+    title = null,
+    parent_id = null,
+    position_x = null,
+    position_y = null,
+  }: {
+    title?: string | null;
+    parent_id?: string | null;
+    position_x?: number | null;
+    position_y?: number | null;
+  } = {}) => {
+    let cardSet: FlashCardSet = createFlashCardSet({
+      title: title ?? getNewTitle(),
+      parent_id: parent_id,
+      position_x: position_x ?? 0,
+      position_y: position_y ?? 0,
+    });
+
+    let newState = useCardSetStore.setState((state) => ({
+      cardSetsById: {
+        ...state.cardSetsById,
+        [cardSet.id]: cardSet,
+      },
+    }));
+
+    toast({
+      title: "Success",
+      description: "New card set created.",
+    });
+
+    return getCurrentState();
+  };
+
   const deleteSet = (setId: string) => {
-    if (!cardSetsById[setId]) {
+    console.log(setId);
+    if (!getCurrentState()[setId]) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -79,9 +142,11 @@ const useCardEditService = () => {
       title: "Success",
       description: "Card set deleted successfully.",
     });
+
+    return getCurrentState();
   };
 
-  return { moveCards, updateSet, deleteSet };
+  return { moveCards, updateSet, createSet, deleteSet };
 };
 
 export default useCardEditService;

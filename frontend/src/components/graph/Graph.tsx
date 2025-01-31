@@ -25,21 +25,15 @@ import RightClickMenu from "./RightClickMenu";
 import CustomNode from "./CustomNode";
 import { FlashCardSet } from "@/models/models";
 import { generateElements } from "./graphFunctions";
+import useCardSetStore from "@/stores/useCardStore";
 
 export interface GraphComponentHandle {
   resize: () => void;
 }
 
-interface GraphComponentProps {
-  data: FlashCardSet[]; // Accepts the array of card sets
-}
-
 const nodeTypes = {
   custom: CustomNode,
 };
-
-const nodeWidth = 172;
-const nodeHeight = 80;
 
 //TODO Set parent in menu
 //TODO Merge node (menu + drag and drop)
@@ -48,9 +42,18 @@ const nodeHeight = 80;
 //TODO enable disable moved to menu
 //TODO default parent
 //TODO expirement with dark mode
+//TODO Fix tabbing in edit menu
+//TODO Fix dialog getting rid of graph draggable
+//TODO fix dialog being populated wrong
+//TODO fix clicking outside dialog
+
+interface GraphComponentProps {
+  data?: any;
+}
 
 const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
-  ({ data }, ref) => {
+  (props, ref) => {
+    const cardSetsById = useCardSetStore((state) => state.cardSetsById);
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
     const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(
       null,
@@ -58,8 +61,8 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
     const [menuType, setMenuType] = useState<"node" | "pane" | null>(null);
 
     const { nodes: initialNodes, edges: initialEdges } = useMemo(
-      () => generateElements(data),
-      [data],
+      () => generateElements(cardSetsById),
+      [cardSetsById],
     );
 
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -79,6 +82,7 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
     }));
 
     const handlePaneContextMenu = (event: React.MouseEvent) => {
+      console.log("openHandlePaneContext");
       setClickedNode(null);
       setMenuType("pane");
 
@@ -96,6 +100,8 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
     };
 
     const handleNodeContextMenu = (event: React.MouseEvent, node: Node) => {
+      console.log("openHandlePaneContext");
+      console.log(node);
       setClickedNode(node);
       setMenuType("node");
     };
@@ -104,7 +110,6 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
       <div style={{ width: "100%", height: "100vh" }} ref={reactFlowWrapper}>
         <RightClickMenu
           menuType={menuType}
-          cardSets={data}
           setNodes={setNodes}
           setEdges={setEdges}
           menuCoords={menuCoords}

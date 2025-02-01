@@ -1,50 +1,46 @@
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
-import {
-  ContextMenu,
-  ContextMenuCheckboxItem,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+import React, { Dispatch, useState } from "react";
 import { Node, Edge } from "reactflow";
-import { createFlashCardSet, FlashCardSet } from "@/models/models";
-import { generateElements } from "./graphFunctions";
-import CancelConfirmDialog, {
-  CancelConfirmDialogContent,
-} from "../common/CancelConfirmDialog";
-import { Dialog } from "../ui/dialog";
-import { DialogTrigger } from "@radix-ui/react-dialog";
-import FlashCardDialog from "../flashCardEditor/FlashCardDialog";
-import useCardSetStore from "@/stores/useCardStore";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import useCardEditService from "@/services/useCardEditService";
+import { generateElements } from "./graphFunctions";
+import { Dialog } from "@radix-ui/react-dialog";
+import FlashCardDialog from "../flashCardEditor/FlashCardDialog";
+import { createFlashCardSet } from "@/models/models";
+import { CancelConfirmDialogContent } from "../common/CancelConfirmDialog";
 
-const RightClickMenu: React.FC<{
-  children: React.ReactNode;
-  menuType: "node" | "pane" | null;
+interface RightClickMenuProps {
+  x: number;
+  y: number;
+  menuType: "node" | "pane";
+  clickedNode?: any;
   setNodes: Dispatch<React.SetStateAction<Node<any, string | undefined>[]>>;
   setEdges: Dispatch<React.SetStateAction<Edge[]>>;
-  menuCoords: {
-    x: number;
-    y: number;
-  } | null;
-  clickedNode: Node | null;
-}> = ({ children, menuType, setNodes, setEdges, menuCoords, clickedNode }) => {
+  onClose: () => void;
+}
+
+const RightClickMenu: React.FC<RightClickMenuProps> = ({
+  x,
+  y,
+  menuType,
+  clickedNode,
+  setNodes,
+  setEdges,
+  onClose,
+}) => {
+  const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
   const { deleteSet, createSet } = useCardEditService();
 
   const handleCreateCardSet = () => {
     let newState = createSet({
       title: null,
       parent_id: clickedNode?.data.cardSet.id ?? null,
-      position_x: menuCoords?.x ?? 0,
-      position_y: menuCoords?.y ?? 0,
+      position_x: x ?? 0,
+      position_y: y ?? 0,
     });
 
     setNodes(generateElements(newState).nodes);
@@ -64,7 +60,8 @@ const RightClickMenu: React.FC<{
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const editorDataRef = useRef<FlashCardSet | null>(null);
+
+  console.log("menu");
 
   return (
     <>
@@ -75,11 +72,14 @@ const RightClickMenu: React.FC<{
             createFlashCardSet({
               title: "Error",
               parent_id: clickedNode?.data.cardSet.id ?? null,
-              position_x: menuCoords?.x ?? 0,
-              position_y: menuCoords?.y ?? 0,
+              position_x: x ?? 0,
+              position_y: y ?? 0,
             })
           }
-          setIsOpen={setIsEditorOpen}
+          close={() => {
+            setIsEditorOpen(false);
+            onClose();
+          }}
         />
       </Dialog>
 
@@ -91,38 +91,57 @@ const RightClickMenu: React.FC<{
           secondaryText={"Cancel"}
           destructive={true}
           confirm={deleteCardSet}
-          cancel={() => setIsDeleteOpen(false)}
+          cancel={() => {
+            setIsDeleteOpen(false);
+            onClose();
+          }}
         />
       </Dialog>
 
-      <ContextMenu>
-        <ContextMenuTrigger>{children}</ContextMenuTrigger>
-        <ContextMenuContent className="w-64">
-          {menuType === "node" && (
+      <DropdownMenu open>
+        <DropdownMenuContent
+          sideOffset={0}
+          align="start"
+          onPointerDownOutside={onClose}
+          style={{ position: "absolute", left: x, top: y }}
+          onClick={stopPropagation}
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          {menuType === "pane" ? (
             <>
-              <ContextMenuItem
+              <DropdownMenuItem
                 onSelect={() => {
-                  editorDataRef.current = clickedNode?.data.cardSet;
+                  console.log("Add Node");
+                  onClose();
+                }}
+              >
+                Add Node
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleCreateCardSet}>
+                Pane Action
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <>
+              <DropdownMenuItem
+                onSelect={() => {
                   setIsEditorOpen(true);
                 }}
               >
-                Edit Set
-              </ContextMenuItem>
-
-              <ContextMenuItem onSelect={() => setIsDeleteOpen(true)}>
-                Delete Set
-              </ContextMenuItem>
-
-              <ContextMenuItem onSelect={handleCreateCardSet}>
-                Create child set
-              </ContextMenuItem>
+                Edit Node
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => {
+                  setIsDeleteOpen(true);
+                  console.log("tests");
+                }}
+              >
+                Delete Node
+              </DropdownMenuItem>
             </>
           )}
-          <ContextMenuItem onSelect={handleCreateCardSet}>
-            Create card set
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </>
   );
 };

@@ -8,19 +8,6 @@ const CustomNode = ({ data }: NodeProps) => {
   const divRef = useRef<HTMLDivElement>(null);
   const cardSet: FlashCardSet = data.cardSet;
 
-  const handleLeftClick = (e: React.MouseEvent) => {
-    if (divRef.current) {
-      const event = new MouseEvent("contextmenu", {
-        bubbles: true,
-        cancelable: true,
-        view: window,
-        clientX: e.clientX,
-        clientY: e.clientY,
-      });
-      divRef.current.dispatchEvent(event);
-    }
-  };
-
   return (
     <div
       className={`h-full rounded-[1.5rem] border-2 border-green-400 bg-muted p-2.5 text-center text-white`}
@@ -31,7 +18,9 @@ const CustomNode = ({ data }: NodeProps) => {
         <Button
           variant="outline"
           size="icon"
-          onClick={handleLeftClick}
+          onClick={() => {
+            console.log("hehe");
+          }}
           className="bg-transparent hover:bg-black/30"
         >
           <EllipsisVerticalIcon className="h-6 w-6" />

@@ -37,12 +37,12 @@ export interface EditorProps {
 
 interface FlashCardDialogProps {
   initialData: FlashCardSet;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  close: () => void;
 }
 
 const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
   initialData,
-  setIsOpen,
+  close,
 }) => {
   const [cardSet, setCardSet] = useState(initialData);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -65,7 +65,7 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
       });
     } else {
       console.log("handle save");
-      setIsOpen(false);
+      close();
     }
   };
 
@@ -83,7 +83,7 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
     if (isEqual(initialData, cardSet)) {
       console.log("handle cancel");
 
-      setIsOpen(false);
+      close;
     } else {
       setCancelDialogOpen(true);
     }
@@ -91,7 +91,7 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
 
   const confirmCancel = () => {
     setCancelDialogOpen(false);
-    setIsOpen(false);
+    close;
   };
 
   const handleSelectMove = () => {

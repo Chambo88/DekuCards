@@ -83,7 +83,7 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
     if (isEqual(initialData, cardSet)) {
       console.log("handle cancel");
 
-      close;
+      close();
     } else {
       setCancelDialogOpen(true);
     }
@@ -91,7 +91,7 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
 
   const confirmCancel = () => {
     setCancelDialogOpen(false);
-    close;
+    close();
   };
 
   const handleSelectMove = () => {

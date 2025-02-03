@@ -45,22 +45,29 @@ const useCardEditService = () => {
     });
   };
 
-  const updateSet = (setId: string, updates: Partial<FlashCardSet>) => {
+  const updateSet = (
+    setId: string,
+    updates: Partial<FlashCardSet>,
+    raiseToast: boolean = true,
+  ) => {
     if (!getCurrentState()[setId]) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Card set not found.",
+        description: "Card set not found. Cannot modify set.",
       });
       return;
     }
 
-    setCardSet(setId, updates);
+    const updatedSet = { ...getCurrentState()[setId], ...updates };
+    setCardSet(setId, updatedSet);
 
-    toast({
-      title: "Success",
-      description: "Card set updated successfully.",
-    });
+    if (raiseToast) {
+      toast({
+        title: "Success",
+        description: "Card set updated successfully.",
+      });
+    }
   };
 
   const getNewTitle = () => {

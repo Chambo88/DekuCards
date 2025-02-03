@@ -13,12 +13,15 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   ReactFlowInstance,
+  Viewport,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import RightClickMenu from "./RightClickMenu";
 import CustomNode from "./CustomNode";
 import { generateElements } from "./graphFunctions";
 import useCardSetStore from "@/stores/useCardStore";
+import useCardEditService from "@/services/useCardEditService";
+import { FlashCardSet } from "@/models/models";
 
 export interface GraphComponentHandle {
   resize: () => void;
@@ -35,6 +38,7 @@ interface GraphComponentProps {
 const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
   (props, ref) => {
     const cardSetsById = useCardSetStore((state) => state.cardSetsById);
+    const { updateSet } = useCardEditService();
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
     const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(
       null,
@@ -87,6 +91,24 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
       console.log(JSON.stringify(node));
     };
 
+    const onNodeDragStop = (
+      event: React.MouseEvent | React.TouchEvent | null,
+      node: Node<any, string | undefined>,
+    ) => {
+      if (node) {
+        const cardSet: FlashCardSet = node.data.cardSet;
+
+        updateSet(
+          cardSet.id,
+          {
+            position_x: node.position.x,
+            position_y: node.position.y,
+          },
+          false,
+        );
+      }
+    };
+
     return (
       <div
         style={{ width: "100%", height: "100vh", position: "relative" }}
@@ -97,6 +119,7 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onNodeDragStop={onNodeDragStop}
           nodeTypes={nodeTypes}
           onPaneContextMenu={handlePaneContextMenu}
           onNodeContextMenu={handleNodeContextMenu}

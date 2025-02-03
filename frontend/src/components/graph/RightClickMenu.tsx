@@ -104,13 +104,14 @@ const RightClickMenu: React.FC<RightClickMenuProps> = ({
               <>
                 <DropdownMenuItem
                   onSelect={() => {
+                    handleCreateCardSet();
                     onClose();
                   }}
                 >
                   Add Node
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={handleCreateCardSet}>
-                  Pane Action
+                  TEMP
                 </DropdownMenuItem>
               </>
             ) : (

@@ -49,33 +49,13 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "DotNetEnv": {
-              "target": "Package",
-              "version": "[3.1.1, )"
-            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
-              "version": "[8.0.8, )"
-            },
-            "Npgsql": {
-              "target": "Package",
-              "version": "[9.0.1, )"
-            },
-            "Serilog.AspNetCore": {
-              "target": "Package",
-              "version": "[8.0.2, )"
-            },
-            "Serilog.Sinks.Console": {
-              "target": "Package",
-              "version": "[6.0.0, )"
+              "version": "[8.0.12, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.7.3, )"
-            },
-            "supabase": {
-              "target": "Package",
-              "version": "[1.1.1, )"
+              "version": "[6.6.2, )"
             }
           },
           "imports": [

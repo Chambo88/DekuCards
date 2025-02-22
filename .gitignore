@@ -6,6 +6,7 @@ yarn-error.log
 .vscode/
 .DS_Store
 .env
+.prod.env
 .env.local
 .env.development.local
 .env.test.local

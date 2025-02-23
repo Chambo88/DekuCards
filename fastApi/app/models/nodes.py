@@ -38,3 +38,7 @@ class Nodes(SQLModel, table=True):
         default=None,
         sa_column=mapped_column(Text)
     )
+    title: str = Field(
+        default="",
+        sa_column=mapped_column(Text)
+    )

@@ -24,6 +24,7 @@ export const createFlashCard = (
 
 export interface FlashCardSet {
   id: string;
+  set_identity_id: string;
   title: string;
   desc: string | null;
   prerequisites: Prerequisite[];
@@ -36,6 +37,7 @@ export interface FlashCardSet {
 
 interface FlashCardSetParams {
   id?: string;
+  set_identity_id?: string;
   title: string;
   position_x: number;
   position_y: number;
@@ -48,6 +50,7 @@ interface FlashCardSetParams {
 
 export const createFlashCardSet = ({
   id = uuidv4(),
+  set_identity_id = uuidv4(),
   title,
   position_x,
   position_y,
@@ -58,6 +61,7 @@ export const createFlashCardSet = ({
   img_url = null,
 }: FlashCardSetParams): FlashCardSet => ({
   id,
+  set_identity_id,
   title,
   position_x,
   position_y,
@@ -71,4 +75,12 @@ export const createFlashCardSet = ({
 export interface Prerequisite {
   name: string;
   link?: string | undefined;
+}
+
+export interface Node {
+  enabled: boolean;
+  icon_url: string;
+  public_node: boolean;
+  public_description: string;
+  sets: FlashCardSet[];
 }

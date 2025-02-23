@@ -4,7 +4,7 @@ import uuid
 
 from sqlalchemy import DateTime, JSON, PrimaryKeyConstraint, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlmodel import Field, SQLModel, Column
+from sqlmodel import Field, SQLModel, Column, Float
 from sqlalchemy.orm import mapped_column
 
 
@@ -15,6 +15,10 @@ class Sets(SQLModel, table=True):
     )
 
     id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        sa_column=mapped_column(PG_UUID(as_uuid=True), server_default=text('gen_random_uuid()'))
+    )
+    set_identity_id: uuid.UUID = Field(
         default_factory=uuid.uuid4,
         sa_column=mapped_column(PG_UUID(as_uuid=True), server_default=text('gen_random_uuid()'))
     )
@@ -42,4 +46,10 @@ class Sets(SQLModel, table=True):
     node_version_id: Optional[uuid.UUID] = Field(
         default=None,
         sa_column=mapped_column(PG_UUID(as_uuid=True), server_default=text('gen_random_uuid()'))
+    )
+    x_relative_node: float = Field(
+        sa_column=mapped_column(Float, nullable=False)
+    )
+    y_relative_node: float = Field(
+        sa_column=mapped_column(Float, nullable=False)
     )

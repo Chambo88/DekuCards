@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from sqlmodel import SQLModel
-from app.api import items
+from app.api import cardset
 from app.core.config import settings
 from app.core.database import engine
 from contextlib import asynccontextmanager
@@ -12,4 +12,4 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, title=settings.PROJECT_NAME)
 
-app.include_router(items.router, prefix="/items", tags=["items"])
+app.include_router(cardset.router, prefix="/api")

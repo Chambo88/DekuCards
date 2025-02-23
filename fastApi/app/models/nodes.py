@@ -4,7 +4,7 @@ import uuid
 
 from sqlalchemy import Boolean, DateTime, PrimaryKeyConstraint, Text, text, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Column
 from sqlalchemy.orm import mapped_column
 
 
@@ -15,13 +15,17 @@ class Nodes(SQLModel, table=True):
     )
 
     created_at: datetime = Field(
-        sa_column=mapped_column(DateTime, nullable=False, server_default=func.now())
+        sa_column=Column( 
+            DateTime(timezone=True),    
+            nullable=False,              
+            server_default=text("now()") 
+        )
     )
     created_by: uuid.UUID = Field(
         sa_column=mapped_column(PG_UUID(as_uuid=True), nullable=False, server_default=text('auth.uid()'))
     )
     updated_at: datetime = Field(
-        sa_column=mapped_column(DateTime, nullable=False, server_default=func.now())
+        sa_column=mapped_column('updated_at', DateTime(True), nullable=False, server_default=text('now()'))
     )
     public_set: bool = Field(
         sa_column=mapped_column(Boolean, nullable=False, server_default=text('false'))

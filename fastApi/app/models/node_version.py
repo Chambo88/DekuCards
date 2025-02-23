@@ -4,7 +4,7 @@ import uuid
 
 from sqlalchemy import DateTime, Integer, PrimaryKeyConstraint, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Column
 from sqlalchemy.orm import mapped_column
 
 
@@ -29,13 +29,19 @@ class NodeVersion(SQLModel, table=True):
         default=None,
         sa_column=mapped_column(Text)
     )
-    created_at: Optional[datetime] = Field(
-        default=None,
-        sa_column=mapped_column(DateTime)
+    created_at: datetime = Field(
+        sa_column=Column( 
+            DateTime(timezone=True),    
+            nullable=False,              
+            server_default=text("now()") 
+        )
     )
-    updated_at: Optional[datetime] = Field(
-        default=None,
-        sa_column=mapped_column(DateTime)
+    updated_at: datetime = Field(
+        sa_column=Column( 
+            DateTime(timezone=True),    
+            nullable=False,              
+            server_default=text("now()") 
+        )
     )
     version_seq_num: Optional[int] = Field(
         default=None,

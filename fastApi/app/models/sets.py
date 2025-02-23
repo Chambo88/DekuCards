@@ -2,10 +2,9 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 import uuid
 
-from sqlalchemy import DateTime, JSON, PrimaryKeyConstraint, Text, text, func
+from sqlalchemy import DateTime, JSON, PrimaryKeyConstraint, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Column
 from sqlalchemy.orm import mapped_column
 
 
@@ -26,7 +25,11 @@ class Sets(SQLModel, table=True):
         sa_column=mapped_column(PG_UUID(as_uuid=True), nullable=False, server_default=text('auth.uid()'))
     )
     created_at: datetime = Field(
-        sa_column=mapped_column(DateTime, nullable=False, server_default=func.now())
+        sa_column=Column( 
+            DateTime(timezone=True),    
+            nullable=False,              
+            server_default=text("now()") 
+        )
     )
     description: Optional[str] = Field( 
         default=None,

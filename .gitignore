@@ -12,6 +12,9 @@ yarn-error.log
 .env.test.local
 .env.production.local
 
+# Ignore all __pycache__ directories
+__pycache__/
+
 # Dependency directories
 jspm_packages/
 

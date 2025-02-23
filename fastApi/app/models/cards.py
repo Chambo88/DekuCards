@@ -1,10 +1,12 @@
 from datetime import datetime
 import uuid
 
-from sqlalchemy import DateTime, PrimaryKeyConstraint, Text, text, func
+from sqlalchemy import DateTime as SADateTime, PrimaryKeyConstraint, Text, text, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Column
 from sqlalchemy.orm import mapped_column
+from sqlalchemy.types import TIMESTAMP
+from sqlalchemy import DateTime as SaDateTime
 
 
 class Cards(SQLModel, table=True):
@@ -27,7 +29,11 @@ class Cards(SQLModel, table=True):
         sa_column=mapped_column(PG_UUID(as_uuid=True), nullable=False, server_default=text('gen_random_uuid()'))
     )
     created_at: datetime = Field(
-        sa_column=mapped_column(DateTime, nullable=False, server_default=func.now())
+        sa_column=Column( 
+            SADateTime(timezone=True),    
+            nullable=False,              
+            server_default=text("now()")
+        )
     )
     node_version_id: uuid.UUID = Field(
         sa_column=mapped_column(PG_UUID(as_uuid=True), nullable=False, server_default=text('gen_random_uuid()'))

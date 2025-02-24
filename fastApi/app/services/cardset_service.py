@@ -3,7 +3,7 @@ from sqlmodel import Session
 from models import SetIdentities, Sets, Nodes, UserNodes, UserSets
 from fastApi.app.schemas.create_card_set import CreateCardSet
 
-def create_cardset(session: Session, create_cardset_data: CreateCardSet) -> Sets:
+def create_cardset(session: Session, create_cardset_data: CreateCardSet):
     try:
         node_uuid = uuid.UUID(create_cardset_data.node_id)
     except ValueError:
@@ -68,5 +68,34 @@ def create_cardset(session: Session, create_cardset_data: CreateCardSet) -> Sets
         session.flush()
         session.refresh(new_user_set)
     
-    # Return the created set (or adjust as needed)
-    return new_set
+    return
+
+def delete_cardset(session: Session, cardset_id: str, user_id: str):
+    cardset = session.get(Sets, cardset_id)
+    if not cardset:
+        raise ValueError("Cardset not found")
+    
+    session.delete(cardset)
+    session.commit()
+    return {"message": "Cardset deleted successfully"}
+
+def delete_node(session: Session, node_id: str):
+    try:
+        node_uuid = uuid.UUID(node_id)
+    except ValueError:
+        raise ValueError("Invalid node_id format")
+    
+    node = session.get(Nodes, node_uuid)
+    if not node:
+        raise ValueError("Node not found")
+    
+    session.delete(node)
+    session.commit()
+
+    user_set = session.get(UserSets, (user_id, set_identity_id))
+    if not user_set:
+        raise ValueError("User set not found for the provided user_id and set_identity_id")
+    
+    session.delete(user_set)
+    session.commit()
+    return {"message": "Node deleted successfully"}

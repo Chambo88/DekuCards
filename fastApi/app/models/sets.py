@@ -22,6 +22,9 @@ class Sets(SQLModel, table=True):
         default_factory=uuid.uuid4,
         sa_column=mapped_column(PG_UUID(as_uuid=True), server_default=text('gen_random_uuid()'))
     )
+    parent_set_id: uuid.UUID = Field(
+        sa_column=mapped_column(PG_UUID(as_uuid=True), nullable=False, server_default=text('gen_random_uuid()'))
+    )
     name: str = Field(
         sa_column=mapped_column(Text, nullable=False)
     )

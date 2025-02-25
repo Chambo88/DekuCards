@@ -1,7 +1,8 @@
 import uuid
-from sqlmodel import Session
+from sqlmodel import Session, select
 from models import SetIdentities, Sets, Nodes, UserNodes, UserSets
-from fastApi.app.schemas.create_card_set import CreateCardSet
+from schemas.cardset_schema import CreateCardSet
+from schemas.node_schema import DeleteNode
 
 def create_cardset(session: Session, create_cardset_data: CreateCardSet):
     try:
@@ -28,7 +29,7 @@ def create_cardset(session: Session, create_cardset_data: CreateCardSet):
             user_node = UserNodes(
                 user_id=create_cardset_data.user_id,
                 node_id=create_cardset_data.node_id,
-                parent_node_id=create_cardset_data.parent_id,
+                parent_node_id=create_cardset_data.node_parent_id,
                 node_version_id=None,
                 position_x=create_cardset_data.node_position_x,
                 position_y=create_cardset_data.node_position_y
@@ -72,30 +73,48 @@ def create_cardset(session: Session, create_cardset_data: CreateCardSet):
 
 def delete_cardset(session: Session, cardset_id: str, user_id: str):
     cardset = session.get(Sets, cardset_id)
+
+    stmt = (
+        select(Nodes, UserNodes, SetIdentities, UserSets, Sets)
+        .join(UserNodes, Nodes.id == UserNodes.user_id)
+        .join(SetIdentities, SetIdentities.node_id == Nodes.id)
+        .join(UserSets, UserSets.set_identity_id == SetIdentities.id)
+        .where(UserNodes.user_id == user_id)
+    )
+
+
     if not cardset:
         raise ValueError("Cardset not found")
     
+    # if this is the nodes only cardSet, deleteNode too
+
+    # If the user doesn't own the 
+    
     session.delete(cardset)
+    session.delete(Nodes, cardset.)
     session.commit()
     return {"message": "Cardset deleted successfully"}
 
-def delete_node(session: Session, node_id: str):
-    try:
-        node_uuid = uuid.UUID(node_id)
-    except ValueError:
-        raise ValueError("Invalid node_id format")
-    
-    node = session.get(Nodes, node_uuid)
-    if not node:
-        raise ValueError("Node not found")
-    
-    session.delete(node)
-    session.commit()
 
-    user_set = session.get(UserSets, (user_id, set_identity_id))
-    if not user_set:
-        raise ValueError("User set not found for the provided user_id and set_identity_id")
+# TODO do cascades
+
+# def delete_node(session: Session, data: DeleteNode):
+#     try:
+#         node_uuid = uuid.UUID(data.node_id)
+#     except ValueError:
+#         raise ValueError("Invalid node_id format")
     
-    session.delete(user_set)
-    session.commit()
-    return {"message": "Node deleted successfully"}
+#     node = session.get(Nodes, node_uuid)
+#     if not node:
+#         raise ValueError("Node not found")
+    
+#     session.delete(node)
+#     session.commit()
+
+#     user_set = session.get(UserSets, (data.user_id, set_identity_id))
+#     if not user_set:
+#         raise ValueError("User set not found for the provided user_id and set_identity_id")
+    
+#     session.delete(user_set)
+#     session.commit()
+#     return {"message": "Node deleted successfully"}

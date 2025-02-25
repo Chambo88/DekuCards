@@ -51,23 +51,23 @@ def delete_cardset_endpoint(
             detail="An error occurred while deleting the card set"
         )
 
-@router.delete(
-    "/node/{node_id}",
-    status_code=status.HTTP_200_OK,
-    summary="Delete an existing node"
-)
-def delete_node_endpoint(
-    node_id: str,
-    session: Session = Depends(get_session)
-):
-    try:
-        result = delete_node(session, node_id)
-        return result
-    except ValueError as ve:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(ve))
-    except Exception as e:
-        session.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while deleting the node"
-        )
+# @router.delete(
+#     "/node/{node_id}",
+#     status_code=status.HTTP_200_OK,
+#     summary="Delete an existing node"
+# )
+# def delete_node_endpoint(
+#     node_id: str,
+#     session: Session = Depends(get_session)
+# ):
+#     try:
+#         result = delete_node(session, node_id)
+#         return result
+#     except ValueError as ve:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(ve))
+#     except Exception as e:
+#         session.rollback()
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="An error occurred while deleting the node"
+#         )

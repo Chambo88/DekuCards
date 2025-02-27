@@ -6,12 +6,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import useCardEditService from "@/services/useCardEditService";
+import useCardEditService from "@/services/useSetService";
 import { generateElements } from "./graphFunctions";
 import { Dialog } from "@radix-ui/react-dialog";
 import FlashCardDialog from "../flashCardEditor/FlashCardDialog";
-import { createFlashCardSet } from "@/models/models";
+import { createSetModel } from "@/models/models";
 import { CancelConfirmDialogContent } from "../common/CancelConfirmDialog";
+import { createSetWithNode } from "../../api/setApi";
 
 interface RightClickMenuProps {
   menuCoords: { x: number; y: number } | null;
@@ -32,16 +33,28 @@ const RightClickMenu: React.FC<RightClickMenuProps> = ({
 }) => {
   const { deleteSet, createSet } = useCardEditService();
 
-  const handleCreateCardSet = () => {
-    let newState = createSet({
-      title: null,
-      parent_id: clickedNode?.data.cardSet.id ?? null,
-      position_x: menuCoords?.x ?? 0,
-      position_y: menuCoords?.y ?? 0,
-    });
+  const handleCreateCardSet = async () => {
+    try{
+      let newSet: Set = createSetModel({
+        title: getNewTitle(),
+        parent_id: null,
+        relative_x: 0,
+        relative_y: 0,
+      });
 
-    setNodes(generateElements(newState).nodes);
-    setEdges(generateElements(newState).edges);
+      const result = await createCardSet(newSet);
+  
+      setNodes(generateElements(newSet).nodes);
+      setEdges(generateElements(newSet).edges);
+
+    }
+
+
+    //TODO Open dialog first before creating data/calling api
+
+    try {
+      
+    } catch (err: any) {}
   };
 
   const deleteCardSet = () => {

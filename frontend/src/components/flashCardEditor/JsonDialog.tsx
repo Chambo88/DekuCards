@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { FlashCardSet, FlashCard, createFlashCard } from "@/models/models";
+import { Set, FlashCard, createFlashCard } from "@/models/models";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { Textarea } from "../ui/textarea";
 import {
@@ -29,8 +29,8 @@ import { Copy } from "lucide-react";
 
 interface JsonDialogProps {
   children: React.ReactNode;
-  cardSet: FlashCardSet;
-  setCardSet: React.Dispatch<React.SetStateAction<FlashCardSet>>;
+  cardSet: Set;
+  setCardSet: React.Dispatch<React.SetStateAction<Set>>;
 }
 
 type InputFlashCard = {

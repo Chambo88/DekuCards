@@ -20,8 +20,8 @@ import RightClickMenu from "./RightClickMenu";
 import CustomNode from "./CustomNode";
 import { generateElements } from "./graphFunctions";
 import useCardSetStore from "@/stores/useCardStore";
-import useCardEditService from "@/services/useCardEditService";
-import { FlashCardSet } from "@/models/models";
+import useCardEditService from "@/services/useSetService";
+import { Set } from "@/models/models";
 
 export interface GraphComponentHandle {
   resize: () => void;
@@ -96,7 +96,7 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
       node: Node<any, string | undefined>,
     ) => {
       if (node) {
-        const cardSet: FlashCardSet = node.data.cardSet;
+        const cardSet: Set = node.data.cardSet;
 
         updateSet(
           cardSet.id,

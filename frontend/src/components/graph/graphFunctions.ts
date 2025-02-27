@@ -1,7 +1,7 @@
-import { FlashCardSet } from "@/models/models";
+import { Set } from "@/models/models";
 import { Edge, Node, Position } from "reactflow";
 
-export const generateElements = (cardSets: Record<string, FlashCardSet>) => {
+export const generateElements = (cardSets: Record<string, Set>) => {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 

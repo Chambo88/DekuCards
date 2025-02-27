@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { getUserId } from "@/services/userService";
 
 export interface FlashCard {
   id: string;
@@ -22,25 +23,23 @@ export const createFlashCard = (
   selected,
 });
 
-export interface FlashCardSet {
+export interface Set {
   id: string;
-  set_identity_id: string;
   title: string;
   desc: string | null;
   prerequisites: Prerequisite[];
   cards: FlashCard[];
   img_url: string | null;
-  position_x: number;
-  position_y: number;
+  relative_x: number;
+  relative_y: number;
   parent_id: string | null;
 }
 
-interface FlashCardSetParams {
+interface SetParams {
   id?: string;
-  set_identity_id?: string;
   title: string;
-  position_x: number;
-  position_y: number;
+  relative_x: number;
+  relative_y: number;
   parent_id?: string | null;
   desc?: string | null;
   prerequisites?: Prerequisite[];
@@ -48,23 +47,21 @@ interface FlashCardSetParams {
   img_url?: string | null;
 }
 
-export const createFlashCardSet = ({
+export const createSetModel = ({
   id = uuidv4(),
-  set_identity_id = uuidv4(),
   title,
-  position_x,
-  position_y,
+  relative_x,
+  relative_y,
   parent_id = null,
   desc = null,
   prerequisites = [],
   cards = [],
   img_url = null,
-}: FlashCardSetParams): FlashCardSet => ({
+}: SetParams): Set => ({
   id,
-  set_identity_id,
   title,
-  position_x,
-  position_y,
+  relative_x,
+  relative_y,
   parent_id,
   desc,
   prerequisites,
@@ -78,9 +75,71 @@ export interface Prerequisite {
 }
 
 export interface Node {
-  enabled: boolean;
-  icon_url: string;
-  public_node: boolean;
-  public_description: string;
-  sets: FlashCardSet[];
+  id: string;
+  enabled?: boolean;
+  icon_url?: string | null;
+  position_x: number;
+  position_y: number;
+  title: string;
+  public_node?: boolean;
+  public_description?: string | null;
+  version_name: string | null;
+  version_id: string | null;
+  owner_name: string | null;
+  owner_id: string | null;
+  parent_node_id: string | null;
+  child_nodes: Node[];
+  sets: Set[];
 }
+
+interface CreateNodeParams {
+  id?: string;
+  enabled?: boolean;
+  icon_url?: string | null;
+  position_x: number;
+  position_y: number;
+  title: string;
+  public_node?: boolean;
+  public_description?: string | null;
+  version_name?: string | null;
+  version_id?: string | null;
+  owner_name?: string | null;
+  owner_id?: string;
+  parent_node_id?: string | null;
+  child_nodes?: Node[];
+  sets?: Set[];
+}
+
+export const createNodeModel = ({
+  id = uuidv4(),
+  enabled = true,
+  icon_url = null,
+  title,
+  position_x,
+  position_y,
+  public_node = false,
+  public_description = null,
+  version_name = null,
+  version_id = null,
+  owner_name = null,
+  owner_id = getUserId()!,
+  parent_node_id = null,
+  child_nodes = [],
+  sets = [],
+}: CreateNodeParams): Node => ({
+  id,
+  enabled,
+  icon_url,
+  position_x,
+  position_y,
+  title,
+  public_node,
+  public_description,
+  version_name,
+  version_id,
+  owner_name,
+  owner_id,
+  parent_node_id,
+  child_nodes,
+  sets,
+});

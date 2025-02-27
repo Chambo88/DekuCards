@@ -1,6 +1,6 @@
-import { FlashCardSet } from "./models";
+import { Set } from "./models";
 
-export const mockCardSetsById: Record<string, FlashCardSet> = {
+export const mockCardSetsById: Record<string, Set> = {
   "1": {
     id: "1",
     position_x: 0,

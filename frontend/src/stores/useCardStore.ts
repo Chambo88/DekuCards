@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import { FlashCardSet } from "@/models/models";
+import { Set } from "@/models/models";
 import { mockCardSetsById } from "@/models/mockdata";
 
 interface CardSetState {
-  cardSetsById: Record<string, FlashCardSet>;
-  setCardSet: (id: string, updates: Partial<FlashCardSet>) => void;
+  cardSetsById: Record<string, Set>;
+  setCardSet: (id: string, updates: Partial<Set>) => void;
 }
 
 export const useCardSetStore = create<CardSetState>((set) => ({

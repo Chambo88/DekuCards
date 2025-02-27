@@ -87,11 +87,10 @@ def delete_cardset(session: Session, cardset_id: str, user_id: str):
         raise ValueError("Cardset not found")
     
     # if this is the nodes only cardSet, deleteNode too
-
     # If the user doesn't own the 
     
     session.delete(cardset)
-    session.delete(Nodes, cardset.)
+    # session.delete(Nodes, cardset.)
     session.commit()
     return {"message": "Cardset deleted successfully"}
 

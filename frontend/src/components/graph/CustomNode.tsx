@@ -2,11 +2,11 @@ import { NodeProps, Handle, Position } from "reactflow";
 import { memo, useRef } from "react";
 import { Button } from "./../ui/button";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
-import { FlashCardSet } from "@/models/models";
+import { Set } from "@/models/models";
 
 const CustomNode = ({ data }: NodeProps) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const cardSet: FlashCardSet = data.cardSet;
+  const cardSet: Set = data.cardSet;
 
   return (
     <div

@@ -15,7 +15,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Node, Edge } from "reactflow";
-import { createFlashCardSet, FlashCardSet } from "@/models/models";
+import { createFlashCardSet, Set } from "@/models/models";
 import { generateElements } from "./graphFunctions";
 import CancelConfirmDialog, {
   CancelConfirmDialogContent,
@@ -24,7 +24,7 @@ import { Dialog } from "../ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import FlashCardDialog from "../flashCardEditor/FlashCardDialog";
 import useCardSetStore from "@/stores/useCardStore";
-import useCardEditService from "@/services/useCardEditService";
+import useCardEditService from "@/services/useSetService";
 
 const RightClickMenu2: React.FC<{
   children: React.ReactNode;
@@ -64,7 +64,7 @@ const RightClickMenu2: React.FC<{
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const editorDataRef = useRef<FlashCardSet | null>(null);
+  const editorDataRef = useRef<Set | null>(null);
 
   return (
     <>

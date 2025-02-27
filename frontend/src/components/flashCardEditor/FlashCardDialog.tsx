@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { FlashCard, FlashCardSet } from "@/models/models";
+import { FlashCard, Set } from "@/models/models";
 import PrerequisiteEditor from "./PrerequisiteEditor";
 import TitleEditor from "./TitleEditor";
 import DescriptionEditor from "./DescriptionEditor";
@@ -17,7 +17,7 @@ import CardEditor from "./CardEditor";
 import { CancelConfirmDialogContent } from "../common/CancelConfirmDialog";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { SquareArrowRightIcon } from "lucide-react";
-import useCardEditService from "@/services/useCardEditService";
+import useCardEditService from "@/services/useSetService";
 import { useToast } from "@/hooks/use-toast";
 
 const cardSchema = z.object({
@@ -31,12 +31,12 @@ const cardSetSchema = z.object({
 });
 
 export interface EditorProps {
-  cardSet: FlashCardSet;
-  setCardSet: React.Dispatch<React.SetStateAction<FlashCardSet>>;
+  cardSet: Set;
+  setCardSet: React.Dispatch<React.SetStateAction<Set>>;
 }
 
 interface FlashCardDialogProps {
-  initialData: FlashCardSet;
+  initialData: Set;
   close: () => void;
 }
 

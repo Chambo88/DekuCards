@@ -1,5 +1,13 @@
+import { nodePost } from "@/api/nodeApi";
+import { setPost } from "@/api/setApi";
 import { useToast } from "@/hooks/use-toast";
-import { createFlashCardSet, FlashCard, FlashCardSet } from "@/models/models";
+import {
+  createSetModel,
+  createNodeModel,
+  FlashCard,
+  Set,
+  Node,
+} from "@/models/models";
 import useCardSetStore from "@/stores/useCardStore";
 
 const useCardEditService = () => {
@@ -47,7 +55,7 @@ const useCardEditService = () => {
 
   const updateSet = (
     setId: string,
-    updates: Partial<FlashCardSet>,
+    updates: Partial<Set>,
     raiseToast: boolean = true,
   ) => {
     if (!getCurrentState()[setId]) {
@@ -96,37 +104,60 @@ const useCardEditService = () => {
     return newTitle;
   };
 
-  const createSet = ({
-    title = null,
-    parent_id = null,
-    position_x = null,
-    position_y = null,
+  const createNode = async (x: number, y: number, title: string) => {
+    let node: Node = createNodeModel({
+      position_x: x,
+      position_y: y,
+      title: title,
+    });
+    try {
+      await nodePost(node);
+    } catch (error) {
+      console.error("Error in createNode:", error);
+      throw error;
+    }
+    return node;
+  };
+
+  const createSet = async ({
+    set,
+    node = null,
   }: {
-    title?: string | null;
-    parent_id?: string | null;
-    position_x?: number | null;
-    position_y?: number | null;
-  } = {}) => {
-    let cardSet: FlashCardSet = createFlashCardSet({
-      title: title ?? getNewTitle(),
-      parent_id: parent_id,
-      position_x: position_x ?? 0,
-      position_y: position_y ?? 0,
-    });
+    set: Set;
+    node?: Node | null;
+  }) => {
+    try {
+      if (node == null) {
+        node = await createNode(position_x, position_y, set.title);
+        set.relative_x = 0;
+        set.relative_y = 0;
+      }
 
-    let newState = useCardSetStore.setState((state) => ({
-      cardSetsById: {
-        ...state.cardSetsById,
-        [cardSet.id]: cardSet,
-      },
-    }));
+      let newState = useCardSetStore.setState((state) => ({
+        cardSetsById: {
+          ...state.cardSetsById,
+          [set.id]: set,
+        },
+      }));
 
-    toast({
-      title: "Success",
-      description: "New card set created.",
-    });
+      await setPost(set, node.id);
 
-    return getCurrentState();
+      toast({
+        title: "Success",
+        description: "New card set created.",
+      });
+
+      return getCurrentState();
+    } catch (error) {
+      console.error("Error in createSetNode service:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          "There was an error creating this set. Set will only exist locally. User the updates tab to try to sync this set with the database again.",
+      });
+      throw error;
+    }
   };
 
   const deleteSet = (setId: string) => {

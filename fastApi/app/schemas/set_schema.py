@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional
 import uuid
 from pydantic import BaseModel
 
-class CardSetBase(BaseModel):
+class DekuSetBase(BaseModel):
     id: uuid.UUID
     title: str
     desc: Optional[str] = None
@@ -12,7 +12,7 @@ class CardSetBase(BaseModel):
     relative_position_y: float
     parent_cardset_id: Optional[str] = None
 
-class CreateCardSet(CardSetBase):
+class CreateDekuSet(DekuSetBase):
     user_id: uuid.UUID
     node_id: uuid.UUID
     node_parent_id: uuid.UUID

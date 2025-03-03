@@ -1,17 +1,17 @@
 from typing import Dict, Optional, Any, List
 import uuid
 from pydantic import BaseModel
-from cardset_schema import CardSetBase
+from fastApi.app.schemas.set_schema import DekuSetBase
 
-class NodeBase(BaseModel):
+class DekuNodeBase(BaseModel):
     id: uuid.UUID
     enabled: bool
     title: str
     icon_url: str
     latest_version: Optional[uuid.UUID] = None
-    card_sets: List[CardSetBase]
+    card_sets: List[DekuSetBase]
 
-class CreateNode(BaseModel):
+class CreateDekuNode(BaseModel):
     id: uuid.UUID
     user_id: uuid.UUID
     enabled: bool
@@ -20,6 +20,6 @@ class CreateNode(BaseModel):
     latest_version: Optional[uuid.UUID] = None
 
 
-class DeleteNode(BaseModel):
+class DeleteDekuNode(BaseModel):
     node_id: uuid.UUID
     user_id: uuid.UUID

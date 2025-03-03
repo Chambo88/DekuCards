@@ -1,8 +1,8 @@
-import { getUserId } from "@/services/userService";
-import { Node } from "@/models/models";
+import { DekuNode } from "@/models/models";
+import useAuthStore from "@/stores/useAuthStore";
 
-export async function nodePost(node: Node): Promise<any> {
-  let userId = getUserId()!;
+export async function nodePost(node: DekuNode): Promise<any> {
+  const userId = useAuthStore.getState().user?.id;
 
   try {
     const response = await fetch("/api/node", {

@@ -23,7 +23,7 @@ import CancelConfirmDialog, {
 import { Dialog } from "../ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import FlashCardDialog from "../flashCardEditor/FlashCardDialog";
-import useCardSetStore from "@/stores/useCardStore";
+import useCardSetStore from "@/stores/useTreeStore";
 import useCardEditService from "@/services/useSetService";
 
 const RightClickMenu2: React.FC<{

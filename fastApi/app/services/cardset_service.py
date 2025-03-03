@@ -1,7 +1,7 @@
 import uuid
 from sqlmodel import Session, select
 from models import SetIdentities, Sets, Nodes, UserNodes, UserSets
-from schemas.cardset_schema import CreateCardSet
+from fastApi.app.schemas.set_schema import CreateCardSet
 from schemas.node_schema import DeleteNode
 
 def create_cardset(session: Session, create_cardset_data: CreateCardSet):

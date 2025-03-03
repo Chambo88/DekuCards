@@ -19,7 +19,7 @@ import "reactflow/dist/style.css";
 import RightClickMenu from "./RightClickMenu";
 import CustomNode from "./CustomNode";
 import { generateElements } from "./graphFunctions";
-import useCardSetStore from "@/stores/useCardStore";
+import useCardSetStore from "@/stores/useTreeStore";
 import useCardEditService from "@/services/useSetService";
 import { Set } from "@/models/models";
 

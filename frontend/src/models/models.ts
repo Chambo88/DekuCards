@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { getUserId } from "@/services/userService";
+import useAuthStore from "@/stores/useAuthStore";
 
 export interface FlashCard {
   id: string;
@@ -23,7 +23,7 @@ export const createFlashCard = (
   selected,
 });
 
-export interface Set {
+export interface DekuSet {
   id: string;
   title: string;
   desc: string | null;
@@ -35,7 +35,7 @@ export interface Set {
   parent_id: string | null;
 }
 
-interface SetParams {
+interface DekuSetParams {
   id?: string;
   title: string;
   relative_x: number;
@@ -57,7 +57,7 @@ export const createSetModel = ({
   prerequisites = [],
   cards = [],
   img_url = null,
-}: SetParams): Set => ({
+}: DekuSetParams): DekuSet => ({
   id,
   title,
   relative_x,
@@ -74,7 +74,7 @@ export interface Prerequisite {
   link?: string | undefined;
 }
 
-export interface Node {
+export interface DekuNode {
   id: string;
   enabled?: boolean;
   icon_url?: string | null;
@@ -88,8 +88,8 @@ export interface Node {
   owner_name: string | null;
   owner_id: string | null;
   parent_node_id: string | null;
-  child_nodes: Node[];
-  sets: Set[];
+  child_nodes: Record<string, DekuNode>;
+  sets: Record<string, DekuSet>;
 }
 
 interface CreateNodeParams {
@@ -106,8 +106,8 @@ interface CreateNodeParams {
   owner_name?: string | null;
   owner_id?: string;
   parent_node_id?: string | null;
-  child_nodes?: Node[];
-  sets?: Set[];
+  child_nodes?: Record<string, DekuNode>;
+  sets?: Record<string, DekuSet>;
 }
 
 export const createNodeModel = ({
@@ -122,11 +122,11 @@ export const createNodeModel = ({
   version_name = null,
   version_id = null,
   owner_name = null,
-  owner_id = getUserId()!,
+  owner_id = useAuthStore.getState().user!.id,
   parent_node_id = null,
-  child_nodes = [],
-  sets = [],
-}: CreateNodeParams): Node => ({
+  child_nodes = {},
+  sets = {}
+}: CreateNodeParams): DekuNode => ({
   id,
   enabled,
   icon_url,

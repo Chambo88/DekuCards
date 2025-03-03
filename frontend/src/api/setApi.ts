@@ -1,8 +1,8 @@
-import { Set } from "@/models/models";
-import { getUserId } from "@/services/userService";
+import { DekuSet } from "@/models/models";
+import useAuthStore from "@/stores/useAuthStore";
 
-export async function setPost(set: Set, nodeId: string): Promise<any> {
-  let userId = getUserId()!;
+export async function setPost(set: DekuSet, nodeId: string): Promise<any> {
+  const userId = useAuthStore.getState().user?.id;
 
   try {
     const response = await fetch("/api/set", {

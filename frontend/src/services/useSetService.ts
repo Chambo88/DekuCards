@@ -5,78 +5,83 @@ import {
   createSetModel,
   createNodeModel,
   FlashCard,
-  Set,
-  Node,
+  DekuSet,
+  DekuNode,
 } from "@/models/models";
-import useCardSetStore from "@/stores/useCardStore";
+import useCardSetStore from "@/stores/useTreeStore";
 
 const useCardEditService = () => {
   const { toast } = useToast();
-  const setCardSet = useCardSetStore((state) => state.setCardSet);
+  const updateNodeState = useCardSetStore((state) => state.updateNode);
+  const updateSetState = useCardSetStore((state) => state.updateSet);
 
   const getCurrentState = () => {
-    return useCardSetStore.getState().cardSetsById;
+    return useCardSetStore.getState().nodes;
   };
 
-  const moveCards = (
-    sourceSetId: string,
-    targetSetId: string,
-    targetTitle: string,
-    cardIds: string[],
-  ) => {
-    const sourceSet = getCurrentState()[sourceSetId];
-    const targetSet = getCurrentState()[targetSetId];
+  // const moveCards = (
+  //   sourceSetId: string,
+  //   targetSetId: string,
+  //   targetTitle: string,
+  //   cardIds: string[],
+  // ) => {
+  //   const sourceSet = getCurrentState()[sourceSetId];
+  //   const targetSet = getCurrentState()[targetSetId];
 
-    if (!sourceSet || !targetSet) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Source or target card set not found.",
-      });
-      return;
-    }
+  //   if (!sourceSet || !targetSet) {
+  //     toast({
+  //       variant: "destructive",
+  //       title: "Error",
+  //       description: "Source or target card set not found.",
+  //     });
+  //     return;
+  //   }
 
-    const cardsToMove = sourceSet.cards.filter((card) =>
-      cardIds.includes(card.id),
-    );
-    const updatedSourceCards = sourceSet.cards.filter(
-      (card) => !cardIds.includes(card.id),
-    );
-    const updatedTargetCards = [...targetSet.cards, ...cardsToMove];
+  //   const cardsToMove = sourceSet.cards.filter((card) =>
+  //     cardIds.includes(card.id),
+  //   );
+  //   const updatedSourceCards = sourceSet.cards.filter(
+  //     (card) => !cardIds.includes(card.id),
+  //   );
+  //   const updatedTargetCards = [...targetSet.cards, ...cardsToMove];
 
-    setCardSet(sourceSetId, { cards: updatedSourceCards });
-    setCardSet(targetSetId, { cards: updatedTargetCards });
+  //   setCardSet(sourceSetId, { cards: updatedSourceCards });
+  //   setCardSet(targetSetId, { cards: updatedTargetCards });
 
-    toast({
-      title: "Success",
-      description: `Moved ${cardsToMove.length} card(s) to the the flash card set ${targetTitle}.`,
-    });
-  };
+  //   toast({
+  //     title: "Success",
+  //     description: `Moved ${cardsToMove.length} card(s) to the the flash card set ${targetTitle}.`,
+  //   });
+  // };
 
-  const updateSet = (
-    setId: string,
-    updates: Partial<Set>,
-    raiseToast: boolean = true,
-  ) => {
-    if (!getCurrentState()[setId]) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Card set not found. Cannot modify set.",
-      });
-      return;
-    }
+  // const updateSet = (
+  //   setId: string,
+  //   updates: Partial<DekuSet>,
+  //   raiseToast: boolean = true,
+  // ) => {
+  //   if (!getCurrentState()[setId]) {
+  //     toast({
+  //       variant: "destructive",
+  //       title: "Error",
+  //       description: "Card set not found. Cannot modify set.",
+  //     });
+  //     return;
+  //   }
 
-    const updatedSet = { ...getCurrentState()[setId], ...updates };
-    setCardSet(setId, updatedSet);
+  //   const updatedSet = { ...getCurrentState()[setId], ...updates };
+  //   setCardSet(setId, updatedSet);
 
-    if (raiseToast) {
-      toast({
-        title: "Success",
-        description: "Card set updated successfully.",
-      });
-    }
-  };
+  //   if (raiseToast) {
+  //     toast({
+  //       title: "Success",
+  //       description: "Card set updated successfully.",
+  //     });
+  //   }
+  // };
+
+  const getTree = () => {
+    
+  }
 
   const getNewTitle = () => {
     let count = 0;
@@ -104,42 +109,51 @@ const useCardEditService = () => {
     return newTitle;
   };
 
-  const createNode = async (x: number, y: number, title: string) => {
-    let node: Node = createNodeModel({
-      position_x: x,
-      position_y: y,
-      title: title,
-    });
-    try {
-      await nodePost(node);
-    } catch (error) {
-      console.error("Error in createNode:", error);
-      throw error;
-    }
-    return node;
-  };
+  // const createNode = async (x: number, y: number, title: string) => {
+  //   let node: DekuNode = createNodeModel({
+  //     position_x: x,
+  //     position_y: y,
+  //     title: title,
+  //   });
+  //   try {
+  //     await nodePost(node);
+  //   } catch (error) {
+  //     console.error("Error in createNode:", error);
+  //     throw error;
+  //   }
+  //   return node;
+  // };
 
   const createSet = async ({
     set,
     node = null,
+    position_x,
+    position_y
   }: {
-    set: Set;
-    node?: Node | null;
+    set: DekuSet;
+    node?: DekuNode | null;
+    position_x: number;
+    position_y: number;
   }) => {
+    // Local state
+    if (node == null) {
+      node = createNodeModel({
+        position_x: position_x,
+        position_y: position_y,
+        title: set.title,
+      });
+      set.relative_x = 0;
+      set.relative_y = 0;
+    }
+
+    node.sets[set.id] = set; 
+
+    updateNodeState(node.id, node);
+
     try {
       if (node == null) {
-        node = await createNode(position_x, position_y, set.title);
-        set.relative_x = 0;
-        set.relative_y = 0;
+        await nodePost(node);
       }
-
-      let newState = useCardSetStore.setState((state) => ({
-        cardSetsById: {
-          ...state.cardSetsById,
-          [set.id]: set,
-        },
-      }));
-
       await setPost(set, node.id);
 
       toast({
@@ -154,37 +168,42 @@ const useCardEditService = () => {
         variant: "destructive",
         title: "Error",
         description:
-          "There was an error creating this set. Set will only exist locally. User the updates tab to try to sync this set with the database again.",
+          "There was an error creating this set. Set will only exist locally. Use the updates tab to try to sync this set with the database again.",
       });
       throw error;
     }
   };
 
-  const deleteSet = (setId: string) => {
-    console.log(setId);
-    if (!getCurrentState()[setId]) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Card set not found.",
-      });
-      return;
-    }
+  // const deleteSet = (setId: string) => {
+  //   console.log(setId);
+  //   if (!getCurrentState()[setId]) {
+  //     toast({
+  //       variant: "destructive",
+  //       title: "Error",
+  //       description: "Card set not found.",
+  //     });
+  //     return;
+  //   }
 
-    useCardSetStore.setState((state) => {
-      const { [setId]: _, ...remainingSets } = state.cardSetsById;
-      return { cardSetsById: remainingSets };
-    });
+  //   useCardSetStore.setState((state) => {
+  //     const { [setId]: _, ...remainingSets } = state.cardSetsById;
+  //     return { cardSetsById: remainingSets };
+  //   });
 
-    toast({
-      title: "Success",
-      description: "Card set deleted successfully.",
-    });
+  //   toast({
+  //     title: "Success",
+  //     description: "Card set deleted successfully.",
+  //   });
 
-    return getCurrentState();
+  //   return getCurrentState();
+  // };
+
+  return { 
+    // moveCards, 
+    // updateSet, 
+    createSet, 
+    // deleteSet 
   };
-
-  return { moveCards, updateSet, createSet, deleteSet };
 };
 
 export default useCardEditService;

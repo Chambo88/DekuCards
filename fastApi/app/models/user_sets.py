@@ -1,3 +1,4 @@
+from typing import Optional
 import uuid
 
 from sqlalchemy import Boolean, PrimaryKeyConstraint, text
@@ -20,6 +21,11 @@ class UserSets(SQLModel, table=True):
         default_factory=uuid.uuid4,
         sa_column=mapped_column(PG_UUID(as_uuid=True), nullable=False, server_default=text('gen_random_uuid()'))
     )
+    node_version_id: Optional[uuid.UUID] = Field(
+        default=None,
+        sa_column=mapped_column(PG_UUID(as_uuid=True), server_default=text('gen_random_uuid()'))
+    )
     enabled: bool = Field(
         sa_column=mapped_column(Boolean, nullable=False, server_default=text('false'))
     )
+    

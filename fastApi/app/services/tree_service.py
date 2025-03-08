@@ -13,7 +13,7 @@ def tree_service(session: Session, user_id: uuid.UUID):
     .where(UserNodes.user_id == user_id)
   )
 
-  results = session.exec(stmt).all()
+  node_results = session.exec(stmt).all()
 
   stmt = (
     select(Sets, UserSets, SetIdentities)
@@ -22,7 +22,12 @@ def tree_service(session: Session, user_id: uuid.UUID):
     .where(UserSets.node_version_id == Sets.node_version_id)
   )
 
-  results = session.exec(stmt).all()
+  set_results = session.exec(stmt).all()
+
+  return {
+    "sets" : set_results,
+    "nodes" : node_results
+  }
 
   # stmt = (
   #   select(Nodes, UserNodes)

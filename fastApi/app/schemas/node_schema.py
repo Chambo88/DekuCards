@@ -1,7 +1,7 @@
 from typing import Dict, Optional, Any, List
 import uuid
 from pydantic import BaseModel
-from fastApi.app.schemas.set_schema import DekuSetBase
+from .set_schema import DekuSetBase
 
 class DekuNodeBase(BaseModel):
     id: uuid.UUID

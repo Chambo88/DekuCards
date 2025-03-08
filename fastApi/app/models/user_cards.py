@@ -23,6 +23,9 @@ class UserCards(SQLModel, table=True):
     times_correct: int = Field(
         sa_column=mapped_column(SmallInteger, nullable=False, server_default=text("'0'::smallint"))
     )
+    user_set_id: uuid.UUID = Field(
+        sa_column=mapped_column(PG_UUID(as_uuid=True), nullable=False, server_default=text('gen_random_uuid()'))
+    )
     available: datetime = Field(
         sa_column=Column( 
             DateTime(timezone=True),    

@@ -21,7 +21,7 @@ class UserSets(SQLModel, table=True):
         default_factory=uuid.uuid4,
         sa_column=mapped_column(PG_UUID(as_uuid=True), nullable=False, server_default=text('gen_random_uuid()'))
     )
-    node_version_id: Optional[uuid.UUID] = Field(
+    user_node_id: Optional[uuid.UUID] = Field(
         default=None,
         sa_column=mapped_column(PG_UUID(as_uuid=True), server_default=text('gen_random_uuid()'))
     )

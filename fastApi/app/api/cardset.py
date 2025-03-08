@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from schemas import CreateCardSet
+from schemas.set_schema import CreateDekuSet
 from services.cardset_service import create_cardset, delete_cardset
-from app.core.database import get_session  # assuming you have this dependency set up
+from core.database import get_session  # assuming you have this dependency set up
 
 router = APIRouter()
 
@@ -13,7 +13,7 @@ router = APIRouter()
     summary="Create a new flashcard set (and Node if needed)"
 )
 def create_flashcard_set(
-    flashcard_set: CreateCardSet,
+    flashcard_set: CreateDekuSet,
     session: Session = Depends(get_session)
 ):
     try:

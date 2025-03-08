@@ -1,10 +1,9 @@
 import uuid
 from sqlmodel import Session, select
 from models import SetIdentities, Sets, Nodes, UserNodes, UserSets
-from fastApi.app.schemas.set_schema import CreateCardSet
-from schemas.node_schema import DeleteNode
+from schemas.set_schema import CreateDekuSet
 
-def create_cardset(session: Session, create_cardset_data: CreateCardSet):
+def create_cardset(session: Session, create_cardset_data: CreateDekuSet):
     try:
         node_uuid = uuid.UUID(create_cardset_data.node_id)
     except ValueError:

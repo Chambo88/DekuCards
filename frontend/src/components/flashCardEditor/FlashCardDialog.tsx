@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { FlashCard, Set } from "@/models/models";
+import { FlashCard, DekuSet } from "@/models/models";
 import PrerequisiteEditor from "./PrerequisiteEditor";
 import TitleEditor from "./TitleEditor";
 import DescriptionEditor from "./DescriptionEditor";
@@ -31,12 +31,12 @@ const cardSetSchema = z.object({
 });
 
 export interface EditorProps {
-  cardSet: Set;
-  setCardSet: React.Dispatch<React.SetStateAction<Set>>;
+  cardSet: DekuSet;
+  setCardSet: React.Dispatch<React.SetStateAction<DekuSet>>;
 }
 
 interface FlashCardDialogProps {
-  initialData: Set;
+  initialData: DekuSet;
   close: () => void;
 }
 
@@ -48,7 +48,7 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectDeleteOpen, setSelectDeleteOpen] = useState(false);
   const { toast } = useToast();
-  const { moveCards } = useCardEditService();
+  // const { moveCards } = useCardEditService();
 
   const selectedIds = new Set(
     cardSet.cards.filter((card) => card.selected).map((card) => card.id),

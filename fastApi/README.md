@@ -19,3 +19,7 @@ For port 8000
 
 else 
 ```uvicorn main:app --host 0.0.0.0 --port 8000```
+
+## Deploying
+
+Make sure to set ENVIRONMENT=production

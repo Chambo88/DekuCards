@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import useAuthStore from "@/stores/useAuthStore";
+import useCardSetStore from "@/stores/useTreeStore";
+
 
 export interface FlashCard {
   id: string;
@@ -37,7 +39,7 @@ export interface DekuSet {
 
 interface DekuSetParams {
   id?: string;
-  title: string;
+  title?: string;
   relative_x: number;
   relative_y: number;
   parent_id?: string | null;
@@ -49,7 +51,7 @@ interface DekuSetParams {
 
 export const createSetModel = ({
   id = uuidv4(),
-  title,
+  title = getNewTitle(),
   relative_x,
   relative_y,
   parent_id = null,
@@ -68,6 +70,35 @@ export const createSetModel = ({
   cards,
   img_url,
 });
+
+
+export const getNewTitle = () => {
+  let count = 0;
+  let newTitle = "";
+  let titleCreated = false;
+  const currentTitles = Object.values(useCardSetStore.getState().nodes)
+  .flatMap(node => Object.values(node.sets).map(set => set.title));
+
+  while (!titleCreated) {
+    let alreadyMade = false;
+    let newPotentialTitle = "New Card set " + (count === 0 ? "" : count);
+
+    for (const title of currentTitles) {
+      if (title === newPotentialTitle) {
+        count += 1;
+        alreadyMade = true;
+        break;
+      }
+    }
+
+    if (!alreadyMade) {
+      newTitle = newPotentialTitle;
+      titleCreated = true;
+    }
+  }
+
+  return newTitle;
+};
 
 export interface Prerequisite {
   name: string;

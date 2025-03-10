@@ -1,29 +1,34 @@
-import { Set } from "@/models/models";
+import { DekuNode } from "@/models/models";
 import { Edge, Node, Position } from "reactflow";
 
-export const generateElements = (cardSets: Record<string, Set>) => {
+export const generateElements = (dekuNodes: Record<string, DekuNode>) => {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  for (const cardSet of Object.values(cardSets)) {
+  for (const dekuNode of Object.values(dekuNodes)) {
+    // TODO Add grouping features etc.
+    if (Object.keys(dekuNode.sets).length == 0) {
+      continue;
+    }
+    let tempSet = Object.values(dekuNode.sets)[0]
     nodes.push({
-      id: cardSet.id,
+      id: dekuNode.id,
       data: {
-        cardSet: cardSet,
+        cardSet: tempSet,
         selected: false,
       },
-      position: { x: cardSet.position_x, y: cardSet.position_y },
+      position: { x: dekuNode.position_x, y: dekuNode.position_y },
       draggable: true,
       type: "custom",
       targetPosition: Position.Top,
       sourcePosition: Position.Bottom,
     });
 
-    if (cardSet.parent_id) {
+    if (dekuNode.parent_node_id) {
       edges.push({
-        id: `edge-${cardSet.parent_id}-${cardSet.id}`,
-        source: cardSet.parent_id,
-        target: cardSet.id,
+        id: `edge-${dekuNode.parent_node_id}-${dekuNode.id}`,
+        source: dekuNode.parent_node_id,
+        target: dekuNode.id,
       });
     }
   }

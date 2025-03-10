@@ -10,16 +10,15 @@ import useCardEditService from "@/services/useSetService";
 import { generateElements } from "./graphFunctions";
 import { Dialog } from "@radix-ui/react-dialog";
 import FlashCardDialog from "../flashCardEditor/FlashCardDialog";
-import { createSetModel } from "@/models/models";
+import { createSetModel, DekuSet } from "@/models/models";
 import { CancelConfirmDialogContent } from "../common/CancelConfirmDialog";
-import { createSetWithNode } from "../../api/setApi";
 
 interface RightClickMenuProps {
   menuCoords: { x: number; y: number } | null;
   menuType: "node" | "pane" | null;
   clickedNode?: any;
-  setNodes: Dispatch<React.SetStateAction<Node<any, string | undefined>[]>>;
-  setEdges: Dispatch<React.SetStateAction<Edge[]>>;
+  refreshNodes: () => void;
+  refreshEdges: () => void;
   onClose: () => void;
 }
 
@@ -27,43 +26,41 @@ const RightClickMenu: React.FC<RightClickMenuProps> = ({
   menuCoords,
   menuType,
   clickedNode,
-  setNodes,
-  setEdges,
+  refreshNodes,
+  refreshEdges,
   onClose,
 }) => {
-  const { deleteSet, createSet } = useCardEditService();
+  // const { deleteSet, createSet } = useCardEditService();
+    const { createSetAndNode } = useCardEditService();
 
   const handleCreateCardSet = async () => {
     try{
-      let newSet: Set = createSetModel({
-        title: getNewTitle(),
+      let newSet: DekuSet = createSetModel({
         parent_id: null,
         relative_x: 0,
         relative_y: 0,
       });
 
-      const result = await createCardSet(newSet);
+      const result = await createSetAndNode(newSet, menuCoords?.x ?? 0, menuCoords?.y ?? 0);
   
-      setNodes(generateElements(newSet).nodes);
-      setEdges(generateElements(newSet).edges);
+      refreshNodes();
+      refreshEdges();
 
+    } catch (e) {
+      // TODO proper error handling
+      console.log(e)
     }
 
-
     //TODO Open dialog first before creating data/calling api
-
-    try {
-      
-    } catch (err: any) {}
   };
 
   const deleteCardSet = () => {
-    let newState = deleteSet(clickedNode?.data.cardSet.id);
+    // let newState = deleteSet(clickedNode?.data.cardSet.id);
 
-    if (newState) {
-      setNodes(generateElements(newState).nodes);
-      setEdges(generateElements(newState).edges);
-    }
+    // if (newState) {
+    //   setNodes(generateElements(newState).nodes);
+    //   setEdges(generateElements(newState).edges);
+    // }
 
     setIsDeleteOpen(false);
   };

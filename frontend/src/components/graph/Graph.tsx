@@ -21,7 +21,8 @@ import CustomNode from "./CustomNode";
 import { generateElements } from "./graphFunctions";
 import useCardSetStore from "@/stores/useTreeStore";
 import useCardEditService from "@/services/useSetService";
-import { Set } from "@/models/models";
+import { DekuSet } from "@/models/models";
+import { P } from "pino";
 
 export interface GraphComponentHandle {
   resize: () => void;
@@ -35,10 +36,11 @@ interface GraphComponentProps {
   data?: any;
 }
 
+const getGraphData = () => generateElements(useCardSetStore.getState().nodes)
+
 const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
   (props, ref) => {
-    const cardSetsById = useCardSetStore((state) => state.cardSetsById);
-    const { updateSet } = useCardEditService();
+    // const { updateSet } = useCardEditService();
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
     const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(
       null,
@@ -50,13 +52,9 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
     } | null>(null);
     const [clickedNode, setClickedNode] = useState<Node | null>(null);
 
-    const { nodes: initialNodes, edges: initialEdges } = useMemo(
-      () => generateElements(cardSetsById),
-      [cardSetsById],
-    );
-
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const initialData = useMemo(() => getGraphData(), []);
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialData.nodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(initialData.edges);
 
     useImperativeHandle(ref, () => ({
       resize() {
@@ -68,8 +66,6 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
 
     const handlePaneContextMenu = (event: React.MouseEvent) => {
       event.preventDefault();
-
-      console.log("setting to ");
 
       setClickedNode(null);
       setMenuType("pane");
@@ -87,8 +83,6 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
 
       const { clientX, clientY } = event;
       setMenuCoords({ x: clientX, y: clientY });
-      console.log("who we login");
-      console.log(JSON.stringify(node));
     };
 
     const onNodeDragStop = (
@@ -96,18 +90,26 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
       node: Node<any, string | undefined>,
     ) => {
       if (node) {
-        const cardSet: Set = node.data.cardSet;
+        // const cardSet: Set = node.data.cardSet;
 
-        updateSet(
-          cardSet.id,
-          {
-            position_x: node.position.x,
-            position_y: node.position.y,
-          },
-          false,
-        );
+        // updateSet(
+        //   cardSet.id,
+        //   {
+        //     position_x: node.position.x,
+        //     position_y: node.position.y,
+        //   },
+        //   false,
+        // );
       }
     };
+
+    const refreshEdges = () => {
+      setEdges(getGraphData().edges)
+    }
+
+    const refreshNodes = () => {
+      setNodes(getGraphData().nodes)
+    }
 
     return (
       <div
@@ -136,8 +138,8 @@ const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
           menuCoords={menuCoords}
           menuType={menuType}
           clickedNode={clickedNode}
-          setNodes={setNodes}
-          setEdges={setEdges}
+          refreshNodes={refreshNodes}
+          refreshEdges={refreshEdges}
           onClose={() => {
             setMenuCoords(null);
             setMenuType(null);

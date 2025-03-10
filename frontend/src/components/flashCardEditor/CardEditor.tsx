@@ -20,17 +20,15 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
 
   const filteredCards = useMemo(() => {
     if (!searchTerm.trim()) {
-      return cardSet.cards.map((card, index) => ({ card, index }));
+      return cardSet.cards.map((card : FlashCard, index : number) => ({ card, index }));
     }
     const search = searchTerm.toLowerCase();
     return cardSet.cards
-      .map((card, index) => ({ card, index }))
-      .filter(({ card }) => {
-        return (
-          card.front.toLowerCase().includes(search) ||
-          card.back.toLowerCase().includes(search)
-        );
-      });
+      .map((card : FlashCard, index : number) => ({ card, index }))
+      .filter(({ card }) =>
+        card.front.toLowerCase().includes(search) ||
+        card.back.toLowerCase().includes(search)
+      );
   }, [searchTerm, cardSet.cards]);
 
   const handleCardChange = (

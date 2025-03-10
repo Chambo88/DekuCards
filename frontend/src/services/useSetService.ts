@@ -1,5 +1,6 @@
 import { nodePost } from "@/api/nodeApi";
 import { setPost } from "@/api/setApi";
+import { getTree } from "@/api/treeApi"
 import { useToast } from "@/hooks/use-toast";
 import {
   createSetModel,
@@ -79,35 +80,23 @@ const useCardEditService = () => {
   //   }
   // };
 
-  const getTree = () => {
-    
+  const initTree = async (userId : string) => {
+    try {
+      // await getTree()
+
+    } catch (e) {
+      console.error("Error in getTree:", e);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          "There was an error fetching tree data.",
+      });
+      throw e;
+    }
   }
 
-  const getNewTitle = () => {
-    let count = 0;
-    let newTitle = "";
-    let titleCreated = false;
 
-    while (!titleCreated) {
-      let alreadyMade = false;
-      let newPotentialTitle = "New Card set " + (count === 0 ? "" : count);
-
-      for (const cardSet of Object.values(getCurrentState())) {
-        if (cardSet.title === newPotentialTitle) {
-          count += 1;
-          alreadyMade = true;
-          break;
-        }
-      }
-
-      if (!alreadyMade) {
-        newTitle = newPotentialTitle;
-        titleCreated = true;
-      }
-    }
-
-    return newTitle;
-  };
 
   // const createNode = async (x: number, y: number, title: string) => {
   //   let node: DekuNode = createNodeModel({
@@ -124,36 +113,40 @@ const useCardEditService = () => {
   //   return node;
   // };
 
-  const createSet = async ({
-    set,
-    node = null,
-    position_x,
-    position_y
-  }: {
-    set: DekuSet;
-    node?: DekuNode | null;
-    position_x: number;
-    position_y: number;
-  }) => {
+  const createSetAndNode = async (
+    set: DekuSet,
+    nodeX: number,
+    nodeY: number
+  ) => {
     // Local state
-    if (node == null) {
-      node = createNodeModel({
-        position_x: position_x,
-        position_y: position_y,
+    let node = createNodeModel({
+        position_x: nodeX,
+        position_y: nodeY,
         title: set.title,
       });
       set.relative_x = 0;
       set.relative_y = 0;
-    }
+
+    let result = await createSet(set, node);
+
+    return result;
+  };
+
+  // Function called when creating a new set with no parent
+  const createSet = async (
+    set : DekuSet,
+    node : DekuNode
+  ) => {
+
+    // TODO dynamically set the relatives of new set if others exist
+    set.relative_x = 0;
+    set.relative_y = 0;
 
     node.sets[set.id] = set; 
-
     updateNodeState(node.id, node);
 
     try {
-      if (node == null) {
-        await nodePost(node);
-      }
+      await nodePost(node);
       await setPost(set, node.id);
 
       toast({
@@ -162,15 +155,15 @@ const useCardEditService = () => {
       });
 
       return getCurrentState();
-    } catch (error) {
-      console.error("Error in createSetNode service:", error);
+    } catch (e) {
+      console.error("Error in createSetNode service:", e);
       toast({
         variant: "destructive",
         title: "Error",
         description:
           "There was an error creating this set. Set will only exist locally. Use the updates tab to try to sync this set with the database again.",
       });
-      throw error;
+      throw e;
     }
   };
 
@@ -202,6 +195,8 @@ const useCardEditService = () => {
     // moveCards, 
     // updateSet, 
     createSet, 
+    createSetAndNode,
+    initTree,
     // deleteSet 
   };
 };

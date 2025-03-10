@@ -1,11 +1,13 @@
 import { DekuSet } from "@/models/models";
 import useAuthStore from "@/stores/useAuthStore";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+
 export async function setPost(set: DekuSet, nodeId: string): Promise<any> {
   const userId = useAuthStore.getState().user?.id;
 
   try {
-    const response = await fetch("/api/set", {
+    const response = await fetch(`${API_BASE_URL}/api/set`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

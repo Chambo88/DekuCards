@@ -1,10 +1,10 @@
-import { Set } from "./models";
+import { DekuSet } from "./models";
 
-export const mockCardSetsById: Record<string, Set> = {
+export const mockCardSetsById: Record<string, DekuSet> = {
   "1": {
     id: "1",
-    position_x: 0,
-    position_y: 0,
+    relative_x: 0,
+    relative_y: 0,
     parent_id: null,
     title: "Physics Fundamentals",
     desc: "A set of flashcards covering the basic principles of physics. Use this set to brush up on essential physics concepts.",
@@ -39,8 +39,8 @@ export const mockCardSetsById: Record<string, Set> = {
   },
   "2": {
     id: "2",
-    position_x: -200,
-    position_y: 150,
+    relative_x: -200,
+    relative_y: 150,
     parent_id: "1",
     title: "Kinematics",
     desc: "Explore the concepts of motion including velocity, acceleration, and displacement.",
@@ -65,8 +65,8 @@ export const mockCardSetsById: Record<string, Set> = {
   },
   "3": {
     id: "3",
-    position_x: 200,
-    position_y: 150,
+    relative_x: 200,
+    relative_y: 150,
     parent_id: "1",
     title: "Forces and Dynamics",
     desc: "Understand the interactions between objects and the forces that cause motion.",
@@ -91,8 +91,8 @@ export const mockCardSetsById: Record<string, Set> = {
   },
   "4": {
     id: "4",
-    position_x: -300,
-    position_y: 300,
+    relative_x: -300,
+    relative_y: 300,
     parent_id: "2",
     title: "Projectile Motion",
     desc: "Analyze the motion of objects in two dimensions under gravity.",
@@ -117,8 +117,8 @@ export const mockCardSetsById: Record<string, Set> = {
   },
   "5": {
     id: "5",
-    position_x: -100,
-    position_y: 300,
+    relative_x: -100,
+    relative_y: 300,
     parent_id: "2",
     title: "Circular Motion",
     img_url: "https://example.com/physics-fundamentals-image.jpg",
@@ -143,8 +143,8 @@ export const mockCardSetsById: Record<string, Set> = {
   },
   "6": {
     id: "6",
-    position_x: 100,
-    position_y: 300,
+    relative_x: 100,
+    relative_y: 300,
     parent_id: "3",
     title: "Energy and Work",
     desc: "Study the principles of energy, work, and power in physics.",
@@ -169,8 +169,8 @@ export const mockCardSetsById: Record<string, Set> = {
   },
   "7": {
     id: "7",
-    position_x: 300,
-    position_y: 300,
+    relative_x: 300,
+    relative_y: 300,
     parent_id: "3",
     title: "Momentum and Impulse",
     desc: "Explore the concepts of momentum and impulse and their applications.",

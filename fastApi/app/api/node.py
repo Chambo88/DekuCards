@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 import logging
-from schemas.set_schema import CreateDekuSet
+from schemas.node_schema import CreateNodePayload
 from services.cardset_service import create_cardset, delete_cardset
 from core.database import get_session
 
@@ -10,16 +10,18 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.post(
-    "/cardset",
+    "/node",
     status_code=status.HTTP_201_CREATED,
     summary="Create a new flashcard set (and Node if needed)"
 )
-def create_flashcard_set(
-    flashcard_set: CreateDekuSet,
+def create_node(
+    payload: CreateNodePayload,
     session: Session = Depends(get_session)
 ):
     try:
-        create_cardset(session, flashcard_set)
+        node = payload.data
+        user_id = payload.user_id
+        create_cardset(session, node)
         logger.info(f"Card set created with ID")
         return
     except ValueError as ve:

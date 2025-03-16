@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../services/supabaseClient";
 import { Button } from "@/components/ui/button";
-import useAuthStore from "../stores/useAuthStore";
+import useUserStore from "../stores/useUserStore";
 import { Link } from "react-router-dom";
 import {
   Bars3Icon,
@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const NavBar: React.FC = () => {
-  const signOut = useAuthStore((state) => state.signOut);
+  const signOut = useUserStore((state) => state.signOut);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const dropdownRef = useRef<HTMLDivElement>(null);

@@ -1,15 +1,15 @@
 import { DekuNode } from "@/models/models";
-import useAuthStore from "@/stores/useAuthStore";
-import { stringify } from "uuid";
+import useUserStore from "@/stores/useUserStore";
+import authFetch from "./authFetch";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export async function nodePost(node: DekuNode): Promise<any> {
-  const userId = useAuthStore.getState().user?.id;
+  const userId = useUserStore.getState().user?.id;
 
   const { sets, ...nodeData } = node;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/node`, {
+    const response = await authFetch(`${API_BASE_URL}/api/node`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

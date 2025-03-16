@@ -2,13 +2,13 @@ import { useEffect } from "react";
 import { Session, AuthChangeEvent } from "@supabase/supabase-js";
 import logger from "./logger";
 import { supabase } from "./supabaseClient";
-import useAuthStore from "../stores/useAuthStore";
+import useUserStore from "../stores/useUserStore";
 import { User } from "../models/user";
 import useSetService from "./useSetService";
 
 const useAuthService = () => {
-  const setUser = useAuthStore((state) => state.setUser);
-  const signOut = useAuthStore((state) => state.signOut);
+  const setUser = useUserStore((state) => state.setUser);
+  const signOut = useUserStore((state) => state.signOut);
   const { initTree } = useSetService();
 
   useEffect(() => {
@@ -22,6 +22,7 @@ const useAuthService = () => {
         return;
       }
       try {
+        const token = session.access_token;
         const user: User = {
           ...session.user,
           firstName: "",
@@ -29,13 +30,12 @@ const useAuthService = () => {
           id: session.user.id,
         };
         await initTree(user.id);
-        setUser(user);
+        setUser(user, token);
       } catch (error) {
         console.error("Error setting user and initializing tree:", error);
       }
     };
 
-    // Check session on mount for prev login cases
     const checkSession = async () => {
       try {
         const { data: sessionData } = await supabase.auth.getSession();
@@ -61,8 +61,6 @@ const useAuthService = () => {
       authListener.subscription.unsubscribe();
     };
 
-    // Since setUser, signOut, and initTree come from external hooks,
-    // we include them in the dependency array to avoid stale references.
   }, [setUser, signOut, initTree]);
 };
 

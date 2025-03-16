@@ -1,12 +1,13 @@
-import useAuthStore from "@/stores/useAuthStore";
+import useUserStore from "@/stores/useUserStore";
+import authFetch from "./authFetch";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export async function getTree(): Promise<any> {
-    const userId = useAuthStore.getState().user?.id;
+    const userId = useUserStore.getState().user?.id;
   
     try {
-      const response = await fetch(`${API_BASE_URL}/api/tree?userId=${userId}`, {
+      const response = await authFetch(`${API_BASE_URL}/api/tree?userId=${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

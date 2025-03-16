@@ -17,6 +17,11 @@ def get_tree_structure(
     session: Session = Depends(get_session)
 ):
     try:
+        if user_id != current_user.sub:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You are not authorized to modify another user's data"
+            )
         tree_data = tree_service(session, user_id)
         return tree_data
     except Exception as e:

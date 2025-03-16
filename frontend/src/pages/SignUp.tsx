@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from "react";
 import { supabase } from "../services/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import useAuthStore from "../stores/useAuthStore";
+import useUserStore from "../stores/useUserStore";
 import {
   Session,
   AuthError,
@@ -18,7 +18,7 @@ const SignUp: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  // const setUser = useAuthStore((state) => state.setUser);
+  // const setUser = useUserStore((state) => state.setUser);
 
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();

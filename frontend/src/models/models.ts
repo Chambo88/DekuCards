@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import useAuthStore from "@/stores/useAuthStore";
+import useUserStore from "@/stores/useUserStore";
 import useCardSetStore from "@/stores/useTreeStore";
 
 
@@ -153,7 +153,7 @@ export const createNodeModel = ({
   version_name = null,
   version_id = null,
   owner_name = null,
-  owner_id = useAuthStore.getState().user!.id,
+  owner_id = useUserStore.getState().user!.id,
   parent_node_id = null,
   child_nodes = {},
   sets = {}

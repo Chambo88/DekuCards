@@ -1,8 +1,8 @@
 import { Outlet, Navigate } from "react-router-dom";
-import useAuthStore from "../../stores/useAuthStore";
+import useUserStore from "../../stores/useUserStore";
 
 const AuthProtectedRoute = () => {
-  const { user } = useAuthStore();
+  const { user } = useUserStore();
 
   if (user === undefined) {
     return <div>Loadingv ...</div>;

@@ -4,6 +4,7 @@ import logging
 from schemas.node_schema import CreateNodePayload
 from services.cardset_service import create_cardset, delete_cardset
 from core.database import get_session
+from core.auth import validate_token, TokenData
 
 logger = logging.getLogger(__name__)
 
@@ -16,11 +17,17 @@ router = APIRouter()
 )
 def create_node(
     payload: CreateNodePayload,
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
+    current_user: TokenData = Depends(validate_token),
 ):
     try:
         node = payload.data
         user_id = payload.user_id
+        if user_id != current_user.sub:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You are not authorized to modify another user's data"
+            )
         create_cardset(session, node)
         logger.info(f"Card set created with ID")
         return

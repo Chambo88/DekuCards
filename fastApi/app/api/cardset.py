@@ -6,7 +6,6 @@ from services.cardset_service import create_cardset, delete_cardset
 from core.database import get_session
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter()
 
 @router.post(

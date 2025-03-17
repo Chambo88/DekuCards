@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 from api import cardset
+from api import tree
+from api import node
 from core.config import settings
 from core.database import engine
 from contextlib import asynccontextmanager
@@ -22,6 +24,11 @@ app = FastAPI(lifespan=lifespan, title=settings.PROJECT_NAME)
 setup_cors(app)
 
 app.include_router(cardset.router, prefix="/api")
+app.include_router(tree.router, prefix="/api")
+app.include_router(node.router, prefix="/api")
+
+for route in app.routes:
+    print(route.path)
 
 if __name__ == "__main__":
     import uvicorn
@@ -30,6 +37,6 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8000,
         reload=True,
-        ssl_keyfile="../../certs/dev/key.pem",
-        ssl_certfile="../../certs/dev/cert.pem"
+        ssl_keyfile="../../certs/dev/localhost-key.pem",
+        ssl_certfile="../../certs/dev/localhost.pem"
     )

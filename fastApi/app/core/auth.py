@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import ExpiredSignatureError, jwt, JWTError
 from pydantic import BaseModel
 from typing import Optional
-from app.core.config import settings
+from core.config import settings
 import os
 
 security = HTTPBearer()

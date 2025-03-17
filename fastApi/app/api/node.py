@@ -7,7 +7,6 @@ from core.database import get_session
 from core.auth import validate_token, TokenData
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter()
 
 @router.post(
@@ -18,12 +17,12 @@ router = APIRouter()
 def create_node(
     payload: CreateNodePayload,
     session: Session = Depends(get_session),
-    current_user: TokenData = Depends(validate_token),
+    token: TokenData = Depends(validate_token),
 ):
     try:
         node = payload.data
         user_id = payload.user_id
-        if user_id != current_user.sub:
+        if user_id != token.sub:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You are not authorized to modify another user's data"

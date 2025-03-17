@@ -80,9 +80,11 @@ const useCardEditService = () => {
   //   }
   // };
 
-  const initTree = async (userId : string) => {
+  const initTree = async () => {
     try {
-      // await getTree()
+      let tree = await getTree()
+
+      console.log(JSON.stringify(tree))
 
     } catch (e) {
       console.error("Error in getTree:", e);
@@ -92,7 +94,6 @@ const useCardEditService = () => {
         description:
           "There was an error fetching tree data.",
       });
-      throw e;
     }
   }
 

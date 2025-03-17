@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     DATABASE_PASSWORD: str
     ECHO_SQL: bool = False
     ALLOWED_ORIGINS: List[str]
+    SECRET_KEY: str
 
     @property
     def DATABASE_URL(self) -> str:

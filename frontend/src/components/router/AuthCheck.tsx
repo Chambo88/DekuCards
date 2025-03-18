@@ -3,9 +3,14 @@ import { Outlet, Navigate } from "react-router-dom";
 import useUserStore from "../../stores/useUserStore";
 
 const AuthCheck: React.FC = () => {
-  const { user } = useUserStore();
+  const user = useUserStore((state) => state.user);
+  const isInit = useUserStore((state) => state.isLoaded);
 
-  if (user === undefined) {
+  if (user === null) {
+    return <Outlet />;
+  }
+
+  if (user === undefined || isInit == false) {
     return <div>Loading...</div>;
   }
 

@@ -5,11 +5,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export async function getTree(): Promise<any> {
     const userId = useUserStore.getState().user?.id;
-
-    console.log("get tree api");
   
     try {
-      const response = await authFetch(`${API_BASE_URL}/api/tree?userId=${userId}`, {
+      const response = await authFetch(`${API_BASE_URL}/api/tree/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

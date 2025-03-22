@@ -27,19 +27,53 @@ def get_tree_structure(
     logger.error(user_id)
     logger.error(token.sub)
 
-    return {"Test ": 123}
     token_user_id = uuid.UUID(token.sub)
     if user_id != token_user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not authorized to fetch this user's data"
         )
-    try:
 
+    try:
         tree_data = tree_service(session, user_id)
         return tree_data
     except Exception as e:
+        logger.error("ok1")
         session.rollback()
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving the tree structure"
+        )
+
+@router.post(
+    "/setnode",
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new flashcard set (and Node if needed)"
+)
+def get_tree_structure(
+    user_id: uuid.UUID,
+    session: Session = Depends(get_session),
+    token: TokenData = Depends(validate_token)
+):
+    logger.error("Fetching tree data") # todo change the log level
+    logger.error(user_id)
+    logger.error(token.sub)
+
+    token_user_id = uuid.UUID(token.sub)
+    if user_id != token_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to fetch this user's data"
+        )
+
+    try:
+        tree_data = tree_service(session, user_id)
+        return tree_data
+    except Exception as e:
+        logger.error("ok1")
+        session.rollback()
+        logger.error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while retrieving the tree structure"

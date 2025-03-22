@@ -28,3 +28,7 @@ Make sure to set ENVIRONMENT=production
 ## Gen local certs for local dev
 
 Install certs for localhost using mkcert.
+
+## Future me
+
+Migrate to async FastAPI incase of performance issues

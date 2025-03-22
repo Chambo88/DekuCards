@@ -1,6 +1,6 @@
 import { nodePost } from "@/api/nodeApi";
 import { setPost } from "@/api/setApi";
-import { getTree } from "@/api/treeApi"
+import { getTree, nodeAndSetPost } from "@/api/treeApi"
 import { useToast } from "@/hooks/use-toast";
 import {
   createSetModel,
@@ -147,8 +147,7 @@ const useCardEditService = () => {
     updateNodeState(node.id, node);
 
     try {
-      await nodePost(node);
-      await setPost(set, node.id);
+      await nodeAndSetPost(node, set);
 
       toast({
         title: "Success",

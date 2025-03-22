@@ -9,9 +9,9 @@ from sqlalchemy.orm import mapped_column
 
 
 class NodeVersion(SQLModel, table=True):
-    __tablename__ = 'NodeVersion'
+    __tablename__ = 'node_version'
     __table_args__ = (
-        PrimaryKeyConstraint('id', name='NodeVersion_pkey'),
+        PrimaryKeyConstraint('id', name='node_version_pkey'),
     )
 
     id: uuid.UUID = Field(

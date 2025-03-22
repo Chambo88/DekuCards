@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 import logging
 from schemas.set_schema import CreateDekuSet
-from services.cardset_service import create_cardset, delete_cardset
+from services.cardset_service import create_cardset
 from core.database import get_session
 
 logger = logging.getLogger(__name__)
@@ -30,6 +30,7 @@ def create_flashcard_set(
         logger.info(f"create flashcard bad request data.")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
     except Exception as e:
+        logger.error("ok")
         session.rollback()
         logger.info(f"Internal error")
         raise HTTPException(
@@ -52,6 +53,7 @@ def delete_cardset_endpoint(
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(ve))
     except Exception as e:
+        logger.error("ok")
         session.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -1,43 +1,53 @@
 import uuid
 from sqlalchemy import select
 from sqlmodel import Session
-from models import SetIdentities, Sets, Nodes, UserNodes, UserSets
+from models import SetIdentity, DekuSet, Node, UserNode, UserSet, Card, CardIdentity, UserCard
 
 
 def tree_service(session: Session, user_id: uuid.UUID):
-  session.get(Nodes, )
 
   stmt = (
-    select(Nodes, UserNodes)
-    .join(UserNodes, Nodes.id == UserNodes.node_id)
-    .where(UserNodes.user_id == user_id)
+    select(Node, UserNode)
+    .join(UserNode, Node.id == UserNode.node_id)
+    .where(UserNode.user_id == user_id)
   )
 
   node_results = session.exec(stmt).all()
 
+
+  print("RESULTS 1")
+  print(node_results)
+
   stmt = (
-    select(Sets, UserSets, SetIdentities)
-    .join(SetIdentities, SetIdentities.Id == UserSets.set_identity_id)
-    .join(Sets, Sets.set_identity_id == SetIdentities.id)
-    .where(UserSets.node_version_id == Sets.node_version_id)
+    select(DekuSet, UserSet)
+    .join(SetIdentity, SetIdentity.id == UserSet.set_identity_id)
+    .join(DekuSet, DekuSet.set_identity_id == SetIdentity.id)
+    .join(UserNode, UserNode.id == UserSet.user_node_id)
+    .where(UserNode.node_version_id == DekuSet.node_version_id)
   )
 
   set_results = session.exec(stmt).all()
 
+  print("RESULTS 2")
+
+  stmt = (
+    select(Card, UserCard)
+    .join(CardIdentity, CardIdentity.id == UserCard.card_identity_id)
+    .join(Card, Card.card_identity == CardIdentity.id)
+    .join(UserNode, UserNode.id == UserCard.user_node_id)
+    .where(UserNode.node_version_id == Card.node_version_id)
+  )
+
+  card_results = session.exec(stmt).all()
+
+  print(set_results)
+  
+  print("RESULTS 3")
+
   return {
     "sets" : set_results,
-    "nodes" : node_results
+    "nodes" : node_results,
+    "cards" : card_results
   }
-
-  # stmt = (
-  #   select(Nodes, UserNodes)
-  #   .join(UserNodes, Nodes.id == UserNodes.user_id)
-  #   .join(SetIdentities, SetIdentities.node_id == Nodes.id)
-  #   .join(UserSets, UserSets.set_identity_id == SetIdentities.id)
-  #   .join(Sets, Sets.set_identity_id == SetIdentities.id and Sets.node_version_id == UserNodes.node_version_id)
-  #   .where(UserNodes.user_id == user_id)
-  # )
-
-  # results = session.exec(stmt).all()
 
   

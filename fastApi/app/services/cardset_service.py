@@ -1,6 +1,6 @@
 import uuid
 from sqlmodel import Session, select
-from models import SetIdentities, Sets, Nodes, UserNodes, UserSets
+from models import SetIdentity, DekuSet, Node, UserNode, UserSet
 from schemas.set_schema import CreateDekuSet
 
 def create_cardset(session: Session, create_cardset_data: CreateDekuSet):
@@ -11,9 +11,9 @@ def create_cardset(session: Session, create_cardset_data: CreateDekuSet):
 
     with session.begin():
         # Check if node exists, if not create one
-        node = session.get(Nodes, node_uuid)
+        node = session.get(Node, node_uuid)
         if not node:
-            node = Nodes(
+            node = Node(
                 id=create_cardset_data.node_id,
                 created_by=create_cardset_data.user_id,
                 title=create_cardset_data.title
@@ -23,9 +23,9 @@ def create_cardset(session: Session, create_cardset_data: CreateDekuSet):
             session.refresh(node)
       
         # Check User Meta data
-        user_node = session.get(UserNodes, node_uuid)
+        user_node = session.get(UserNode, node_uuid)
         if not user_node:
-            user_node = UserNodes(
+            user_node = UserNode(
                 user_id=create_cardset_data.user_id,
                 node_id=create_cardset_data.node_id,
                 parent_node_id=create_cardset_data.node_parent_id,
@@ -38,7 +38,7 @@ def create_cardset(session: Session, create_cardset_data: CreateDekuSet):
             session.refresh(user_node)
 
         # Create a new card set identity record.
-        new_set_identity = SetIdentities(
+        new_set_identity = SetIdentity(
             node_id=create_cardset_data.node_id
         )
         session.add(new_set_identity)
@@ -46,7 +46,7 @@ def create_cardset(session: Session, create_cardset_data: CreateDekuSet):
         session.refresh(new_set_identity)
 
         # Create a new card set record.
-        new_set = Sets(
+        new_set = DekuSet(
             id=create_cardset_data.id,
             name=create_cardset_data.title,
             description=create_cardset_data.desc,
@@ -60,7 +60,7 @@ def create_cardset(session: Session, create_cardset_data: CreateDekuSet):
         session.refresh(new_set)
 
         # Create a new user set record.
-        new_user_set = UserSets(
+        new_user_set = UserSet(
             user_id=create_cardset_data.user_id,
             set_identity_id=new_set_identity.id
         )
@@ -70,28 +70,28 @@ def create_cardset(session: Session, create_cardset_data: CreateDekuSet):
     
     return
 
-def delete_cardset(session: Session, cardset_id: str, user_id: str):
-    cardset = session.get(Sets, cardset_id)
+# def delete_cardset(session: Session, cardset_id: str, user_id: str):
+#     cardset = session.get(Sets, cardset_id)
 
-    stmt = (
-        select(Nodes, UserNodes, SetIdentities, UserSets, Sets)
-        .join(UserNodes, Nodes.id == UserNodes.user_id)
-        .join(SetIdentities, SetIdentities.node_id == Nodes.id)
-        .join(UserSets, UserSets.set_identity_id == SetIdentities.id)
-        .where(UserNodes.user_id == user_id)
-    )
+#     stmt = (
+#         select(Nodes, UserNodes, SetIdentities, UserSets, Sets)
+#         .join(UserNodes, Nodes.id == UserNodes.user_id)
+#         .join(SetIdentities, SetIdentities.node_id == Nodes.id)
+#         .join(UserSets, UserSets.set_identity_id == SetIdentities.id)
+#         .where(UserNodes.user_id == user_id)
+#     )
 
 
-    if not cardset:
-        raise ValueError("Cardset not found")
+#     if not cardset:
+#         raise ValueError("Cardset not found")
     
-    # if this is the nodes only cardSet, deleteNode too
-    # If the user doesn't own the 
+#     # if this is the nodes only cardSet, deleteNode too
+#     # If the user doesn't own the 
     
-    session.delete(cardset)
-    # session.delete(Nodes, cardset.)
-    session.commit()
-    return {"message": "Cardset deleted successfully"}
+#     session.delete(cardset)
+#     # session.delete(Nodes, cardset.)
+#     session.commit()
+#     return {"message": "Cardset deleted successfully"}
 
 
 # TODO do cascades

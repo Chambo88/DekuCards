@@ -28,7 +28,6 @@ export const useNodeStore = create<TreeState>((set) => ({
         }
       }
     }))
-  
 }));
 
 export default useNodeStore;

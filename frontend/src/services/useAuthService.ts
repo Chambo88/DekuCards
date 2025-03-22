@@ -6,8 +6,6 @@ import useUserStore from "../stores/useUserStore";
 import { User } from "../models/user";
 import useSetService from "./useSetService";
 
-//TODO it currently calls the api for the tree for every change in status, add interim loading state to not check again
-
 const useAuthService = () => {
   const setUser = useUserStore((state) => state.setUser);
   const signOut = useUserStore((state) => state.signOut);
@@ -19,12 +17,11 @@ const useAuthService = () => {
 
   useEffect(() => {
     const init = async () => {
+      setIsInit(true);
       try {
         await initTree();
-        setIsInit(true);
       } catch (error) {
-        console.log(error);
-        setIsInit(true);
+        console.error("Error initialising tree: ", error);
       }
     }
     if (user && !isInit) {
@@ -51,7 +48,7 @@ const useAuthService = () => {
         };
         setUser(user, token);
       } catch (error) {
-        console.error("Error setting user and initializing tree:", error);
+        console.error("Error setting user: ", error);
       }
     };
 

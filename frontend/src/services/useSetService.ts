@@ -98,7 +98,6 @@ const useCardEditService = () => {
   }
 
 
-
   // const createNode = async (x: number, y: number, title: string) => {
   //   let node: DekuNode = createNodeModel({
   //     position_x: x,
@@ -119,7 +118,6 @@ const useCardEditService = () => {
     nodeX: number,
     nodeY: number
   ) => {
-    // Local state
     let node = createNodeModel({
         position_x: nodeX,
         position_y: nodeY,
@@ -127,32 +125,12 @@ const useCardEditService = () => {
       });
       set.relative_x = 0;
       set.relative_y = 0;
-
-    let result = await createSet(set, node);
-
-    return result;
-  };
-
-  // Function called when creating a new set with no parent
-  const createSet = async (
-    set : DekuSet,
-    node : DekuNode
-  ) => {
-
-    // TODO dynamically set the relatives of new set if others exist
-    set.relative_x = 0;
-    set.relative_y = 0;
-
+    
     node.sets[set.id] = set; 
     updateNodeState(node.id, node);
 
     try {
       await nodeAndSetPost(node, set);
-
-      toast({
-        title: "Success",
-        description: "New card set created.",
-      });
 
       return getCurrentState();
     } catch (e) {
@@ -166,6 +144,40 @@ const useCardEditService = () => {
       throw e;
     }
   };
+
+  // Function called when creating a new set with no parent
+  // const createSet = async (
+  //   set : DekuSet,
+  //   node : DekuNode
+  // ) => {
+
+  //   //TODO dynamically set the relatives of new set if others exist
+  //   set.relative_x = 0;
+  //   set.relative_y = 0;
+
+  //   node.sets[set.id] = set; 
+  //   updateNodeState(node.id, node);
+
+  //   try {
+  //     await nodeAndSetPost(node, set);
+
+  //     toast({
+  //       title: "Success",
+  //       description: "New card set created.",
+  //     });
+
+  //     return getCurrentState();
+  //   } catch (e) {
+  //     console.error("Error in createSetNode service:", e);
+  //     toast({
+  //       variant: "destructive",
+  //       title: "Error",
+  //       description:
+  //         "There was an error creating this set. Set will only exist locally. Use the updates tab to try to sync this set with the database again.",
+  //     });
+  //     throw e;
+  //   }
+  // };
 
   // const deleteSet = (setId: string) => {
   //   console.log(setId);
@@ -194,7 +206,7 @@ const useCardEditService = () => {
   return { 
     // moveCards, 
     // updateSet, 
-    createSet, 
+    // createSet, 
     createSetAndNode,
     initTree,
     // deleteSet 

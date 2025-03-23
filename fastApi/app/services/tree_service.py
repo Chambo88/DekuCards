@@ -1,14 +1,14 @@
 import uuid
 from sqlalchemy import select
 from sqlmodel import Session
-from models import SetIdentity, DekuSet, Node, UserNode, UserSet, Card, CardIdentity, UserCard
+from models import SetIdentity, DekuSet, DekuNode, UserNode, UserSet, Card, CardIdentity, UserCard
 
 
 def tree_service(session: Session, user_id: uuid.UUID):
 
   stmt = (
-    select(Node, UserNode)
-    .join(UserNode, Node.id == UserNode.node_id)
+    select(DekuNode, UserNode)
+    .join(UserNode, DekuNode.id == UserNode.node_id)
     .where(UserNode.user_id == user_id)
   )
 

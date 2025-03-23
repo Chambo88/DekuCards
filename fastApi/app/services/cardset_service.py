@@ -1,74 +1,104 @@
+from datetime import datetime, timezone
 import uuid
-from sqlmodel import Session, select
-from models import SetIdentity, DekuSet, Node, UserNode, UserSet
-from schemas.set_schema import CreateDekuSet
+from sqlmodel import Session
+from models import SetIdentity, DekuSet, UserNode, UserSet, DekuNode, NodeVersion
+from schemas.tree_schema import DekuSetBase, DekuNodeBase
 
-def create_cardset(session: Session, create_cardset_data: CreateDekuSet):
-    try:
-        node_uuid = uuid.UUID(create_cardset_data.node_id)
-    except ValueError:
-        raise ValueError("Invalid node_id format")
+def create_deku_node (
+        session: Session, 
+        deku_node: DekuNodeBase, 
+        user_id: uuid.UUID, 
+        parent_node_id: uuid.UUID = None
+    ):
 
-    with session.begin():
-        # Check if node exists, if not create one
-        node = session.get(Node, node_uuid)
-        if not node:
-            node = Node(
-                id=create_cardset_data.node_id,
-                created_by=create_cardset_data.user_id,
-                title=create_cardset_data.title
-            )
-            session.add(node)
-            session.flush()
-            session.refresh(node)
-      
-        # Check User Meta data
-        user_node = session.get(UserNode, node_uuid)
-        if not user_node:
-            user_node = UserNode(
-                user_id=create_cardset_data.user_id,
-                node_id=create_cardset_data.node_id,
-                parent_node_id=create_cardset_data.node_parent_id,
-                node_version_id=None,
-                position_x=create_cardset_data.node_position_x,
-                position_y=create_cardset_data.node_position_y
-            )
-            session.add(user_node)
-            session.flush()
-            session.refresh(user_node)
+    node_version = NodeVersion(
+        version_display_num = "1.0",
+        version_name = None,
+        notes = None,
+        version_seq_num = 1,
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
+    )
 
-        # Create a new card set identity record.
-        new_set_identity = SetIdentity(
-            node_id=create_cardset_data.node_id
-        )
-        session.add(new_set_identity)
-        session.flush()
-        session.refresh(new_set_identity)
+    session.add(node_version)
+    session.flush()
+    session.refresh(node_version)
 
-        # Create a new card set record.
-        new_set = DekuSet(
-            id=create_cardset_data.id,
-            name=create_cardset_data.title,
-            description=create_cardset_data.desc,
-            prerequisites=create_cardset_data.prerequisites,
-            node_version_id=node.id,
-            x_relative_node=create_cardset_data.relative_position_x,
-            y_relative_node=create_cardset_data.relative_position_y,
-        )
-        session.add(new_set)
-        session.flush()
-        session.refresh(new_set)
-
-        # Create a new user set record.
-        new_user_set = UserSet(
-            user_id=create_cardset_data.user_id,
-            set_identity_id=new_set_identity.id
-        )
-        session.add(new_user_set)
-        session.flush()
-        session.refresh(new_user_set)
+    new_node = DekuNode(
+        id = deku_node.id,
+        created_by = user_id,
+        title = deku_node.title,
+        public_set = deku_node.public_node,
+        icon_url = deku_node.icon_url,
+        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(timezone.utc)
+    )
+    session.add(new_node)
+    session.flush()
+    session.refresh(new_node)
     
-    return
+    new_user_node = UserNode(
+        user_id = user_id,
+        node_id = deku_node.id,
+        parent_node_id = parent_node_id,
+        node_version_id = node_version.id,
+        position_x = deku_node.position_x,
+        position_y = deku_node.position_y,
+        enabled = deku_node.enabled
+    )
+    session.add(new_user_node)
+    session.flush()
+    session.refresh(new_user_node)
+
+    return new_node, new_user_node, node_version
+
+
+def create_deku_set(
+        session: Session, 
+        deku_set: DekuSetBase, 
+        user_id: uuid.UUID, 
+        parent_node_id: uuid.UUID, 
+        node_version_id: uuid.UUID,
+        parent_set_id: uuid.UUID = None
+    ):
+    
+    new_set_identity = SetIdentity(
+        node_id=parent_node_id
+    )
+    session.add(new_set_identity)
+    session.flush()
+    session.refresh(new_set_identity)
+
+    new_set = DekuSet(
+        id=deku_set.id,
+        set_identity_id=new_set_identity.id,
+        parent_set_id=parent_set_id,
+        name=deku_set.title,
+        description=deku_set.desc,
+        prerequisites=deku_set.prerequisites,
+        node_version_id=node_version_id,
+        x_relative_node=deku_set.relative_x,
+        y_relative_node=deku_set.relative_y,
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
+        created_by=user_id
+    )
+    session.add(new_set)
+    session.flush()
+    session.refresh(new_set)
+
+    new_user_set = UserSet(
+        user_id=user_id,
+        set_identity_id=new_set_identity.id,
+        enabled=deku_set.enabled
+    )
+    session.add(new_user_set)
+    session.flush()
+    session.refresh(new_user_set)
+
+    return new_set, new_user_set, new_set_identity
+
+
 
 # def delete_cardset(session: Session, cardset_id: str, user_id: str):
 #     cardset = session.get(Sets, cardset_id)

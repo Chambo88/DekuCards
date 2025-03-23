@@ -31,10 +31,11 @@ export interface DekuSet {
   desc: string | null;
   prerequisites: Prerequisite[];
   cards: FlashCard[];
-  img_url: string | null;
   relative_x: number;
   relative_y: number;
   parent_id: string | null;
+  child_sets: Record<string, DekuSet>;
+  enabled: boolean;
 }
 
 interface DekuSetParams {
@@ -46,7 +47,8 @@ interface DekuSetParams {
   desc?: string | null;
   prerequisites?: Prerequisite[];
   cards?: FlashCard[];
-  img_url?: string | null;
+  child_sets?: Record<string, DekuSet>;
+  enabled?: boolean;
 }
 
 export const createSetModel = ({
@@ -58,7 +60,8 @@ export const createSetModel = ({
   desc = null,
   prerequisites = [],
   cards = [],
-  img_url = null,
+  child_sets = {},
+  enabled = true
 }: DekuSetParams): DekuSet => ({
   id,
   title,
@@ -68,7 +71,8 @@ export const createSetModel = ({
   desc,
   prerequisites,
   cards,
-  img_url,
+  child_sets,
+  enabled
 });
 
 

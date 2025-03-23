@@ -2,7 +2,7 @@ from .card_identity import CardIdentity
 from .card import Card 
 from .deku_user import DekuUser
 from .node_version import NodeVersion
-from .node import Node
+from .node import DekuNode
 from .public_node import PublicNode
 from .set_identity import SetIdentity
 from .deku_set import DekuSet

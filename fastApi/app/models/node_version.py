@@ -18,9 +18,11 @@ class NodeVersion(SQLModel, table=True):
         default_factory=uuid.uuid4,
         sa_column=mapped_column(PG_UUID(as_uuid=True), server_default=text('gen_random_uuid()'))
     )
+    # This is more 1.0.5 etc.
     version_display_num: str = Field(
         sa_column=mapped_column(Text, nullable=False)
     )
+    # This is something like, Javascript 6.0 edition!
     version_name: Optional[str] = Field(
         default=None,
         sa_column=mapped_column(Text)
@@ -43,6 +45,7 @@ class NodeVersion(SQLModel, table=True):
             server_default=text("now()") 
         )
     )
+    # This is purely for database sorting etc.
     version_seq_num: Optional[int] = Field(
         default=None,
         sa_column=mapped_column(Integer)

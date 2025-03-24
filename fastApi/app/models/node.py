@@ -31,7 +31,7 @@ class DekuNode(SQLModel, table=True):
     updated_at: datetime = Field(
         sa_column=mapped_column('updated_at', DateTime(True), nullable=False, server_default=text('now()'))
     )
-    public_set: bool = Field(
+    public_node: bool = Field(
         sa_column=mapped_column(Boolean, nullable=False, server_default=text('false'))
     )
     id: uuid.UUID = Field(

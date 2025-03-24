@@ -16,7 +16,8 @@ class DekuSetBase(BaseModel):
     prerequisites: Optional[List[Prerequisite]] = None
     relative_x: float
     relative_y: float
-    parent_id: Optional[str] = None
+    parent_set_id: Optional[str] = None
+    parent_node_id: str
     enabled: bool = True
 
 class DekuNodeBase(BaseModel):
@@ -29,7 +30,8 @@ class DekuNodeBase(BaseModel):
     public_node: Optional[bool] = False
     public_description: Optional[str] = None
     version_name: Optional[str] = None
-    version_id: Optional[str] = None
+    version_display_num: Optional[str] = None
+    version_id: str
     owner_name: Optional[str] = None
     owner_id: Optional[uuid.UUID] = None
     parent_node_id: Optional[uuid.UUID] = None

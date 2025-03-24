@@ -55,3 +55,7 @@ class PublicNode(SQLModel, table=True):
             server_default=text('gen_random_uuid()')
         )
     )
+    creator_name: str = Field(
+        default="",
+        nullable=False
+    )

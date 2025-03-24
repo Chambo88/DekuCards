@@ -56,7 +56,7 @@ class DekuSet(SQLModel, table=True):
             server_default=text('gen_random_uuid()')
         )
     )
-    name: str = Field(
+    title: str = Field(
         sa_column=mapped_column(Text, nullable=False)
     )
     created_by: uuid.UUID = Field(
@@ -88,9 +88,9 @@ class DekuSet(SQLModel, table=True):
         default=None,
         sa_type=JSON()
     )
-    x_relative_node: float = Field(
+    relative_x: float = Field(
         sa_column=mapped_column(Float, nullable=False)
     )
-    y_relative_node: float = Field(
+    relative_y: float = Field(
         sa_column=mapped_column(Float, nullable=False)
     )

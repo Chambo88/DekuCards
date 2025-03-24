@@ -119,6 +119,7 @@ export interface DekuNode {
   public_node?: boolean;
   public_description?: string | null;
   version_name: string | null;
+  version_display_num: string | null;
   version_id: string | null;
   owner_name: string | null;
   owner_id: string | null;
@@ -137,6 +138,7 @@ interface CreateNodeParams {
   public_node?: boolean;
   public_description?: string | null;
   version_name?: string | null;
+  version_display_num?: string | null;
   version_id?: string | null;
   owner_name?: string | null;
   owner_id?: string;
@@ -155,7 +157,8 @@ export const createNodeModel = ({
   public_node = false,
   public_description = null,
   version_name = null,
-  version_id = null,
+  version_display_num = "1.0.0",
+  version_id = uuidv4(),
   owner_name = null,
   owner_id = useUserStore.getState().user!.id,
   parent_node_id = null,
@@ -171,6 +174,7 @@ export const createNodeModel = ({
   public_node,
   public_description,
   version_name,
+  version_display_num,
   version_id,
   owner_name,
   owner_id,

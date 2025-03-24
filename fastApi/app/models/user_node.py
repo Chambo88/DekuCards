@@ -1,6 +1,6 @@
 import uuid
 from typing import Optional
-from sqlmodel import SQLModel, Field
+from sqlmodel import Float, SQLModel, Field
 from sqlalchemy import PrimaryKeyConstraint, ForeignKeyConstraint, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import mapped_column
@@ -51,3 +51,9 @@ class UserNode(SQLModel, table=True):
         )
     )
     node_enabled: bool = Field(default=True, nullable=False)
+    position_x: float = Field(
+        sa_column=mapped_column(Float, nullable=False)
+    )
+    position_y: float = Field(
+        sa_column=mapped_column(Float, nullable=False)
+    )

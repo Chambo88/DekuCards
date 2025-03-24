@@ -37,6 +37,7 @@ def get_tree_structure(
 
     try:
         tree_data = tree_service(session, user_id)
+        print(tree_data)
         return tree_data
     except Exception as e:
         logger.error("ok1")

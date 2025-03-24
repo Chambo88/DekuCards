@@ -10,7 +10,7 @@ from sqlalchemy.orm import mapped_column
 class UserCard(SQLModel, table=True):
     __tablename__ = 'user_card'
     __table_args__ = (
-        PrimaryKeyConstraint('user_id', 'card_identity_id', name='user_card_pkey'),
+        PrimaryKeyConstraint('id', name='user_card_pkey'),
         ForeignKeyConstraint(
             ['user_node_id'],
             ['user_node.id'],
@@ -18,6 +18,13 @@ class UserCard(SQLModel, table=True):
         ),
     )
 
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        sa_column=mapped_column(
+            PG_UUID(as_uuid=True),
+            server_default=text('gen_random_uuid()')
+        )
+    )
     user_id: uuid.UUID = Field(
         sa_column=mapped_column(
             PG_UUID(as_uuid=True),

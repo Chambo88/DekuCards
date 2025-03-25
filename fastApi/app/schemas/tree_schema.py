@@ -31,9 +31,9 @@ class DekuNodeBase(BaseModel):
     public_description: Optional[str] = None
     version_name: Optional[str] = None
     version_display_num: Optional[str] = None
-    version_id: str
+    version_id: uuid.UUID
     owner_name: Optional[str] = None
-    owner_id: Optional[uuid.UUID] = None
+    owner_id: uuid.UUID
     parent_node_id: Optional[uuid.UUID] = None
     icon_url: Optional[str] = None
 

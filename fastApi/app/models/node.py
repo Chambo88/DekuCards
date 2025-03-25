@@ -32,6 +32,7 @@ class DekuNode(SQLModel, table=True):
         sa_column=mapped_column('updated_at', DateTime(True), nullable=False, server_default=text('now()'))
     )
     public_node: bool = Field(
+        default=False,
         sa_column=mapped_column(Boolean, nullable=False, server_default=text('false'))
     )
     id: uuid.UUID = Field(

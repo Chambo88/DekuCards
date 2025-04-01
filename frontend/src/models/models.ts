@@ -33,8 +33,8 @@ export interface DekuSet {
   cards: FlashCard[];
   relative_x: number;
   relative_y: number;
-  parent_id: string | null;
-  child_sets: Record<string, DekuSet>;
+  parent_set_id: string | null;
+  parent_node_id: string;
   enabled: boolean;
 }
 
@@ -43,66 +43,37 @@ interface DekuSetParams {
   title?: string;
   relative_x: number;
   relative_y: number;
-  parent_id?: string | null;
+  parent_set_id?: string | null;
+  parent_node_id: string;
   desc?: string | null;
   prerequisites?: Prerequisite[];
   cards?: FlashCard[];
-  child_sets?: Record<string, DekuSet>;
   enabled?: boolean;
 }
 
 export const createSetModel = ({
   id = uuidv4(),
-  title = getNewTitle(),
+  title = "New Card set",
   relative_x,
   relative_y,
-  parent_id = null,
+  parent_set_id = null,
+  parent_node_id,
   desc = null,
   prerequisites = [],
   cards = [],
-  child_sets = {},
   enabled = true
 }: DekuSetParams): DekuSet => ({
   id,
   title,
   relative_x,
   relative_y,
-  parent_id,
+  parent_set_id,
+  parent_node_id,
   desc,
   prerequisites,
   cards,
-  child_sets,
   enabled
 });
-
-
-export const getNewTitle = () => {
-  let count = 0;
-  let newTitle = "";
-  let titleCreated = false;
-  const currentTitles = Object.values(useCardSetStore.getState().nodes)
-  .flatMap(node => Object.values(node.sets).map(set => set.title));
-
-  while (!titleCreated) {
-    let alreadyMade = false;
-    let newPotentialTitle = "New Card set " + (count === 0 ? "" : count);
-
-    for (const title of currentTitles) {
-      if (title === newPotentialTitle) {
-        count += 1;
-        alreadyMade = true;
-        break;
-      }
-    }
-
-    if (!alreadyMade) {
-      newTitle = newPotentialTitle;
-      titleCreated = true;
-    }
-  }
-
-  return newTitle;
-};
 
 export interface Prerequisite {
   name: string;
@@ -111,21 +82,19 @@ export interface Prerequisite {
 
 export interface DekuNode {
   id: string;
-  enabled?: boolean;
-  icon_url?: string | null;
+  enabled: boolean;
+  icon_url: string | null;
   position_x: number;
   position_y: number;
-  title: string;
-  public_node?: boolean;
-  public_description?: string | null;
+  group_title: string | null;
+  public_node: boolean;
+  public_description: string | null;
   version_name: string | null;
   version_display_num: string | null;
   version_id: string | null;
   owner_name: string | null;
-  owner_id: string | null;
+  owner_id: string;
   parent_node_id: string | null;
-  child_nodes: Record<string, DekuNode>;
-  sets: Record<string, DekuSet>;
 }
 
 interface CreateNodeParams {
@@ -134,7 +103,7 @@ interface CreateNodeParams {
   icon_url?: string | null;
   position_x: number;
   position_y: number;
-  title: string;
+  group_title?: string | null;
   public_node?: boolean;
   public_description?: string | null;
   version_name?: string | null;
@@ -143,34 +112,30 @@ interface CreateNodeParams {
   owner_name?: string | null;
   owner_id?: string;
   parent_node_id?: string | null;
-  child_nodes?: Record<string, DekuNode>;
-  sets?: Record<string, DekuSet>;
 }
 
 export const createNodeModel = ({
   id = uuidv4(),
   enabled = true,
   icon_url = null,
-  title,
+  group_title = null,
   position_x,
   position_y,
   public_node = false,
   public_description = null,
   version_name = null,
-  version_display_num = "1.0.0",
+  version_display_num = null,
   version_id = uuidv4(),
   owner_name = null,
   owner_id = useUserStore.getState().user!.id,
   parent_node_id = null,
-  child_nodes = {},
-  sets = {}
 }: CreateNodeParams): DekuNode => ({
   id,
   enabled,
   icon_url,
   position_x,
   position_y,
-  title,
+  group_title,
   public_node,
   public_description,
   version_name,
@@ -179,6 +144,4 @@ export const createNodeModel = ({
   owner_name,
   owner_id,
   parent_node_id,
-  child_nodes,
-  sets,
 });

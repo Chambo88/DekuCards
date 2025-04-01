@@ -26,12 +26,12 @@ class DekuNodeBase(BaseModel):
     icon_url: Optional[str] = None
     position_x: float
     position_y: float
-    title: str
+    title: Optional[str] = None
     public_node: Optional[bool] = False
     public_description: Optional[str] = None
     version_name: Optional[str] = None
     version_display_num: Optional[str] = None
-    version_id: uuid.UUID
+    version_id: Optional[uuid.UUID] = None
     owner_name: Optional[str] = None
     owner_id: uuid.UUID
     parent_node_id: Optional[uuid.UUID] = None
@@ -44,5 +44,3 @@ class DekuNodeBase(BaseModel):
 class Prerequisite(BaseModel):
     name: str
     link: Optional[str] = None
-
-

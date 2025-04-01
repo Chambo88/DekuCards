@@ -27,7 +27,7 @@ def tree_service(session: Session, user_id: uuid.UUID):
         icon_url=result[0].icon_url,
         position_x=result[1].position_x,
         position_y=result[1].position_y,
-        title=result[0].title,
+        title=result[0].group_title,
         public_node=result[0].public_node,
         public_description=result[3].description if result[3] is not None else None,
         version_name=result[2].version_name,
@@ -46,9 +46,12 @@ def tree_service(session: Session, user_id: uuid.UUID):
     .join(DekuSet, DekuSet.set_identity_id == SetIdentity.id)
     .join(UserNode, UserNode.id == UserSet.user_node_id)
     .where(UserNode.node_version_id == DekuSet.node_version_id)
+    .where(UserNode.user_id == user_id)
   )
 
   set_results : List[Tuple[DekuSet, UserSet, SetIdentity]] = session.exec(stmt).all()
+
+  print
 
   set_results_mapped = {}
   for result in set_results:

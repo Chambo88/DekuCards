@@ -61,6 +61,8 @@ def create_deku_set(
         node_version_id: uuid.UUID,
         parent_set_id: uuid.UUID = None
     ):
+
+    print(deku_set)
     
     new_set_identity = SetIdentity(
         node_id=parent_node_id
@@ -73,12 +75,12 @@ def create_deku_set(
         id=deku_set.id,
         set_identity_id=new_set_identity.id,
         parent_set_id=parent_set_id,
-        name=deku_set.title,
+        title=deku_set.title,
         description=deku_set.desc,
         prerequisites=deku_set.prerequisites,
         node_version_id=node_version_id,
-        x_relative_node=deku_set.relative_x,
-        y_relative_node=deku_set.relative_y,
+        relative_x=deku_set.relative_x,
+        relative_y=deku_set.relative_y,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
         created_by=user_id

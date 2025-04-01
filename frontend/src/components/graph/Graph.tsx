@@ -36,7 +36,7 @@ interface GraphComponentProps {
   data?: any;
 }
 
-const getGraphData = () => generateElements(useCardSetStore.getState().nodes)
+const getGraphData = () => generateElements()
 
 const GraphComponent = forwardRef<GraphComponentHandle, GraphComponentProps>(
   (props, ref) => {

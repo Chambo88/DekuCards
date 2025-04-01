@@ -17,7 +17,7 @@ const useCardEditService = () => {
   const updateSetState = useCardSetStore((state) => state.updateSet);
 
   const getCurrentState = () => {
-    return useCardSetStore.getState().nodes;
+    return useCardSetStore.getState().dekuNodes;
   };
 
   // const moveCards = (
@@ -84,6 +84,8 @@ const useCardEditService = () => {
     try {
       let tree = await getTree()
 
+      updateNodeState(tree.)
+
       console.log(JSON.stringify(tree))
 
     } catch (e) {
@@ -114,25 +116,26 @@ const useCardEditService = () => {
   // };
 
   const createSetAndNode = async (
-    set: DekuSet,
     nodeX: number,
     nodeY: number
   ) => {
-    let node = createNodeModel({
+    let newNode = createNodeModel({
         position_x: nodeX,
         position_y: nodeY,
-        title: set.title,
-      });
-      set.relative_x = 0;
-      set.relative_y = 0;
+    });
     
-    node.sets[set.id] = set; 
-    updateNodeState(node.id, node);
+    let newSet: DekuSet = createSetModel({
+      parent_set_id: null,
+      parent_node_id: newNode.id,
+      relative_x: 0,
+      relative_y: 0,
+    });
+    
+    updateNodeState(newNode.id, newNode);
+    updateSetState(newSet.id, newSet)
 
     try {
-      await nodeAndSetPost(node, set);
-
-      return getCurrentState();
+      await nodeAndSetPost(newNode, newSet);
     } catch (e) {
       console.error("Error in createSetNode service:", e);
       toast({

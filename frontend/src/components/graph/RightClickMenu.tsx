@@ -33,16 +33,10 @@ const RightClickMenu: React.FC<RightClickMenuProps> = ({
   // const { deleteSet, createSet } = useCardEditService();
     const { createSetAndNode } = useCardEditService();
 
-  const handleCreateCardSet = async () => {
+  const handleCreateSetAndNode = async () => {
     try{
       console.log("handling create card set")
-      let newSet: DekuSet = createSetModel({
-        parent_id: null,
-        relative_x: 0,
-        relative_y: 0,
-      });
-
-      await createSetAndNode(newSet, menuCoords?.x ?? 0, menuCoords?.y ?? 0);
+      await createSetAndNode(menuCoords?.x ?? 0, menuCoords?.y ?? 0);
   
       refreshNodes();
       refreshEdges();
@@ -115,13 +109,13 @@ const RightClickMenu: React.FC<RightClickMenuProps> = ({
               <>
                 <DropdownMenuItem
                   onSelect={() => {
-                    handleCreateCardSet();
+                    handleCreateSetAndNode();
                     onClose();
                   }}
                 >
                   Add Node
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={handleCreateCardSet}>
+                <DropdownMenuItem onSelect={handleCreateSetAndNode}>
                   TEMPTest
                 </DropdownMenuItem>
               </>

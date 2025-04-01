@@ -26,7 +26,7 @@ const CustomNode = ({ data }: NodeProps) => {
           <EllipsisVerticalIcon className="h-6 w-6" />
         </Button>
       </div>
-      {cardSet.parent_id && <Handle type="target" position={Position.Top} />}
+      {cardSet.parent_set_id && <Handle type="target" position={Position.Top} />}
       <Handle type="source" position={Position.Bottom} />
     </div>
   );

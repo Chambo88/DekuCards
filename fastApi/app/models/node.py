@@ -43,7 +43,7 @@ class DekuNode(SQLModel, table=True):
         default=None,
         sa_column=mapped_column(Text)
     )
-    title: str = Field(
-        default="",
+    group_title: Optional[str] = Field(
+        default=None,
         sa_column=mapped_column(Text)
     )

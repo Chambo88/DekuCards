@@ -1,11 +1,13 @@
 import useUserStore from "@/stores/useUserStore";
 import authFetch from "./authFetch";
-import { DekuNode, DekuSet } from "@/models/models";
+import { DekuNode, DekuSet, FlashCard } from "@/models/models";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
-export async function getTree(): Promise<any> {
+export async function getTree(): Promise<{nodes: DekuNode[], sets: DekuSet[], cards: FlashCard[]}> {
     const userId = useUserStore.getState().user?.id;
+
+    console.log(userId)
 
     try {
       const response = await authFetch(`${API_BASE_URL}/api/tree/${userId}`, {
@@ -20,7 +22,7 @@ export async function getTree(): Promise<any> {
       }
 
       const data = await response.json();
-      console.log(data);  // logs the actual response data
+      console.log(data);
       return data;
     } catch (error) {
       console.error("Error fetching user tree data", error);
@@ -30,12 +32,9 @@ export async function getTree(): Promise<any> {
 
 export async function nodeAndSetPost(node: DekuNode, set: DekuSet): Promise<any> {
     const userId = useUserStore.getState().user?.id;
-  
-    const { sets, child_nodes, ...nodeData } = node;
-    const { child_sets, ...setData } = set;
 
     console.log(JSON.stringify({
-      data : {node: nodeData, set: set},
+      data : {node: node, set: set},
       user_id: userId,
     }))
     try {
@@ -45,7 +44,7 @@ export async function nodeAndSetPost(node: DekuNode, set: DekuSet): Promise<any>
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data : {node: nodeData, set: setData},
+          data : {node: node, set: set},
           user_id: userId,
         }),
       });

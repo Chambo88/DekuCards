@@ -1,39 +1,39 @@
-import { DekuNode } from "@/models/models";
 import { Edge, Node, Position } from "reactflow";
+import useCardSetStore from "@/stores/useTreeStore";
 
-export const generateElements = (dekuNodes: Record<string, DekuNode>) => {
+export const generateElements = () => {
+  let dekuNodes = useCardSetStore.getState().dekuNodes
+  let dekuSets = useCardSetStore.getState().dekuSets
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  for (const dekuNode of Object.values(dekuNodes)) {
-    // TODO Add grouping features etc.
-    if (Object.keys(dekuNode.sets).length == 0) {
-      continue;
-    }
-    let tempSet = Object.values(dekuNode.sets)[0]
+  // TODO Add grouping features etc.
+
+  for (const dekuSet of Object.values(dekuSets)) {
     nodes.push({
-      id: dekuNode.id,
+      id: dekuSet.id,
       data: {
-        cardSet: tempSet,
+        cardSet: dekuSet,
         selected: false,
       },
-      position: { x: dekuNode.position_x, y: dekuNode.position_y },
+      position: { x: dekuNodes[dekuSet.parent_node_id].position_x, y: dekuNodes[dekuSet.parent_node_id].position_y },
       draggable: true,
       type: "custom",
       targetPosition: Position.Top,
       sourcePosition: Position.Bottom,
     });
 
-    if (dekuNode.parent_node_id) {
-      edges.push({
-        id: `edge-${dekuNode.parent_node_id}-${dekuNode.id}`,
-        source: dekuNode.parent_node_id,
-        target: dekuNode.id,
-      });
-    }
+    //TODO fix edges
+    // if (dekuSet.parent_node_id) {
+    //   edges.push({
+    //     id: `edge-${dekuSet.parent_node_id}-${dekuSet.id}`,
+    //     source: dekuSet.parent_node_id,
+    //     target: dekuSet.id,
+    //   });
+    // }
   }
 
-  console.log("reran");
+  console.log("Generated elements");
 
   return { nodes, edges };
 };

@@ -15,6 +15,8 @@ const useCardEditService = () => {
   const { toast } = useToast();
   const updateNodeState = useCardSetStore((state) => state.updateNode);
   const updateSetState = useCardSetStore((state) => state.updateSet);
+  const initNodeState = useCardSetStore((state) => state.initNodes);
+  const initSetState = useCardSetStore((state) => state.initSets);
 
   const getCurrentState = () => {
     return useCardSetStore.getState().dekuNodes;
@@ -84,7 +86,9 @@ const useCardEditService = () => {
     try {
       let tree = await getTree()
 
-      updateNodeState(tree.)
+      initNodeState(tree.nodes)
+      initSetState(tree.sets)
+      // initCards
 
       console.log(JSON.stringify(tree))
 

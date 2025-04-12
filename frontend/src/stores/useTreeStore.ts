@@ -6,6 +6,8 @@ interface TreeState {
   dekuSets: Record<string, DekuSet>;
   updateNode: (nodeId: string, updates: Partial<DekuNode>) => void;
   updateSet: (setId: string, updates: Partial<DekuSet>) => void;
+  initSets: (sets: Record<string, DekuSet>) => void;
+  initNodes: (nodes: Record<string, DekuNode>) => void;
 }
 
 export const useNodeStore = create<TreeState>((set) => ({
@@ -24,6 +26,14 @@ export const useNodeStore = create<TreeState>((set) => ({
         ...state.dekuSets,
         [setId]: { ...state.dekuSets[setId], ...updates },
       },
+  })),
+  initSets: (sets) =>
+    set(() => ({
+      dekuSets: sets,
+  })),
+  initNodes: (nodes) =>
+    set(() => ({
+      dekuNodes: nodes,
   })),
 }));
 

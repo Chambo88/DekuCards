@@ -5,10 +5,14 @@ import useCardSetStore from "@/stores/useTreeStore";
 
 export interface FlashCard {
   id: string;
+  times_correct: number;
+  set_id: string;
+  available: Date;
+  created_at: Date;
   enabled: boolean;
+  last_shown_at: Date | null;
   front: string;
   back: string;
-  selected: boolean;
 }
 
 export const createFlashCard = (
@@ -21,8 +25,7 @@ export const createFlashCard = (
   id,
   front,
   back,
-  enabled,
-  selected,
+  enabled
 });
 
 export interface DekuSet {
@@ -30,7 +33,6 @@ export interface DekuSet {
   title: string;
   desc: string | null;
   prerequisites: Prerequisite[];
-  cards: FlashCard[];
   relative_x: number;
   relative_y: number;
   parent_set_id: string | null;
@@ -47,7 +49,6 @@ interface DekuSetParams {
   parent_node_id: string;
   desc?: string | null;
   prerequisites?: Prerequisite[];
-  cards?: FlashCard[];
   enabled?: boolean;
 }
 
@@ -60,7 +61,6 @@ export const createSetModel = ({
   parent_node_id,
   desc = null,
   prerequisites = [],
-  cards = [],
   enabled = true
 }: DekuSetParams): DekuSet => ({
   id,
@@ -71,7 +71,6 @@ export const createSetModel = ({
   parent_node_id,
   desc,
   prerequisites,
-  cards,
   enabled
 });
 

@@ -83,11 +83,13 @@ def create_node_set(
                 payload.user_id
             )
             new_set, new_user_set, new_set_identity = create_deku_set(
-                session, 
-                payload.data.set, 
-                payload.user_id, 
-                payload.data.node.id, 
-                new_version.id
+                session = session, 
+                deku_set = payload.data.set, 
+                user_id = payload.user_id,
+                node_id = new_node.id, 
+                user_node_id = new_user_node.id,
+                node_version_id = new_version.id,
+                parent_set_id=payload.data.set.parent_set_id
             )
         return {
             "node_id": new_node.id,

@@ -1,4 +1,5 @@
 from typing import List, Optional
+from datetime import datetime
 import uuid
 from pydantic import BaseModel
 
@@ -9,6 +10,17 @@ class Prerequisite(BaseModel):
     name: str
     link: Optional[str] = None
 
+class CardBase(BaseModel):
+    id: uuid.UUID
+    times_correct: int
+    set_id: uuid.UUID
+    available_date: datetime
+    created_at_date: datetime
+    enabled: bool
+    last_shown_at_date: Optional[datetime]
+    front: str
+    back: str
+
 class DekuSetBase(BaseModel):
     id: uuid.UUID
     title: str
@@ -16,8 +28,8 @@ class DekuSetBase(BaseModel):
     prerequisites: Optional[List[Prerequisite]] = None
     relative_x: float
     relative_y: float
-    parent_set_id: Optional[str] = None
-    parent_node_id: str
+    parent_set_id: Optional[uuid.UUID] = None
+    parent_node_id: uuid.UUID
     enabled: bool = True
 
 class DekuNodeBase(BaseModel):

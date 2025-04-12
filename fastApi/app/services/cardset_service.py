@@ -57,7 +57,8 @@ def create_deku_set(
         session: Session, 
         deku_set: DekuSetBase, 
         user_id: uuid.UUID, 
-        parent_node_id: uuid.UUID, 
+        node_id: uuid.UUID, 
+        user_node_id: uuid.UUID,
         node_version_id: uuid.UUID,
         parent_set_id: uuid.UUID = None
     ):
@@ -65,7 +66,7 @@ def create_deku_set(
     print(deku_set)
     
     new_set_identity = SetIdentity(
-        node_id=parent_node_id
+        node_id=node_id
     )
     session.add(new_set_identity)
     session.flush()
@@ -92,7 +93,8 @@ def create_deku_set(
     new_user_set = UserSet(
         user_id=user_id,
         set_identity_id=new_set_identity.id,
-        enabled=deku_set.enabled
+        enabled=deku_set.enabled,
+        user_node_id=user_node_id
     )
     session.add(new_user_set)
     session.flush()

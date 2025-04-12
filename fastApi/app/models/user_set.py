@@ -38,11 +38,9 @@ class UserSet(SQLModel, table=True):
             server_default=text('gen_random_uuid()')
         )
     )
-    user_node_id: Optional[uuid.UUID] = Field(
-        default=None,
+    user_node_id: uuid.UUID = Field(
         sa_column=mapped_column(
-            PG_UUID(as_uuid=True),
-            server_default=text('gen_random_uuid()')
+            PG_UUID(as_uuid=True)
         )
     )
     enabled: bool = Field(

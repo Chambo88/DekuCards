@@ -4,7 +4,30 @@ import { DekuNode, DekuSet, FlashCard } from "@/models/models";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
-export async function getTree(): Promise<{nodes: DekuNode[], sets: DekuSet[], cards: FlashCard[]}> {
+export interface FlashCardDTO {
+  id: string; 
+  times_correct: number;
+  set_id: string; 
+  available: string;
+  created_at: string; 
+  enabled: boolean;
+  last_shown_at: string | null; 
+  front: string;
+  back: string;
+}
+
+
+function parseFlashCard(dto: FlashCardDTO): FlashCard {
+  return {
+    ...dto,
+    available: new Date(dto.available),
+    created_at: new Date(dto.created_at),
+    last_shown_at: dto.last_shown_at ? new Date(dto.last_shown_at) : null,
+  };
+}
+
+
+export async function getTree(): Promise<{nodes: Record<string, DekuNode>, sets: Record<string, DekuSet>, cards: Record<string, FlashCard[]>}> {
     const userId = useUserStore.getState().user?.id;
 
     console.log(userId)
@@ -21,7 +44,18 @@ export async function getTree(): Promise<{nodes: DekuNode[], sets: DekuSet[], ca
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      let data = await response.json();
+      
+      // TODO we need to sync db changes, we also need to parse the cards
+      // to the right object. 
+      const newCards :  Record<string, FlashCard[]> = data.cards.map(card => {
+        parseFlashCard(card)
+      })
+
+      data = {
+        ...data,
+        newCards: 
+      }
       console.log(data);
       return data;
     } catch (error) {

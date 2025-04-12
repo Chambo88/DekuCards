@@ -1,8 +1,8 @@
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 import uuid
 from sqlalchemy import select
 from sqlmodel import Session
-from schemas.tree_schema import DekuNodeBase, DekuSetBase
+from schemas.tree_schema import DekuNodeBase, DekuSetBase, CardBase
 from models import SetIdentity, DekuSet, DekuNode, UserNode, UserSet, Card, CardIdentity, UserCard, NodeVersion, PublicNode
 import logging
 
@@ -51,12 +51,10 @@ def tree_service(session: Session, user_id: uuid.UUID):
 
   set_results : List[Tuple[DekuSet, UserSet, SetIdentity]] = session.exec(stmt).all()
 
-  print
+  logger.info(set_results)
 
-  set_results_mapped = {}
-  for result in set_results:
-    if result[2].node_id not in set_results_mapped:
-      set_results_mapped[result[2].node_id] = [DekuSetBase(
+  set_results_mapped = {
+     result[0].id : DekuSetBase(
           id=result[0].id,
           title=result[0].title,
           desc=result[0].description,
@@ -66,38 +64,43 @@ def tree_service(session: Session, user_id: uuid.UUID):
           parent_set_id=result[0].parent_set_id,
           parent_node_id=result[2].node_id,
           enabled=result[1].enabled
-        )]
-    else:
-        set_results_mapped[result[2].node_id].append(DekuSetBase(
-          id=result[0].id,
-          title=result[0].title,
-          desc=result[0].description,
-          prerequisites=[],
-          relative_x=result[0].relative_x,
-          relative_y=result[0].relative_y,
-          parent_set_id=result[0].parent_set_id,
-          parent_node_id=result[2].node_id,
-          enabled=result[1].enabled
-        ))
+    )
+    for result in set_results
+  }
+
+  stmt = (
+    select(Card, UserCard, CardIdentity)
+    .join(CardIdentity, CardIdentity.id == UserCard.card_identity_id)
+    .join(UserCard, UserCard.card_identity_id == CardIdentity.id)
+    .join(UserNode, UserNode.id == UserCard.user_node_id)
+    .where(UserNode.node_version_id == Card.node_version_id)
+    .where(UserNode.user_id == user_id)
+  )
+
+  # I mapped setIds to card lists as order is important
+  # And the UI should keep card state and set state seperatley 
+  # As card updates should not rerender the graph (heavy cost)
+  sets_to_cards_mapped: Dict[uuid.UUID, List[Card]] = {result[0].id: [] for result in set_results}
+
+  card_results: List[Tuple[Card, UserCard, CardIdentity]] = session.exec(stmt).all()
+
+  for card in card_results:
+    sets_to_cards_mapped[card[2].set_id].append(CardBase(
+      id=card[0].id,
+      times_correct=card[1].times_correct,
+      set_id=card[2].set_id,
+      available_date=card[1].available_date,
+      created_at_date=card[0].created_at,
+      enabled=card[1].enabled,
+      last_shown_at_date=card[1].last_shown_at_date,
+      streak_start_date=card[1].streak_start_date
+    ))
 
 
-
-
-  # logger.error("\n3\n")
-  # stmt = (
-  #   select(Card, UserCard)
-  #   .join(CardIdentity, CardIdentity.id == UserCard.card_identity_id)
-  #   .join(Card, Card.card_identity == CardIdentity.id)
-  #   .join(UserNode, UserNode.id == UserCard.user_node_id)
-  #   .where(UserNode.node_version_id == Card.node_version_id)
-  # )
-  # logger.error("\n4\n")
-  # card_results = session.exec(stmt).all()
-  # logger.error("\n5\n")
   return {
     "sets" : set_results_mapped,
     "nodes" : node_results_mapped,
-    "cards" : [] # card_results
+    "cards" : sets_to_cards_mapped
   }
 
   

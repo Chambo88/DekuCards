@@ -60,7 +60,7 @@ class UserCard(SQLModel, table=True):
             server_default=text('gen_random_uuid()')
         )
     )
-    available: datetime = Field(
+    available_date: datetime = Field(
         sa_column=Column(
             DateTime(timezone=True),
             nullable=False,
@@ -74,11 +74,19 @@ class UserCard(SQLModel, table=True):
             server_default=text('true')
         )
     )
-    last_shown_at: Optional[datetime] = Field(
+    last_shown_at_date: Optional[datetime] = Field(
         default=None,
         sa_column=mapped_column(
             'last_shown_at',
             DateTime(True),
             server_default=text('now()')
+        )
+    )
+    streak_start_date: Optional[datetime] = Field(
+        default=None,
+        sa_column=mapped_column(
+            DateTime(timezone=True),
+            nullable=False,
+            server_default=text("now()")
         )
     )

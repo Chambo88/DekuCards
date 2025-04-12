@@ -1,11 +1,16 @@
 import { Edge, Node, Position } from "reactflow";
 import useCardSetStore from "@/stores/useTreeStore";
 
+
 export const generateElements = () => {
   let dekuNodes = useCardSetStore.getState().dekuNodes
   let dekuSets = useCardSetStore.getState().dekuSets
   const nodes: Node[] = [];
   const edges: Edge[] = [];
+
+  console.log("the nodes are")
+  console.log(JSON.stringify(dekuNodes));
+  console.log(JSON.stringify(dekuSets));
 
   // TODO Add grouping features etc.
 
@@ -32,6 +37,8 @@ export const generateElements = () => {
     //   });
     // }
   }
+
+  console.log(nodes)
 
   console.log("Generated elements");
 

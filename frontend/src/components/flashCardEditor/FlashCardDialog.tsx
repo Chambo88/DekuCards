@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { z } from "zod";
 import isEqual from "lodash/isEqual";
 import {
@@ -19,79 +19,60 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { SquareArrowRightIcon } from "lucide-react";
 import useCardEditService from "@/services/useSetService";
 import { useToast } from "@/hooks/use-toast";
+import useNodeStore from "@/stores/useTreeStore";
 
-const cardSchema = z.object({
+export const flashCardSchema = z.object({
   front: z.string().trim().min(1, "A card has an empty front."),
-  back: z.string().trim().min(1, "A card has an empty Back."),
+  back: z.string().trim().min(1, "A card has an empty back."),
 });
 
-const cardSetSchema = z.object({
+export const cardSetSchema = z.object({
   title: z.string().trim().min(1, "Title is empty."),
-  cards: z.array(cardSchema),
+});
+
+export const cardSetWithCardsSchema = z.object({
+  dekuSet: cardSetSchema,
+  cards: z.array(flashCardSchema),
 });
 
 export interface EditorProps {
-  cardSet: DekuSet;
-  setCardSet: React.Dispatch<React.SetStateAction<DekuSet>>;
+  dekuSetId: string;
 }
 
 interface FlashCardDialogProps {
-  initialData: DekuSet;
+  dekuSetId: string;
   close: () => void;
 }
 
 const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
-  initialData,
+  dekuSetId,
   close,
 }) => {
-  const [cardSet, setCardSet] = useState(initialData);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectDeleteOpen, setSelectDeleteOpen] = useState(false);
+  const selectedCards = useRef<Set<string>>(new Set());
   const { toast } = useToast();
+  const { deleteCards } = useNodeStore()
   // const { moveCards } = useCardEditService();
 
-  const selectedIds = new Set(
-    cardSet.cards.filter((card) => card.selected).map((card) => card.id),
-  );
-  const parseResult = cardSetSchema.safeParse(cardSet);
 
-  const handleSave = () => {
-    // TODO Handle save properly
+  const handlClose = () => {
+    const dekuSet: DekuSet = useNodeStore.getState().dekuSets[dekuSetId];
+    const cards: Record<string, FlashCard> = useNodeStore.getState().setToCards[dekuSetId];
+
+    const parseResult = cardSetWithCardsSchema.safeParse({
+      set: dekuSet,
+      cards: cards,
+    });
+
     if (!parseResult.success) {
       toast({
         variant: "destructive",
-        title: "Couldn't save! missing fields",
+        title: "Card set is missing fields!",
         description: `Reason: ${parseResult.error.errors[0].message}`,
       });
     } else {
-      console.log("handle save");
       close();
     }
-  };
-
-  const handleCancel = (event: any) => {
-    console.log("handle cancel {");
-    console.log(event);
-
-    if (
-      event.type === "focus" ||
-      event.target.closest("[data-dialog-content]")
-    ) {
-      return;
-    }
-    event.preventDefault();
-    if (isEqual(initialData, cardSet)) {
-      console.log("handle cancel");
-
-      close();
-    } else {
-      setCancelDialogOpen(true);
-    }
-  };
-
-  const confirmCancel = () => {
-    setCancelDialogOpen(false);
-    close();
   };
 
   const handleSelectMove = () => {
@@ -100,12 +81,7 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
   };
 
   const handleSelectDelete = () => {
-    setCardSet((prev) => {
-      return {
-        ...prev,
-        cards: prev.cards.filter((card) => !selectedIds.has(card.id)),
-      };
-    });
+    deleteCards(dekuSetId, selectedCards.current);
     setSelectDeleteOpen(false);
   };
 
@@ -119,21 +95,12 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
     >
       <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary">
         <DialogHeader>
-          <TitleEditor cardSet={cardSet} setCardSet={setCardSet} />
+          <TitleEditor dekuSetId={dekuSetId}/>
         </DialogHeader>
-        <DescriptionEditor cardSet={cardSet} setCardSet={setCardSet} />
-        <PrerequisiteEditor cardSet={cardSet} setCardSet={setCardSet} />
-        <CardEditor cardSet={cardSet} setCardSet={setCardSet} />
+        <DescriptionEditor dekuSetId={dekuSetId}/>
+        <PrerequisiteEditor dekuSetId={dekuSetId}/>
+        <CardEditor dekuSetId={dekuSetId} selectedCards={selectedCards} />
       </div>
-
-      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <CancelConfirmDialogContent
-          title="Discard Changes"
-          desc="Are you sure you want to discard all changes you've made?"
-          confirm={confirmCancel}
-          cancel={() => setCancelDialogOpen(false)}
-        />
-      </Dialog>
 
       <Dialog open={selectDeleteOpen} onOpenChange={setSelectDeleteOpen}>
         <CancelConfirmDialogContent
@@ -147,7 +114,7 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
       <DialogFooter className="border-t bg-background p-4 shadow-lg">
         <div className="flex w-full justify-between">
           <div>
-            {selectedIds.size > 0 && (
+            {selectedCards.current.size > 0 && (
               <>
                 <Button
                   onClick={handleSelectMove}
@@ -169,13 +136,9 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
           </div>
         </div>
         <Button
-          className={parseResult.success ? "" : "opacity-50"}
-          onClick={handleSave}
+          onClick={handlClose}
         >
-          Save changes
-        </Button>
-        <Button variant="secondary" onClick={handleCancel} className="ml-2">
-          Cancel
+          Close
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -183,3 +146,4 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
 };
 
 export default FlashCardDialog;
+

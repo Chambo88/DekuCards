@@ -17,6 +17,7 @@ const useCardEditService = () => {
   const updateSetState = useCardSetStore((state) => state.updateSet);
   const initNodeState = useCardSetStore((state) => state.initNodes);
   const initSetState = useCardSetStore((state) => state.initSets);
+  const initCardState = useCardSetStore((state) => state.initCards);
 
   const getCurrentState = () => {
     return useCardSetStore.getState().dekuNodes;
@@ -88,7 +89,7 @@ const useCardEditService = () => {
 
       initNodeState(tree.nodes)
       initSetState(tree.sets)
-      // initCards
+      initCardState(tree.cards)
 
       console.log(JSON.stringify(tree))
 
@@ -119,13 +120,13 @@ const useCardEditService = () => {
   //   return node;
   // };
 
-  const createSetAndNode = async (
+  const createSetAndNodeLocal = (
     nodeX: number,
     nodeY: number
   ) => {
     let newNode = createNodeModel({
-        position_x: nodeX,
-        position_y: nodeY,
+      position_x: nodeX,
+      position_y: nodeY,
     });
     
     let newSet: DekuSet = createSetModel({
@@ -137,6 +138,14 @@ const useCardEditService = () => {
     
     updateNodeState(newNode.id, newNode);
     updateSetState(newSet.id, newSet)
+
+    return {newNode, newSet}
+  }
+
+  const createSetAndNodeDB = async (
+    newSet: DekuSet,
+    newNode: DekuNode
+  ) => {
 
     try {
       await nodeAndSetPost(newNode, newSet);
@@ -214,7 +223,8 @@ const useCardEditService = () => {
     // moveCards, 
     // updateSet, 
     // createSet, 
-    createSetAndNode,
+    createSetAndNodeDB,
+    createSetAndNodeLocal,
     initTree,
     // deleteSet 
   };

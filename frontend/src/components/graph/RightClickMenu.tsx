@@ -31,15 +31,17 @@ const RightClickMenu: React.FC<RightClickMenuProps> = ({
   onClose,
 }) => {
   // const { deleteSet, createSet } = useCardEditService();
-    const { createSetAndNode } = useCardEditService();
+    const { createSetAndNodeDB, createSetAndNodeLocal } = useCardEditService();
 
   const handleCreateSetAndNode = async () => {
     try{
       console.log("handling create card set")
-      await createSetAndNode(menuCoords?.x ?? 0, menuCoords?.y ?? 0);
+      let {newNode, newSet} = createSetAndNodeLocal(menuCoords?.x ?? 0, menuCoords?.y ?? 0);
   
       refreshNodes();
       refreshEdges();
+
+      await createSetAndNodeDB(newSet,newNode);
 
     } catch (e) {
       // TODO proper error handling

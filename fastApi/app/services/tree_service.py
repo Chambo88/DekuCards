@@ -71,7 +71,6 @@ def tree_service(session: Session, user_id: uuid.UUID):
   stmt = (
     select(Card, UserCard, CardIdentity)
     .join(CardIdentity, CardIdentity.id == UserCard.card_identity_id)
-    .join(UserCard, UserCard.card_identity_id == CardIdentity.id)
     .join(UserNode, UserNode.id == UserCard.user_node_id)
     .where(UserNode.node_version_id == Card.node_version_id)
     .where(UserNode.user_id == user_id)
@@ -80,12 +79,12 @@ def tree_service(session: Session, user_id: uuid.UUID):
   # I mapped setIds to card lists as order is important
   # And the UI should keep card state and set state seperatley 
   # As card updates should not rerender the graph (heavy cost)
-  sets_to_cards_mapped: Dict[uuid.UUID, List[Card]] = {result[0].id: [] for result in set_results}
+  sets_to_cards_mapped: Dict[uuid.UUID, Dict[uuid.UUID, CardBase]] = {result[0].id: {} for result in set_results}
 
   card_results: List[Tuple[Card, UserCard, CardIdentity]] = session.exec(stmt).all()
 
   for card in card_results:
-    sets_to_cards_mapped[card[2].set_id].append(CardBase(
+    sets_to_cards_mapped[card[2].set_id][card[0].id] = CardBase(
       id=card[0].id,
       times_correct=card[1].times_correct,
       set_id=card[2].set_id,
@@ -94,7 +93,7 @@ def tree_service(session: Session, user_id: uuid.UUID):
       enabled=card[1].enabled,
       last_shown_at_date=card[1].last_shown_at_date,
       streak_start_date=card[1].streak_start_date
-    ))
+    )
 
 
   return {

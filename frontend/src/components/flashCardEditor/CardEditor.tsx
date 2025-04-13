@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, MutableRefObject, memo } from "react";
 import { Input } from "../ui/input";
 import { EditorProps } from "./FlashCardDialog";
 import { Textarea } from "../ui/textarea";
@@ -10,26 +10,48 @@ import { v4 as uuidv4 } from "uuid";
 import CardTags from "./CardTags";
 import JsonDialog from "./JsonDialog";
 import { MAX_FLASHCARD_CHAR } from "@/constants";
+import useNodeStore from "@/stores/useTreeStore";
 
-const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
+
+export interface CardEditorProps {
+  dekuSetId: string;
+  selectedCards: MutableRefObject<Set<string>>;
+}
+
+const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  // const cards: Record<string, FlashCard> = useNodeStore(
+  //   (state) => state.setToCards[dekuSetId] ?? []
+  // );
   const lastCardFrontRef = useRef<HTMLTextAreaElement>(null);
   const lastCardBackRef = useRef<HTMLTextAreaElement>(null);
-  const prevNumOfCards = useRef(cardSet.cards.length);
+  const cardIds = useNodeStore((state) =>
+    Object.keys(state.setToCards[dekuSetId] || {})
+  );
+  const prevNumOfCards = useRef(cardIds.length);
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
-  const filteredCards = useMemo(() => {
+
+  const filteredCardIds = useMemo(() => {
+    const cardRecord: Record<string, FlashCard> =
+      useNodeStore.getState().setToCards[dekuSetId] || {};
+  
+    let entries = Object.entries(cardRecord);
+  
+    entries.sort(([, cardA], [, cardB]) => {
+      return cardA.created_at.getTime() - cardB.created_at.getTime();
+    });
+  
     if (!searchTerm.trim()) {
-      return cardSet.cards.map((card : FlashCard, index : number) => ({ card, index }));
+      return entries.map(([cardId]) => cardId);
     }
-    const search = searchTerm.toLowerCase();
-    return cardSet.cards
-      .map((card : FlashCard, index : number) => ({ card, index }))
-      .filter(({ card }) =>
-        card.front.toLowerCase().includes(search) ||
-        card.back.toLowerCase().includes(search)
-      );
-  }, [searchTerm, cardSet.cards]);
+  
+    const filtered = entries.filter(([, card]) =>
+      card.front.includes(searchTerm) || card.back.includes(searchTerm)
+    );
+  
+    return filtered.map(([cardId]) => cardId);
+  }, [dekuSetId, searchTerm, cardIds.join(",")]);
 
   const handleCardChange = (
     index: number,
@@ -79,8 +101,8 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
       observer.observe(textareaRefs.current[textareaRefs.current.length - 1]!);
     }
 
-    prevNumOfCards.current = cardSet.cards.length;
-  }, [cardSet.cards.length]);
+    prevNumOfCards.current = cardIds.length;
+  }, [cardIds.length]);
 
   useEffect(() => {
     const handleTabPress = (event: KeyboardEvent) => {
@@ -234,4 +256,4 @@ const CardEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   );
 };
 
-export default CardEditor;
+export default memo(CardEditor);

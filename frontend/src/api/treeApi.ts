@@ -12,18 +12,24 @@ export interface FlashCardDTO {
   created_at: string; 
   enabled: boolean;
   last_shown_at: string | null; 
+  streak_start: string | null;
   front: string;
   back: string;
 }
 
 
-function parseFlashCard(dto: FlashCardDTO): FlashCard {
-  return {
-    ...dto,
-    available: new Date(dto.available),
-    created_at: new Date(dto.created_at),
-    last_shown_at: dto.last_shown_at ? new Date(dto.last_shown_at) : null,
-  };
+function parseFlashCard(dto : FlashCardDTO[]): FlashCard[] {
+  let parsedList : FlashCard[] = [];
+  for (let unParsedcard of dto ) {
+    parsedList.push({
+      ...unParsedcard,
+      available: new Date(unParsedcard.available),
+      created_at: new Date(unParsedcard.created_at),
+      last_shown_at: unParsedcard.last_shown_at ? new Date(unParsedcard.last_shown_at) : null,
+      streak_start: unParsedcard.streak_start ? new Date(unParsedcard.streak_start) : null,
+    })
+  }
+  return parsedList
 }
 
 
@@ -45,18 +51,15 @@ export async function getTree(): Promise<{nodes: Record<string, DekuNode>, sets:
       }
 
       let data = await response.json();
-      
-      // TODO we need to sync db changes, we also need to parse the cards
-      // to the right object. 
-      const newCards :  Record<string, FlashCard[]> = data.cards.map(card => {
-        parseFlashCard(card)
-      })
 
-      data = {
-        ...data,
-        newCards: 
+      // Create Date fields from strings
+      const newCards: Record<string, FlashCard[]> = {};
+      for (const [setId, dtoList] of Object.entries(data.cards as Record<string, FlashCardDTO[]>)) {
+        newCards[setId] = parseFlashCard(dtoList);
       }
-      console.log(data);
+
+      console.log(data); //TODO remove me
+
       return data;
     } catch (error) {
       console.error("Error fetching user tree data", error);
@@ -67,10 +70,11 @@ export async function getTree(): Promise<{nodes: Record<string, DekuNode>, sets:
 export async function nodeAndSetPost(node: DekuNode, set: DekuSet): Promise<any> {
     const userId = useUserStore.getState().user?.id;
 
-    console.log(JSON.stringify({
+    console.log(JSON.stringify({ // TODO remove me
       data : {node: node, set: set},
       user_id: userId,
     }))
+
     try {
       const response = await authFetch(`${API_BASE_URL}/api/setnode`, {
         method: "POST",

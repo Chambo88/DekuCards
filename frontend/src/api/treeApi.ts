@@ -18,18 +18,19 @@ export interface FlashCardDTO {
 }
 
 
-function parseFlashCard(dto : FlashCardDTO[]): FlashCard[] {
-  let parsedList : FlashCard[] = [];
-  for (let unParsedcard of dto ) {
-    parsedList.push({
+function parseFlashCard(dto : Record<string, FlashCard>): Record<string, FlashCard> {
+  let parsedCards : Record<string, FlashCard> = {};
+  for (let unParsedcard of Object.values(dto) ) {
+    parsedCards[unParsedcard.id] = {
       ...unParsedcard,
       available: new Date(unParsedcard.available),
       created_at: new Date(unParsedcard.created_at),
       last_shown_at: unParsedcard.last_shown_at ? new Date(unParsedcard.last_shown_at) : null,
       streak_start: unParsedcard.streak_start ? new Date(unParsedcard.streak_start) : null,
-    })
+      selected: false
+    }
   }
-  return parsedList
+  return parsedCards
 }
 
 
@@ -52,13 +53,15 @@ export async function getTree(): Promise<{nodes: Record<string, DekuNode>, sets:
 
       let data = await response.json();
 
+      console.log(data); //TODO remove me
+
       // Create Date fields from strings
-      const newCards: Record<string, FlashCard[]> = {};
-      for (const [setId, dtoList] of Object.entries(data.cards as Record<string, FlashCardDTO[]>)) {
+      const newCards: Record<string, Record<string, FlashCard>> = {};
+      for (const [setId, dtoList] of Object.entries(data.cards as Record<string, Record<string, FlashCard>>)) {
         newCards[setId] = parseFlashCard(dtoList);
       }
 
-      console.log(data); //TODO remove me
+
 
       return data;
     } catch (error) {

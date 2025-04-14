@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect, MutableRefObject, memo } f
 import { Input } from "../ui/input";
 import { EditorProps } from "./FlashCardDialog";
 import { Textarea } from "../ui/textarea";
-import { FlashCard } from "@/models/models";
+import { createFlashCard, FlashCard } from "@/models/models";
 import { Button } from "../ui/button";
 import { PlusCircleIcon } from "lucide-react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
@@ -11,6 +11,7 @@ import CardTags from "./CardTags";
 import JsonDialog from "./JsonDialog";
 import { MAX_FLASHCARD_CHAR } from "@/constants";
 import useNodeStore from "@/stores/useTreeStore";
+import CardEditorItem from "./CardEditorItem";
 
 
 export interface CardEditorProps {
@@ -20,9 +21,6 @@ export interface CardEditorProps {
 
 const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  // const cards: Record<string, FlashCard> = useNodeStore(
-  //   (state) => state.setToCards[dekuSetId] ?? []
-  // );
   const lastCardFrontRef = useRef<HTMLTextAreaElement>(null);
   const lastCardBackRef = useRef<HTMLTextAreaElement>(null);
   const cardIds = useNodeStore((state) =>
@@ -30,7 +28,6 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
   );
   const prevNumOfCards = useRef(cardIds.length);
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
-
 
   const filteredCardIds = useMemo(() => {
     const cardRecord: Record<string, FlashCard> =
@@ -53,86 +50,68 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
     return filtered.map(([cardId]) => cardId);
   }, [dekuSetId, searchTerm, cardIds.join(",")]);
 
-  const handleCardChange = (
-    index: number,
-    field: keyof FlashCard,
-    value: string,
-  ) => {
-    const updatedCards = [...cardSet.cards];
-    updatedCards[index] = { ...updatedCards[index], [field]: value };
-    setCardSet({ ...cardSet, cards: updatedCards });
-  };
 
   const handleAddCard = () => {
-    const newCard: FlashCard = {
-      front: "",
-      back: "",
-      enabled: true,
-      selected: false,
-      id: uuidv4(),
-    };
-    setCardSet((prevCardSet) => ({
-      ...prevCardSet,
-      cards: [...prevCardSet.cards, newCard],
-    }));
+    const newCard = createFlashCard({set_id: dekuSetId});
+    useNodeStore.getState().updateCard(dekuSetId, newCard.id, newCard);
   };
 
-  useEffect(() => {
-    if (
-      prevNumOfCards.current < cardSet.cards.length &&
-      textareaRefs.current[textareaRefs.current.length - 1]
-    ) {
-      textareaRefs.current[textareaRefs.current.length - 1]!.scrollIntoView({
-        behavior: "smooth",
-      });
+  // useEffect(() => {
+  //   if (
+  //     prevNumOfCards.current < cardSet.cards.length &&
+  //     textareaRefs.current[textareaRefs.current.length - 1]
+  //   ) {
+  //     textareaRefs.current[textareaRefs.current.length - 1]!.scrollIntoView({
+  //       behavior: "smooth",
+  //     });
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            lastCardFrontRef.current?.focus();
-            observer.disconnect();
-          }
-        },
-        {
-          threshold: 1.0,
-        },
-      );
+  //     const observer = new IntersectionObserver(
+  //       (entries) => {
+  //         if (entries[0].isIntersecting) {
+  //           lastCardFrontRef.current?.focus();
+  //           observer.disconnect();
+  //         }
+  //       },
+  //       {
+  //         threshold: 1.0,
+  //       },
+  //     );
 
-      observer.observe(textareaRefs.current[textareaRefs.current.length - 1]!);
-    }
+  //     observer.observe(textareaRefs.current[textareaRefs.current.length - 1]!);
+  //   }
 
-    prevNumOfCards.current = cardIds.length;
-  }, [cardIds.length]);
+  //   prevNumOfCards.current = cardIds.length;
+  // }, [cardIds.length]);
 
-  useEffect(() => {
-    const handleTabPress = (event: KeyboardEvent) => {
-      if (event.key === "tab") {
-      }
-      if (
-        event.key === "Tab" &&
-        textareaRefs.current[textareaRefs.current.length - 1] ===
-          document.activeElement
-      ) {
-        event.preventDefault();
-        handleAddCard();
-      }
-    };
+  // useEffect(() => {
+  //   const handleTabPress = (event: KeyboardEvent) => {
+  //     if (event.key === "tab") {
+  //     }
+  //     if (
+  //       event.key === "Tab" &&
+  //       textareaRefs.current[textareaRefs.current.length - 1] ===
+  //         document.activeElement
+  //     ) {
+  //       event.preventDefault();
+  //       handleAddCard();
+  //     }
+  //   };
 
-    if (textareaRefs.current[textareaRefs.current.length - 1]) {
-      textareaRefs.current[textareaRefs.current.length - 1]!.addEventListener(
-        "keydown",
-        handleTabPress,
-      );
-    }
+  //   if (textareaRefs.current[textareaRefs.current.length - 1]) {
+  //     textareaRefs.current[textareaRefs.current.length - 1]!.addEventListener(
+  //       "keydown",
+  //       handleTabPress,
+  //     );
+  //   }
 
-    return () => {
-      if (textareaRefs.current[textareaRefs.current.length - 1]) {
-        textareaRefs.current[
-          textareaRefs.current.length - 1
-        ]!.removeEventListener("keydown", handleTabPress);
-      }
-    };
-  }, [textareaRefs]);
+  //   return () => {
+  //     if (textareaRefs.current[textareaRefs.current.length - 1]) {
+  //       textareaRefs.current[
+  //         textareaRefs.current.length - 1
+  //       ]!.removeEventListener("keydown", handleTabPress);
+  //     }
+  //   };
+  // }, [textareaRefs]);
 
   return (
     <div>
@@ -146,7 +125,7 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
           className="mb-8 w-96"
         />
         <div>
-          <JsonDialog setCardSet={setCardSet} cardSet={cardSet}>
+          <JsonDialog dekuSetId={dekuSetId}>
             <Button variant="secondary" className="mr-2">
               <PlusCircleIcon className="mr-2 h-4 w-4" /> Add cards via AI/JSON
             </Button>
@@ -157,84 +136,9 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
           </Button>
         </div>
       </div>
-      {filteredCards.map(({ card, index }) => {
-        const isFrontFocused =
-          textareaRefs.current[index * 2] == document.activeElement;
-        const isBackFocused =
-          textareaRefs.current[index * 2 + 1] == document.activeElement;
-        const displayFrontEmpty =
-          !isFrontFocused && card.front.trim().length == 0;
-        const displayBackEmpty =
-          !isFrontFocused && !isBackFocused && card.back.trim().length == 0;
-
+      {filteredCardIds.map((cardId, index) => {
         return (
-          <div
-            key={index}
-            className={`pb-7 pt-3 ${card.selected ? "bg-popover" : card.enabled ? "" : "bg-code"} `}
-          >
-            <div className="mr-2 flex items-stretch space-x-4">
-              <div
-                className={`w-2 ${card.enabled ? "bg-green-500" : "bg-muted"}`}
-              ></div>
-
-              <div className="relative flex aspect-[3/2] w-1/2 flex-col">
-                <Textarea
-                  className={`h-full resize-none border ${displayFrontEmpty ? "border-destructive" : ""} p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
-                  value={card.front}
-                  onChange={(e) =>
-                    handleCardChange(index, "front", e.target.value)
-                  }
-                  placeholder="Front of the card"
-                  ref={(el) => (textareaRefs.current[index * 2] = el)}
-                  maxLength={MAX_FLASHCARD_CHAR}
-                />
-                {isFrontFocused && (
-                  <p className="absolute -bottom-6 right-1 mt-2 text-sm text-muted-foreground">
-                    {card.front.length} / {MAX_FLASHCARD_CHAR}
-                  </p>
-                )}
-
-                {displayFrontEmpty && (
-                  <p className="absolute -bottom-6 left-1 mt-2 text-sm text-red-500">
-                    Card needs content
-                  </p>
-                )}
-              </div>
-
-              <div className="relative flex aspect-[3/2] w-1/2 flex-col">
-                <Textarea
-                  className={`h-full resize-none border ${displayBackEmpty ? "border-destructive" : ""} p-2 scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary ${card.enabled ? "" : "text-muted-foreground"}`}
-                  value={card.back}
-                  onChange={(e) =>
-                    handleCardChange(index, "back", e.target.value)
-                  }
-                  placeholder="Back of the card"
-                  ref={(el) => (textareaRefs.current[index * 2 + 1] = el)}
-                  maxLength={MAX_FLASHCARD_CHAR}
-                />
-                {isBackFocused && (
-                  <p
-                    className="absolute -bottom-6 right-1 mt-2 text-sm text-muted-foreground"
-                    tabIndex={-1}
-                  >
-                    {card.back.length} / {MAX_FLASHCARD_CHAR}
-                  </p>
-                )}
-                {displayBackEmpty && (
-                  <p className="absolute -bottom-6 left-1 mt-2 text-sm text-red-500">
-                    Card needs content
-                  </p>
-                )}
-              </div>
-              <div className="mr-5 flex flex-col gap-2">
-                <CardTags
-                  setCardSet={setCardSet}
-                  cardSet={cardSet}
-                  card={card}
-                />
-              </div>
-            </div>
-          </div>
+          <CardEditorItem key={cardId} dekuSetId={dekuSetId} cardId={cardId} index={index} />
         );
       })}
       <div className="mb-10 mt-4 flex w-full justify-center">

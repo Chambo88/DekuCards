@@ -7,6 +7,7 @@ interface TreeState {
   setToCards: Record<string, Record<string, FlashCard>>;
   updateNode: (nodeId: string, updates: Partial<DekuNode>) => void;
   updateSet: (setId: string, updates: Partial<DekuSet>) => void;
+  addCards: (setId: string, newCards: Record<string, FlashCard>) => void;
   updateCard: (setId: string, cardId: string, updates: Partial<FlashCard>) => void;
   deleteCards: (setId: string, cardIds: Set<string>) => void;
   initSets: (sets: Record<string, DekuSet>) => void;
@@ -32,6 +33,17 @@ export const useNodeStore = create<TreeState>((set) => ({
       dekuSets: {
         ...state.dekuSets,
         [setId]: { ...state.dekuSets[setId], ...updates },
+      },
+    })),
+
+  addCards: (setId, newCards) =>
+    set((state) => ({
+      setToCards: {
+        ...state.setToCards,
+        [setId]: {
+          ...(state.setToCards[setId] || {}),
+          ...newCards,
+        },
       },
     })),
 

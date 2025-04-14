@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { DekuSet, FlashCard, createFlashCard } from "@/models/models";
+import { DekuSet, FlashCard, createFlashCard, createSetModel } from "@/models/models";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { Textarea } from "../ui/textarea";
 import {
@@ -26,11 +26,11 @@ import {
 } from "../ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { Copy } from "lucide-react";
+import useNodeStore from "@/stores/useTreeStore";
 
 interface JsonDialogProps {
   children: React.ReactNode;
-  cardSet: DekuSet;
-  setCardSet: React.Dispatch<React.SetStateAction<DekuSet>>;
+  dekuSetId: string;
 }
 
 type InputFlashCard = {
@@ -47,14 +47,17 @@ const flashCardsSchema = z.array(flashCardSchema).max(MAX_FLASHCARD_IN_NODE);
 
 const JsonDialog: React.FC<JsonDialogProps> = ({
   children,
-  cardSet,
-  setCardSet,
+  dekuSetId,
 }) => {
+  const dekuSet = useNodeStore((state) =>
+      state.dekuSets[dekuSetId]
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const { toast } = useToast();
-
+  const addCards = useNodeStore((state) => state.addCards);
+  
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSave = () => {
@@ -62,7 +65,9 @@ const JsonDialog: React.FC<JsonDialogProps> = ({
       const parsedData: InputFlashCard[] = JSON.parse(jsonInput);
       flashCardsSchema.parse(parsedData);
 
-      if (parsedData.length + cardSet.cards.length > MAX_FLASHCARD_IN_NODE) {
+      const cardsLength = Object.keys(useNodeStore.getState().setToCards[dekuSet.id]).length;
+
+      if (parsedData.length + cardsLength > MAX_FLASHCARD_IN_NODE) {
         toast({
           variant: "destructive",
           title: "Uh oh! Card limit reached",
@@ -71,14 +76,14 @@ const JsonDialog: React.FC<JsonDialogProps> = ({
         return;
       }
 
-      const newFlashCards: FlashCard[] = parsedData.map((val: InputFlashCard) =>
-        createFlashCard(val.front, val.back),
-      );
+      const newFlashCards: Record<string, FlashCard> = parsedData.reduce((acc, val: InputFlashCard) => {
+        const card = createFlashCard({ set_id: dekuSet.id, front: val.front, back: val.back });
+        acc[card.id] = card;
+        return acc;
+      }, {} as Record<string, FlashCard>);
+      
 
-      setCardSet((prevCardSet) => ({
-        ...prevCardSet,
-        cards: [...prevCardSet.cards, ...newFlashCards],
-      }));
+      addCards(dekuSet.id, newFlashCards);
 
       setIsOpen(false);
     } catch (error) {

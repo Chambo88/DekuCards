@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import CancelConfirmDialog from "../common/CancelConfirmDialog";
+import useNodeStore from "@/stores/useTreeStore";
 
 interface CardTagsProps extends EditorProps {
   card: FlashCard;
@@ -25,30 +26,20 @@ interface TagProps {
   tooltip: string;
 }
 
-const CardTags: React.FC<CardTagsProps> = ({ setCardSet, card }) => {
-  const handleSelect = () => {
-    setCardSet((prevItems) => ({
-      ...prevItems,
-      cards: prevItems.cards.map((item) =>
-        item.id === card.id ? { ...item, selected: !item.selected } : item,
-      ),
-    }));
-  };
+const CardTags: React.FC<CardTagsProps> = ({ card, dekuSetId }) => {
+  const updateCard = useNodeStore((state) => state.updateCard);
+  const deleteCards = useNodeStore((state) => state.deleteCards);
 
-  const handleDelete = () => {
-    setCardSet((prevItems) => ({
-      ...prevItems,
-      cards: prevItems.cards.filter((item) => item.id !== card.id),
-    }));
+  const handleSelect = () => {
+    updateCard(dekuSetId, card.id, { selected: !card.selected });
   };
 
   const handleEnable = () => {
-    setCardSet((prevItems) => ({
-      ...prevItems,
-      cards: prevItems.cards.map((item) =>
-        item.id === card.id ? { ...item, enabled: !item.enabled } : item,
-      ),
-    }));
+    updateCard(dekuSetId, card.id, { enabled: !card.enabled });
+  };
+
+  const handleDelete = () => {
+    deleteCards(dekuSetId, new Set([card.id]));
   };
 
   return (

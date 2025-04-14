@@ -14,20 +14,36 @@ export interface FlashCard {
   streak_start: Date | null;
   front: string;
   back: string;
+  selected: boolean;
 }
 
-export const createFlashCard = (
-  id: string = uuidv4(),
-  times_correct: number = 0,
-  set_id: string,
-  available: Date = new Date(),
-  created_at: Date = new Date(),
-  enabled: boolean = true,
-  last_shown_at: Date | null = null,
-  streak_start: Date | null = null,
-  front: string = "",
-  back: string = "",
-): FlashCard => ({
+export interface FlashCardParams {
+  id?: string;
+  times_correct?: number;
+  set_id: string;
+  available?: Date;
+  created_at?: Date;
+  enabled?: boolean;
+  last_shown_at?: Date | null;
+  streak_start?: Date | null;
+  front?: string;
+  back?: string;
+  selected?: boolean;
+}
+
+export const createFlashCard = ({
+  id = uuidv4(),
+  times_correct = 0,
+  set_id,
+  available = new Date(),
+  created_at = new Date(),
+  enabled = true,
+  last_shown_at = null,
+  streak_start = null,
+  front = "",
+  back = "",
+  selected = false
+}: FlashCardParams) : FlashCard => ({
   id,
   times_correct,
   set_id,
@@ -38,6 +54,7 @@ export const createFlashCard = (
   streak_start,
   front,
   back,
+  selected
 });
 
 export interface DekuSet {

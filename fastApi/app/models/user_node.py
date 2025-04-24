@@ -9,10 +9,10 @@ class UserNode(SQLModel, table=True):
     __tablename__ = 'user_node'
     __table_args__ = (
         PrimaryKeyConstraint('id', name='user_node_pkey'),
-        ForeignKeyConstraint(['user_id'], ['deku_user.id'], name='fk_user_node_user_id'),
-        ForeignKeyConstraint(['node_id'], ['node.id'], name='fk_user_node_node_id'),
+        ForeignKeyConstraint(['user_id'], ['deku_user.id'], name='fk_user_node_user_id', ondelete='CASCADE'),
+        ForeignKeyConstraint(['node_id'], ['node.id'], name='fk_user_node_node_id', ondelete='CASCADE'),
         ForeignKeyConstraint(['parent_node_id'], ['node.id'], name='fk_user_node_parent_node_id'),
-        ForeignKeyConstraint(['node_version_id'], ['node_version.id'], name='fk_user_node_node_version_id'),
+        ForeignKeyConstraint(['node_version_id'], ['node_version.id'], name='fk_user_node_node_version_id', ondelete='CASCADE'),
     )
 
     id: uuid.UUID = Field(

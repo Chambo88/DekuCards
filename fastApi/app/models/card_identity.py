@@ -9,7 +9,7 @@ class CardIdentity(SQLModel, table=True):
     __tablename__ = 'card_identity'
     __table_args__ = (
         PrimaryKeyConstraint('id', name='card_identity_pkey'),
-        ForeignKeyConstraint(['set_id'], ['set.id'], name='fk_card_identity_set_id'),
+        ForeignKeyConstraint(['set_identity_id'], ['set_identity.id'], name='fk_card_identity_set_identitiy_id',  ondelete='CASCADE'),
     )
 
     id: uuid.UUID = Field(
@@ -20,7 +20,7 @@ class CardIdentity(SQLModel, table=True):
             server_default=text('gen_random_uuid()')
         )
     )
-    set_id: uuid.UUID = Field(
+    set_identity_id: uuid.UUID = Field(
         sa_column=mapped_column(
             PG_UUID(as_uuid=True),
             nullable=False,

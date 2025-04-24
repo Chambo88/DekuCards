@@ -3,13 +3,21 @@ import { PrerequisitesForm } from "./PrerequisitesForm";
 import { Prerequisite } from "@/models/models";
 import { EditorProps } from "./FlashCardDialog";
 import EditIcon from "../common/EditIcon";
+import useTreeStore from "@/stores/useTreeStore";
 
-const PrerequisiteEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
+const PrerequisiteEditor: React.FC<EditorProps> = ({ dekuSetId }) => {
+  const dekuSet = useTreeStore((state) =>
+      state.dekuSets[dekuSetId]
+  );
+  if (!dekuSet) {
+    return <div>Loading prerequisites…</div>;
+  }
   const [isPrerequisitesEditable, setIsPrerequisitesEditable] = useState(false);
   //TODO Make prereq hyperlinks clickable
 
   const handleSave = (data: Prerequisite[]) => {
-    setCardSet({ ...cardSet, prerequisites: data });
+    // TODO use Service
+    //setCardSet({ ...cardSet, prerequisites: data });
     setIsPrerequisitesEditable(false);
   };
 
@@ -23,7 +31,7 @@ const PrerequisiteEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
         <div className="mx-5 mb-4 p-4">
           <h3 className="font-semibold">Prerequisites</h3>
           <PrerequisitesForm
-            initialData={cardSet.prerequisites}
+            initialData={dekuSet.prerequisites}
             onCancel={handleCancel}
             onSave={handleSave}
           />
@@ -35,7 +43,7 @@ const PrerequisiteEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
             onClick={() => setIsPrerequisitesEditable(true)}
           >
             <h3 className="mb-4 font-semibold">Prerequisites</h3>
-            {cardSet.prerequisites.length == 0 ? (
+            {dekuSet.prerequisites.length == 0 ? (
               <div className="ml-3 text-sm italic text-muted-foreground">
                 {"None"}
               </div>
@@ -43,7 +51,7 @@ const PrerequisiteEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
               <></>
             )}
             <ul className="ml-3 list-disc pl-5">
-              {cardSet.prerequisites.map((prereq, index) => (
+              {dekuSet.prerequisites.map((prereq, index) => (
                 <li key={index} className="text-sm">
                   {prereq.name}
                 </li>

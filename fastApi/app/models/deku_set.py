@@ -14,7 +14,8 @@ class DekuSet(SQLModel, table=True):
         ForeignKeyConstraint(
             ['set_identity_id'],
             ['set_identity.id'],
-            name='fk_deku_set_set_identity_id'
+            name='fk_deku_set_set_identity_id', 
+            ondelete='CASCADE'
         ),
         ForeignKeyConstraint(
             ['parent_set_id'],
@@ -24,7 +25,8 @@ class DekuSet(SQLModel, table=True):
         ForeignKeyConstraint(
             ['node_version_id'],
             ['node_version.id'],
-            name='fk_deku_set_node_version_id'
+            name='fk_deku_set_node_version_id', 
+            ondelete='CASCADE'
         ),
     )
 

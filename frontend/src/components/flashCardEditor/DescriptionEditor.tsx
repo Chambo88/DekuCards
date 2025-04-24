@@ -4,8 +4,12 @@ import { EditorProps } from "./FlashCardDialog";
 import EditIcon from "../common/EditIcon";
 import { Button } from "../ui/button";
 import { CheckIcon } from "@heroicons/react/24/outline";
+import useTreeStore from "@/stores/useTreeStore";
 
-const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
+const DescriptionEditor: React.FC<EditorProps> = ({ dekuSetId }) => {
+  const dekuSet = useTreeStore((state) =>
+      state.dekuSets[dekuSetId]
+  );
   const [isDescEditable, setIsDescEditable] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -22,7 +26,9 @@ const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
   const handleDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setCardSet({ ...cardSet, desc: e.target.value });
+    // setCardSet({ ...cardSet, desc: e.target.value });
+    //TODO update description
+    
   };
 
   return (
@@ -33,7 +39,7 @@ const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
             ref={textareaRef}
             className="resize-none overflow-hidden"
             style={{ overflowWrap: "anywhere" }}
-            value={cardSet.desc ?? ""}
+            value={dekuSet.desc ?? ""}
             onChange={(e) => {
               handleDescriptionChange(e);
               const textarea = e.target;
@@ -46,7 +52,7 @@ const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
             maxLength={1024}
           />
           <p className="mt-2 text-sm text-muted-foreground">
-            {cardSet.desc?.length ?? 0} / 1024
+            {dekuSet.desc?.length ?? 0} / 1024
           </p>
           <Button
             className="absolute bottom-7 right-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-none rounded-tl-lg rounded-tr-lg bg-secondary p-0 text-secondary-foreground hover:bg-secondary/80"
@@ -61,12 +67,12 @@ const DescriptionEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
             className="mx-4 cursor-text whitespace-pre-line text-wrap break-words p-4 hover:bg-muted"
             onClick={() => setIsDescEditable(true)}
           >
-            {cardSet.desc == undefined || cardSet.desc.trim().length == 0 ? (
+            {dekuSet.desc == undefined || dekuSet.desc.trim().length == 0 ? (
               <div className="ml-3 text-sm italic text-muted-foreground">
                 {"Description.."}
               </div>
             ) : (
-              <p className="pl-4 pr-7 text-sm">{cardSet.desc}</p>
+              <p className="pl-4 pr-7 text-sm">{dekuSet.desc}</p>
             )}
           </div>
         </EditIcon>

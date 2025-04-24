@@ -2,7 +2,9 @@ from typing import Dict, List, Tuple
 import uuid
 from sqlalchemy import select
 from sqlmodel import Session
-from schemas.tree_schema import DekuNodeBase, DekuSetBase, CardBase
+from schemas.node_schema import DekuNodeBase
+from schemas.set_schema import DekuSetBase
+from schemas.card_schema import CardBase
 from models import SetIdentity, DekuSet, DekuNode, UserNode, UserSet, Card, CardIdentity, UserCard, NodeVersion, PublicNode
 import logging
 
@@ -76,9 +78,6 @@ def tree_service(session: Session, user_id: uuid.UUID):
     .where(UserNode.user_id == user_id)
   )
 
-  # I mapped setIds to card lists as order is important
-  # And the UI should keep card state and set state seperatley 
-  # As card updates should not rerender the graph (heavy cost)
   sets_to_cards_mapped: Dict[uuid.UUID, Dict[uuid.UUID, CardBase]] = {result[0].id: {} for result in set_results}
 
   card_results: List[Tuple[Card, UserCard, CardIdentity]] = session.exec(stmt).all()

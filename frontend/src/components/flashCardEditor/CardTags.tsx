@@ -14,7 +14,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import CancelConfirmDialog from "../common/CancelConfirmDialog";
-import useNodeStore from "@/stores/useTreeStore";
+import useTreeStore from "@/stores/useTreeStore";
 
 interface CardTagsProps extends EditorProps {
   card: FlashCard;
@@ -27,8 +27,8 @@ interface TagProps {
 }
 
 const CardTags: React.FC<CardTagsProps> = ({ card, dekuSetId }) => {
-  const updateCard = useNodeStore((state) => state.updateCard);
-  const deleteCards = useNodeStore((state) => state.deleteCards);
+  const updateCard = useTreeStore((state) => state.updateCard);
+  const deleteCards = useTreeStore((state) => state.deleteCards);
 
   const handleSelect = () => {
     updateCard(dekuSetId, card.id, { selected: !card.selected });

@@ -26,7 +26,7 @@ import {
 } from "../ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { Copy } from "lucide-react";
-import useNodeStore from "@/stores/useTreeStore";
+import useTreeStore from "@/stores/useTreeStore";
 
 interface JsonDialogProps {
   children: React.ReactNode;
@@ -49,14 +49,14 @@ const JsonDialog: React.FC<JsonDialogProps> = ({
   children,
   dekuSetId,
 }) => {
-  const dekuSet = useNodeStore((state) =>
+  const dekuSet = useTreeStore((state) =>
       state.dekuSets[dekuSetId]
   );
   const [isOpen, setIsOpen] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const { toast } = useToast();
-  const addCards = useNodeStore((state) => state.addCards);
+  const addCards = useTreeStore((state) => state.addCards);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -65,7 +65,7 @@ const JsonDialog: React.FC<JsonDialogProps> = ({
       const parsedData: InputFlashCard[] = JSON.parse(jsonInput);
       flashCardsSchema.parse(parsedData);
 
-      const cardsLength = Object.keys(useNodeStore.getState().setToCards[dekuSet.id]).length;
+      const cardsLength = Object.keys(useTreeStore.getState().setToCards[dekuSet.id]).length;
 
       if (parsedData.length + cardsLength > MAX_FLASHCARD_IN_NODE) {
         toast({

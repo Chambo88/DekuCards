@@ -3,7 +3,7 @@ import { Textarea } from "../ui/textarea";
 import { createFlashCard, FlashCard } from "@/models/models";
 import { MAX_FLASHCARD_CHAR } from "@/constants";
 import CardTags from "./CardTags";
-import useNodeStore from "@/stores/useTreeStore";
+import useTreeStore from "@/stores/useTreeStore";
 
 export interface CardEditorItemProps {
   dekuSetId: string;
@@ -12,10 +12,10 @@ export interface CardEditorItemProps {
 }
 
 const CardEditorItem: React.FC<CardEditorItemProps> = ({ dekuSetId, cardId }) => {
-  const card = useNodeStore((state) =>
+  const card = useTreeStore((state) =>
       state.setToCards[dekuSetId][cardId] || createFlashCard({set_id: dekuSetId})
   );
-  const updateCard = useNodeStore((state) => state.updateCard);
+  const updateCard = useTreeStore((state) => state.updateCard);
   const frontRef = useRef<HTMLTextAreaElement>(null);
   const backRef = useRef<HTMLTextAreaElement>(null);
 

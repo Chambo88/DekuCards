@@ -9,7 +9,7 @@ class SetIdentity(SQLModel, table=True):
     __tablename__ = 'set_identity'
     __table_args__ = (
         PrimaryKeyConstraint('id', name='set_identity_pkey'),
-        ForeignKeyConstraint(['node_id'], ['node.id'], name='fk_set_identity_node_id'),
+        ForeignKeyConstraint(['node_id'], ['node.id'], name='fk_set_identity_node_id', ondelete='CASCADE'),
     )
 
     id: uuid.UUID = Field(

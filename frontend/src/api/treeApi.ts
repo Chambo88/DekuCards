@@ -34,7 +34,7 @@ function parseFlashCard(dto : Record<string, FlashCard>): Record<string, FlashCa
 }
 
 
-export async function getTree(): Promise<{nodes: Record<string, DekuNode>, sets: Record<string, DekuSet>, cards: Record<string, FlashCard[]>}> {
+export async function getTree(): Promise<{nodes: Record<string, DekuNode>, sets: Record<string, DekuSet>, cards: Record<string, Record<string, FlashCard>>}> {
     const userId = useUserStore.getState().user?.id;
 
     console.log(userId)
@@ -70,32 +70,3 @@ export async function getTree(): Promise<{nodes: Record<string, DekuNode>, sets:
     }
   }
 
-export async function nodeAndSetPost(node: DekuNode, set: DekuSet): Promise<any> {
-    const userId = useUserStore.getState().user?.id;
-
-    console.log(JSON.stringify({ // TODO remove me
-      data : {node: node, set: set},
-      user_id: userId,
-    }))
-
-    try {
-      const response = await authFetch(`${API_BASE_URL}/api/setnode`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data : {node: node, set: set},
-          user_id: userId,
-        }),
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}. Body: ${errorText}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error("Error in tree service:", error);
-      throw error;
-    }
-  }

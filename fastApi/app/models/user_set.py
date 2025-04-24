@@ -10,9 +10,9 @@ class UserSet(SQLModel, table=True):
     __tablename__ = 'user_set'
     __table_args__ = (
         PrimaryKeyConstraint('id', name='user_set_pkey'),
-        ForeignKeyConstraint(['user_id'], ['deku_user.id'], name='fk_user_set_user_id'),
+        ForeignKeyConstraint(['user_id'], ['deku_user.id'], name='fk_user_set_user_id', ondelete='CASCADE'),
         ForeignKeyConstraint(['set_identity_id'], ['set_identity.id'], name='fk_user_set_set_identity_id'),
-        ForeignKeyConstraint(['user_node_id'], ['user_node.id'], name='fk_user_set_user_node_id'),
+        ForeignKeyConstraint(['user_node_id'], ['user_node.id'], name='fk_user_set_user_node_id', ondelete='CASCADE'),
         {'comment': 'Table to describe relationship between users and cardSets.'}
     )
 

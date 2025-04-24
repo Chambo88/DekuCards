@@ -13,12 +13,14 @@ class Card(SQLModel, table=True):
         ForeignKeyConstraint(
             ['card_identity'],
             ['card_identity.id'],
-            name='fk_card_card_identity'
+            name='fk_card_card_identity',
+            ondelete='CASCADE'
         ),
         ForeignKeyConstraint(
             ['node_version_id'],
             ['node_version.id'],
-            name='fk_card_node_version_id'
+            name='fk_card_node_version_id',
+            ondelete='CASCADE'
         ),
     )
 

@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from sqlmodel import SQLModel
-from api import cardset
-from api import tree
-from api import node
+from fastApi.app.api import cardApi
+from fastApi.app.api import treeApi
+from fastApi.app.api import dekuNodeApi
 from core.config import settings
 from core.database import engine
 from contextlib import asynccontextmanager
@@ -24,9 +24,9 @@ app = FastAPI(lifespan=lifespan, title=settings.PROJECT_NAME)
 
 setup_cors(app)
 
-app.include_router(cardset.router, prefix="/api")
-app.include_router(tree.router, prefix="/api")
-app.include_router(node.router, prefix="/api")
+app.include_router(cardApi.router, prefix="/api")
+app.include_router(treeApi.router, prefix="/api")
+app.include_router(dekuNodeApi.router, prefix="/api")
 
 for route in app.routes:
     print(route.path)

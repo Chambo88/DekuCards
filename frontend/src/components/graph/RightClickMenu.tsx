@@ -71,7 +71,7 @@ const RightClickMenu: React.FC<RightClickMenuProps> = ({
         <Dialog open={isEditorOpen}>
           <FlashCardDialog
             key={clickedNode.data.cardSet.id}
-            initialData={clickedNode.data.cardSet}
+            dekuSetId={clickedNode.data.cardSet.id}
             close={() => {
               setIsEditorOpen(false);
             }}

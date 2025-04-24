@@ -14,8 +14,12 @@ class UserCard(SQLModel, table=True):
         ForeignKeyConstraint(
             ['user_node_id'],
             ['user_node.id'],
-            name='fk_user_card_user_node_id'
+            name='fk_user_card_user_node_id',
+            ondelete='CASCADE'
         ),
+        ForeignKeyConstraint(['user_id'], ['deku_user.id'], name='fk_user_card_user_id', ondelete='CASCADE'),
+        ForeignKeyConstraint(['card_identity_id'], ['card_identity.id'], name='fk_user_card_card_identity_id'),
+        ForeignKeyConstraint(['user_set_id'], ['user_set.id'], name='fk_user_card_user_set_id', ondelete='CASCADE'),
     )
 
     id: uuid.UUID = Field(

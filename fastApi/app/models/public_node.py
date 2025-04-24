@@ -19,7 +19,8 @@ class PublicNode(SQLModel, table=True):
         ForeignKeyConstraint(
             ['node_id'],
             ['node.id'],
-            name='fk_public_node_node_id'
+            name='fk_public_node_node_id',
+            ondelete='CASCADE'
         ),
     )
 

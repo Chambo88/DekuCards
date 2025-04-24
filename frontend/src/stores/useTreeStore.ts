@@ -15,7 +15,7 @@ interface TreeState {
   initCards: (cards: Record<string, Record<string, FlashCard>>) => void;
 }
 
-export const useNodeStore = create<TreeState>((set) => ({
+export const useTreeStore = create<TreeState>((set) => ({
   dekuNodes: {},
   dekuSets: {},
   setToCards: {},
@@ -96,4 +96,4 @@ export const useNodeStore = create<TreeState>((set) => ({
     })),
 }));
 
-export default useNodeStore;
+export default useTreeStore;

@@ -19,7 +19,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { SquareArrowRightIcon } from "lucide-react";
 import useCardEditService from "@/services/useSetService";
 import { useToast } from "@/hooks/use-toast";
-import useNodeStore from "@/stores/useTreeStore";
+import useTreeStore from "@/stores/useTreeStore";
 
 export const flashCardSchema = z.object({
   front: z.string().trim().min(1, "A card has an empty front."),
@@ -51,13 +51,13 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
   const [selectDeleteOpen, setSelectDeleteOpen] = useState(false);
   const selectedCards = useRef<Set<string>>(new Set());
   const { toast } = useToast();
-  const { deleteCards } = useNodeStore()
+  const { deleteCards } = useTreeStore()
   // const { moveCards } = useCardEditService();
 
 
   const handlClose = () => {
-    const dekuSet: DekuSet = useNodeStore.getState().dekuSets[dekuSetId];
-    const cards: Record<string, FlashCard> = useNodeStore.getState().setToCards[dekuSetId];
+    const dekuSet: DekuSet = useTreeStore.getState().dekuSets[dekuSetId];
+    const cards: Record<string, FlashCard> = useTreeStore.getState().setToCards[dekuSetId];
 
     const parseResult = cardSetWithCardsSchema.safeParse({
       set: dekuSet,

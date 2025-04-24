@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, MutableRefObject, memo } from "react";
+import { useShallow } from 'zustand/react/shallow'
 import { Input } from "../ui/input";
 import { EditorProps } from "./FlashCardDialog";
 import { Textarea } from "../ui/textarea";
@@ -10,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import CardTags from "./CardTags";
 import JsonDialog from "./JsonDialog";
 import { MAX_FLASHCARD_CHAR } from "@/constants";
-import useNodeStore from "@/stores/useTreeStore";
+import useTreeStore from "@/stores/useTreeStore";
 import CardEditorItem from "./CardEditorItem";
 
 
@@ -23,15 +24,15 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
   const [searchTerm, setSearchTerm] = useState("");
   const lastCardFrontRef = useRef<HTMLTextAreaElement>(null);
   const lastCardBackRef = useRef<HTMLTextAreaElement>(null);
-  const cardIds = useNodeStore((state) =>
+  const cardIds = useTreeStore(useShallow(state => 
     Object.keys(state.setToCards[dekuSetId] || {})
-  );
+  ));
   const prevNumOfCards = useRef(cardIds.length);
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
   const filteredCardIds = useMemo(() => {
     const cardRecord: Record<string, FlashCard> =
-      useNodeStore.getState().setToCards[dekuSetId] || {};
+      useTreeStore.getState().setToCards[dekuSetId] || {};
   
     let entries = Object.entries(cardRecord);
   
@@ -53,7 +54,7 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
 
   const handleAddCard = () => {
     const newCard = createFlashCard({set_id: dekuSetId});
-    useNodeStore.getState().updateCard(dekuSetId, newCard.id, newCard);
+    useTreeStore.getState().updateCard(dekuSetId, newCard.id, newCard);
   };
 
   // useEffect(() => {
@@ -119,7 +120,7 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
       <div className="mx-6 flex flex-row justify-between">
         <Input
           placeholder="Filter cards"
-          icon={<MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />}
+          icon={<MagnifyingGlassIcon className="h-4 w-4"/>}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="mb-8 w-96"

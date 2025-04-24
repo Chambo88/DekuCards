@@ -1,6 +1,6 @@
-import { nodePost } from "@/api/nodeApi";
-import { setPost } from "@/api/setApi";
-import { getTree, nodeAndSetPost } from "@/api/treeApi"
+import { nodeAndSetPost } from "@/api/nodeApi";
+import { setInfoPut, setPost } from "@/api/setApi";
+import { getTree } from "@/api/treeApi"
 import { useToast } from "@/hooks/use-toast";
 import {
   createSetModel,
@@ -9,18 +9,18 @@ import {
   DekuSet,
   DekuNode,
 } from "@/models/models";
-import useCardSetStore from "@/stores/useTreeStore";
+import useTreeStore from "@/stores/useTreeStore";
 
 const useCardEditService = () => {
   const { toast } = useToast();
-  const updateNodeState = useCardSetStore((state) => state.updateNode);
-  const updateSetState = useCardSetStore((state) => state.updateSet);
-  const initNodeState = useCardSetStore((state) => state.initNodes);
-  const initSetState = useCardSetStore((state) => state.initSets);
-  const initCardState = useCardSetStore((state) => state.initCards);
+  const updateNodeState = useTreeStore((state) => state.updateNode);
+  const updateSetState = useTreeStore((state) => state.updateSet);
+  const initNodeState = useTreeStore((state) => state.initNodes);
+  const initSetState = useTreeStore((state) => state.initSets);
+  const initCardState = useTreeStore((state) => state.initCards);
 
   const getCurrentState = () => {
-    return useCardSetStore.getState().dekuNodes;
+    return useTreeStore.getState().dekuNodes;
   };
 
   // const moveCards = (
@@ -120,6 +120,23 @@ const useCardEditService = () => {
   //   return node;
   // };
 
+  const updateDekuSetDB = async (
+    dekuSetId: string
+  ) => {
+    try {
+      let dekuSet = useTreeStore.getState().dekuSets[dekuSetId]
+      await setInfoPut(dekuSet);
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          "There was an error creating this set. Set will only exist locally. Use the updates tab to try to sync this set with the database again.",
+      });
+      throw e;
+    }
+  }
+
   const createSetAndNodeLocal = (
     nodeX: number,
     nodeY: number
@@ -150,7 +167,6 @@ const useCardEditService = () => {
     try {
       await nodeAndSetPost(newNode, newSet);
     } catch (e) {
-      console.error("Error in createSetNode service:", e);
       toast({
         variant: "destructive",
         title: "Error",

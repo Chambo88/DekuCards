@@ -5,21 +5,26 @@ import { EditorProps } from "./FlashCardDialog";
 import EditIcon from "../common/EditIcon";
 import { Button } from "../ui/button";
 import { CheckIcon } from "@heroicons/react/24/outline";
+import useTreeStore from "@/stores/useTreeStore";
 
-const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
+const TitleEditor: React.FC<EditorProps> = ({ dekuSetId }) => {
+  const dekuSet = useTreeStore((state) =>
+      state.dekuSets[dekuSetId]
+  );
   const [isTitleEditable, setIsTitleEditable] = useState(false);
 
   //TODO Add validation for when saving
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCardSet({ ...cardSet, title: e.target.value });
+    // setCardSet({ ...cardSet, title: e.target.value });
+
   };
 
   return isTitleEditable ? (
     <div className="relative mx-8 mt-11">
       <Input
         className="mb-2 px-4 text-xl font-bold"
-        value={cardSet.title}
+        value={dekuSet.title}
         onChange={handleTitleChange}
         onBlur={() => setIsTitleEditable(false)}
         onFocus={(e) => e.target.select()}
@@ -45,7 +50,7 @@ const TitleEditor: React.FC<EditorProps> = ({ cardSet, setCardSet }) => {
           onClick={() => setIsTitleEditable(true)}
           className="mx-5 cursor-text p-4 text-xl font-bold hover:bg-muted"
         >
-          {cardSet.title || "Untitled"}
+          {dekuSet.title || "Untitled"}
         </DialogTitle>
       </EditIcon>
     </div>

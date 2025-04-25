@@ -13,19 +13,6 @@ def create_deku_node (
         parent_node_id: uuid.UUID = None
     ):
 
-    node_version = NodeVersion(
-        version_display_num = "1.0",
-        version_name = None,
-        notes = None,
-        version_seq_num = 1,
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc)
-    )
-
-    session.add(node_version)
-    session.flush()
-    session.refresh(node_version)
-
     new_node = DekuNode(
         id = deku_node.id,
         created_by = user_id,
@@ -38,6 +25,22 @@ def create_deku_node (
     session.add(new_node)
     session.flush()
     session.refresh(new_node)
+
+    
+    node_version = NodeVersion(
+        version_display_num = "1.0",
+        node_id = deku_node.id,
+        version_name = None,
+        notes = None,
+        version_seq_num = 1,
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
+    )
+
+    session.add(node_version)
+    session.flush()
+    session.refresh(node_version)
+
     
     new_user_node = UserNode(
         user_id = user_id,

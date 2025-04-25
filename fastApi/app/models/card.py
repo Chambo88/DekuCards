@@ -22,6 +22,12 @@ class Card(SQLModel, table=True):
             name='fk_card_node_version_id',
             ondelete='CASCADE'
         ),
+        ForeignKeyConstraint(
+            ['parent_set_id'],
+            ['set.id'],
+            name='fk_card_set_id',
+            ondelete='CASCADE'
+        ),
     )
 
     id: uuid.UUID = Field(
@@ -37,6 +43,13 @@ class Card(SQLModel, table=True):
     )
     back: str = Field(
         sa_column=mapped_column(Text, nullable=False)
+    )
+    parent_set_id: uuid.UUID = Field(
+        sa_column=mapped_column(
+            PG_UUID(as_uuid=True),
+            nullable=False,
+            server_default=text('gen_random_uuid()')
+        )
     )
     card_identity: uuid.UUID = Field(
         sa_column=mapped_column(

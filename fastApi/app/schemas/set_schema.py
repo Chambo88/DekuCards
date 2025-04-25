@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class Prerequisite(BaseModel):
     name: str
@@ -9,8 +9,8 @@ class Prerequisite(BaseModel):
 class DekuSetBase(BaseModel):
     id: uuid.UUID
     title: str
-    desc: Optional[str] = None
-    prerequisites: Optional[List[Prerequisite]] = None
+    description: Optional[str] = None
+    prerequisites: List[Prerequisite] = Field(default_factory=list)
     relative_x: float
     relative_y: float
     parent_set_id: Optional[uuid.UUID] = None

@@ -239,6 +239,7 @@ const useCardEditService = () => {
     // moveCards, 
     // updateSet, 
     // createSet, 
+    updateDekuSetDB,
     createSetAndNodeDB,
     createSetAndNodeLocal,
     initTree,

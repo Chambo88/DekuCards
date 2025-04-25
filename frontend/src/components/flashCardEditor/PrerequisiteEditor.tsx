@@ -1,24 +1,28 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { PrerequisitesForm } from "./PrerequisitesForm";
 import { Prerequisite } from "@/models/models";
 import { EditorProps } from "./FlashCardDialog";
 import EditIcon from "../common/EditIcon";
 import useTreeStore from "@/stores/useTreeStore";
+import useSetService from "@/services/useSetService";
 
 const PrerequisiteEditor: React.FC<EditorProps> = ({ dekuSetId }) => {
   const dekuSet = useTreeStore((state) =>
       state.dekuSets[dekuSetId]
   );
+  const updateSetState = useTreeStore((state) => state.updateSet);
+  const { updateDekuSetDB } = useSetService();
+
   if (!dekuSet) {
     return <div>Loading prerequisites…</div>;
   }
   const [isPrerequisitesEditable, setIsPrerequisitesEditable] = useState(false);
   //TODO Make prereq hyperlinks clickable
 
-  const handleSave = (data: Prerequisite[]) => {
-    // TODO use Service
-    //setCardSet({ ...cardSet, prerequisites: data });
+  const handleSave = async (data: Prerequisite[]) => {
+    updateSetState(dekuSetId, { prerequisites: data });
     setIsPrerequisitesEditable(false);
+    await updateDekuSetDB(dekuSetId);
   };
 
   const handleCancel = () => {

@@ -60,7 +60,7 @@ export const createFlashCard = ({
 export interface DekuSet {
   id: string;
   title: string;
-  desc: string | null;
+  description: string | null;
   prerequisites: Prerequisite[];
   relative_x: number;
   relative_y: number;
@@ -76,7 +76,7 @@ interface DekuSetParams {
   relative_y: number;
   parent_set_id?: string | null;
   parent_node_id: string;
-  desc?: string | null;
+  description?: string | null;
   prerequisites?: Prerequisite[];
   enabled?: boolean;
 }
@@ -88,7 +88,7 @@ export const createSetModel = ({
   relative_y,
   parent_set_id = null,
   parent_node_id,
-  desc = null,
+  description = null,
   prerequisites = [],
   enabled = true
 }: DekuSetParams): DekuSet => ({
@@ -98,7 +98,7 @@ export const createSetModel = ({
   relative_y,
   parent_set_id,
   parent_node_id,
-  desc,
+  description,
   prerequisites,
   enabled
 });

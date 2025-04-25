@@ -59,7 +59,7 @@ def tree_service(session: Session, user_id: uuid.UUID):
      result[0].id : DekuSetBase(
           id=result[0].id,
           title=result[0].title,
-          desc=result[0].description,
+          description=result[0].description,
           prerequisites=[],
           relative_x=result[0].relative_x,
           relative_y=result[0].relative_y,
@@ -83,10 +83,10 @@ def tree_service(session: Session, user_id: uuid.UUID):
   card_results: List[Tuple[Card, UserCard, CardIdentity]] = session.exec(stmt).all()
 
   for card in card_results:
-    sets_to_cards_mapped[card[2].set_id][card[0].id] = CardBase(
+    sets_to_cards_mapped[card[0].parent_set_id][card[0].id] = CardBase(
       id=card[0].id,
       times_correct=card[1].times_correct,
-      set_id=card[2].set_id,
+      set_id=card[0].parent_set_id,
       available_date=card[1].available_date,
       created_at_date=card[0].created_at,
       enabled=card[1].enabled,
@@ -100,5 +100,3 @@ def tree_service(session: Session, user_id: uuid.UUID):
     "nodes" : node_results_mapped,
     "cards" : sets_to_cards_mapped
   }
-
-  

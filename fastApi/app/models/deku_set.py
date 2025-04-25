@@ -1,11 +1,17 @@
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 import uuid
 
+from pydantic import BaseModel
 from sqlalchemy import DateTime, JSON, PrimaryKeyConstraint, ForeignKeyConstraint, Text, text
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
+from sqlalchemy import Column as AlcColumn
 from sqlmodel import Field, SQLModel, Column, Float
 from sqlalchemy.orm import mapped_column
+
+class Prerequisite(BaseModel):
+    name: str
+    link: Optional[str] = None
 
 class DekuSet(SQLModel, table=True):
     __tablename__ = 'set'
@@ -86,9 +92,9 @@ class DekuSet(SQLModel, table=True):
         default=None,
         sa_column=mapped_column(Text)
     )
-    prerequisites: Optional[Dict[str, Any]] = Field(
-        default=None,
-        sa_type=JSON()
+    prerequisites: List[Prerequisite] = Field(
+        default_factory=list,
+        sa_column=AlcColumn(JSONB, nullable=False),
     )
     relative_x: float = Field(
         sa_column=mapped_column(Float, nullable=False)
@@ -96,3 +102,4 @@ class DekuSet(SQLModel, table=True):
     relative_y: float = Field(
         sa_column=mapped_column(Float, nullable=False)
     )
+

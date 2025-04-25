@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlmodel import Session
 from models import SetIdentity, DekuSet, UserNode, UserSet, DekuNode, NodeVersion, Card
 from schemas.set_schema import DekuSetBase
+from fastapi.encoders import jsonable_encoder
 
 def create_deku_set(
         session: Session, 
@@ -28,7 +29,7 @@ def create_deku_set(
         set_identity_id=new_set_identity.id,
         parent_set_id=parent_set_id,
         title=deku_set.title,
-        description=deku_set.desc,
+        description=deku_set.description,
         prerequisites=deku_set.prerequisites,
         node_version_id=node_version_id,
         relative_x=deku_set.relative_x,
@@ -62,37 +63,38 @@ def update_deku_set(
     deku_set_db = session.get(DekuSet, deku_set_data.id)
     if not deku_set_db:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Set not found")
-
+    
     user_set_db : UserSet = session.exec(
         select(UserSet)
         .where(
             UserSet.user_id == user_id,
             UserSet.set_identity_id == deku_set_db.set_identity_id
         )
-    ).first()
+    ).scalar_one()
 
+    if not user_set_db:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"UserSet mapping not found for user {user_id} and set identity {deku_set_db.set_identity_id}"
+        )
+    
     if not user_id == deku_set_db.created_by:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not authorized to modify this set."
         )
 
-    user_set_db.title = deku_set_data.title
-    user_set_db.description = deku_set_data.desc
-    user_set_db.prerequisites = deku_set_data.prerequisites
-    user_set_db.relative_x = deku_set_data.relative_x
-    user_set_db.relative_y = deku_set_data.relative_y
-    user_set_db.parent_set_id = deku_set_data.parent_set_id
-    user_set_db.updated_at = datetime.now(timezone.utc)
+    deku_set_db.title = deku_set_data.title
+    deku_set_db.description = deku_set_data.description
+    deku_set_db.prerequisites = jsonable_encoder(deku_set_data.prerequisites)
+    deku_set_db.relative_x = deku_set_data.relative_x
+    deku_set_db.relative_y = deku_set_data.relative_y
+    deku_set_db.parent_set_id = deku_set_data.parent_set_id
+    deku_set_db.updated_at = datetime.now(timezone.utc)
 
     user_set_db.enabled = deku_set_data.enabled
 
-    session.add(deku_set_db)
-    session.add(user_set_db)
-    session.commit()
-    session.refresh(deku_set_db)
-
-    return deku_set_db.id
+    return deku_set_data.id
 
 # This is used specifically to delete a set in a user tree that they own, do not use for public sets
 # They need to be handled differently (To only delete the relevant version)

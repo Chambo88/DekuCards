@@ -32,7 +32,7 @@ export const cardSetSchema = z.object({
 
 export const cardSetWithCardsSchema = z.object({
   dekuSet: cardSetSchema,
-  cards: z.array(flashCardSchema),
+  cards: z.record(flashCardSchema),
 });
 
 export interface EditorProps {
@@ -59,9 +59,11 @@ const FlashCardDialog: React.FC<FlashCardDialogProps> = ({
     const dekuSet: DekuSet = useTreeStore.getState().dekuSets[dekuSetId];
     const cards: Record<string, FlashCard> = useTreeStore.getState().setToCards[dekuSetId];
 
+    console.log(JSON.stringify(dekuSet))
+
     const parseResult = cardSetWithCardsSchema.safeParse({
-      set: dekuSet,
-      cards: cards,
+      dekuSet,
+      cards,
     });
 
     if (!parseResult.success) {

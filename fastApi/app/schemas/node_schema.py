@@ -29,12 +29,7 @@ class CreateNodeSetPayload(BaseModel):
     data: CreateNodeSetData
     user_id: uuid.UUID
 
-class DeleteSetPayload(BaseModel):
+class DeleteNodePayload(BaseModel):
     node_id: uuid.UUID
     user_id: uuid.UUID
 
-
-
-# class DeleteDekuNode(BaseModel):
-#     node_id: uuid.UUID
-#     user_id: uuid.UUID

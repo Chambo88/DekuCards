@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from sqlmodel import SQLModel
-from fastApi.app.api import cardApi
-from fastApi.app.api import treeApi
-from fastApi.app.api import dekuNodeApi
+from api import cardApi
+from api import treeApi
+from api import dekuNodeApi
+from api import dekuSetApi
 from core.config import settings
 from core.database import engine
 from contextlib import asynccontextmanager
@@ -27,6 +28,7 @@ setup_cors(app)
 app.include_router(cardApi.router, prefix="/api")
 app.include_router(treeApi.router, prefix="/api")
 app.include_router(dekuNodeApi.router, prefix="/api")
+app.include_router(dekuSetApi.router, prefix="/api")
 
 for route in app.routes:
     print(route.path)

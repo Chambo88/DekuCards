@@ -60,12 +60,12 @@ def create_node_set(
         raise HTTPException(status_code=500, detail="Server error during cardset (node + set) creation.")
 
 @router.delete(
-    "/set/{set_id}",
+    "/node/{node_id}",
     status_code=status.HTTP_200_OK,
     summary="Delete an existing DekuSet"
 )
 def delete_node(
-    set_id: uuid.UUID,
+    node_id: uuid.UUID,
     payload: DeleteNodePayload,
     session: Session = Depends(get_session),
     token: TokenData = Depends(validate_token)
@@ -79,9 +79,9 @@ def delete_node(
 
     try:
         with session.begin():
-            set_id = delete_deku_set(
+            set_id = delete_deku_node(
                 session, 
-                payload.set_id, 
+                payload.node_id, 
                 payload.user_id
             )
         return {

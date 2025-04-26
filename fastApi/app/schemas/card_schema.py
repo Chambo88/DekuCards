@@ -13,3 +13,20 @@ class CardBase(BaseModel):
     last_shown_at_date: Optional[datetime]
     front: str
     back: str
+
+class UpdateCardData(BaseModel):
+    card: CardBase
+
+class CreateCardPayload(BaseModel):
+    data: UpdateCardData
+    node_id: uuid.UUID
+    set_id: uuid.UUID
+    user_id: uuid.UUID
+
+class UpdateCardPayload(BaseModel):
+    data: UpdateCardData
+    user_id: uuid.UUID
+
+class DeleteCardPayload(BaseModel):
+    card_id: uuid.UUID
+    user_id: uuid.UUID

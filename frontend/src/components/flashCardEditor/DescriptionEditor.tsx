@@ -41,14 +41,6 @@ const DescriptionEditor: React.FC<EditorProps> = ({ dekuSetId }) => {
     <>
       {isDescEditable ? (
         <div className="relative mx-8 mb-2 mt-1 flex flex-col items-end">
-          {/* <textarea
-          title="test"
-            ref={textareaRef}
-            className="resize-none overflow-hidden"
-            value={description ?? ""}
-            onChange={e => console.log("raw textarea onChange:", e.target.value)}
-            autoFocus
-          /> */}
           <Textarea
             ref={textareaRef}
             className="resize-none overflow-hidden"

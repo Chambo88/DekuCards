@@ -1,3 +1,4 @@
+import { cardPost, cardPut } from "@/api/cardApi";
 import { nodeAndSetPost } from "@/api/nodeApi";
 import { setInfoPut, setPost } from "@/api/setApi";
 import { getTree } from "@/api/treeApi"
@@ -8,11 +9,13 @@ import {
   FlashCard,
   DekuSet,
   DekuNode,
+  createFlashCard,
 } from "@/models/models";
 import useTreeStore from "@/stores/useTreeStore";
 
 const useCardEditService = () => {
   const { toast } = useToast();
+  const updateCardState = useTreeStore((state) => state.updateCard);
   const updateNodeState = useTreeStore((state) => state.updateNode);
   const updateSetState = useTreeStore((state) => state.updateSet);
   const initNodeState = useTreeStore((state) => state.initNodes);
@@ -120,6 +123,50 @@ const useCardEditService = () => {
   //   return node;
   // };
 
+  const createCardLocal = (setId: string) => {
+    let newCard: FlashCard = createFlashCard({
+      set_id: setId
+    });
+    
+    updateCardState(setId, newCard.id, newCard);
+
+    return newCard
+  }
+
+  const createCardDB = async (
+    card: FlashCard,
+    setId: string,
+    nodeId: string
+  ) => {
+    try {
+      await cardPost(card, nodeId, setId);
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          "There was an error creating the card. Changes will remain on this device until internet is restored.",
+      });
+    }
+  }
+
+  const updateCardDB = async (
+    cardId: string,
+    setId: string
+  ) => {
+    try {
+      let card = useTreeStore.getState().setToCards[setId][cardId]
+      await cardPut(card);
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          "There was an error updating the card. Changes will remain on this device until internet is restored.",
+      });
+    }
+  }
+
   const updateDekuSetDB = async (
     dekuSetId: string
   ) => {
@@ -131,7 +178,7 @@ const useCardEditService = () => {
         variant: "destructive",
         title: "Error",
         description:
-          "There was an error creating this set. Set will only exist locally. Use the updates tab to try to sync this set with the database again.",
+          "There was an error updating the set. Changes will remain on this device until internet is restored.",
       });
       throw e;
     }
@@ -239,6 +286,9 @@ const useCardEditService = () => {
     // moveCards, 
     // updateSet, 
     // createSet, 
+    updateCardDB,
+    createCardDB,
+    createCardLocal,
     updateDekuSetDB,
     createSetAndNodeDB,
     createSetAndNodeLocal,

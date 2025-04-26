@@ -1,82 +1,113 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
+import uuid
 import logging
-# from schemas.set_schema import CreateDekuSet
-# from services.cardset_service import create_cardset
+from services.card_service import delete_deku_card, update_card, create_card
+from schemas.card_schema import CreateCardPayload, UpdateCardPayload, DeleteCardPayload
 from core.database import get_session
+from core.auth import validate_token, TokenData
+
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# @router.post(
-#     "/cardset",
-#     status_code=status.HTTP_201_CREATED,
-#     summary="Create a new flashcard set (and Node if needed)"
-# )
-# def create_flashcard_set(
-#     flashcard_set: CreateDekuSet,
-#     session: Session = Depends(get_session)
-# ):
-#     try:
-#         if user_id != current_user.sub:
-#             raise HTTPException(
-#                 status_code=status.HTTP_403_FORBIDDEN,
-#                 detail="You are not authorized to modify another user's data"
-#             )
-#         create_cardset(session, flashcard_set)
-#         logger.info(f"Card set created with ID")
-#         return
-#     except ValueError as ve:
-#         logger.info(f"create flashcard bad request data.")
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
-#     except Exception as e:
-#         logger.error("ok")
-#         session.rollback()
-#         logger.info(f"Internal error")
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             detail="An error occurred while creating the card set"
-#         )
+# Create cardset button - creates a node and a child set
+@router.post(
+    "/card",
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new flashcard"
+)
+def post_card(
+    payload: CreateCardPayload,
+    session: Session = Depends(get_session),
+    token: TokenData = Depends(validate_token)
+):
+    token_user_id = uuid.UUID(token.sub)
+    if payload.user_id != token_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to fetch this user's data"
+        )
 
-# @router.delete(
-#     "/cardset/{cardset_id}",
-#     status_code=status.HTTP_200_OK,
-#     summary="Delete an existing flashcard set"
-# )
-# def delete_cardset_endpoint(
-#     cardset_id: str,
-#     session: Session = Depends(get_session)
-# ):
-#     try:
-#         result = delete_cardset(session, cardset_id)
-#         return result
-#     except ValueError as ve:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(ve))
-#     except Exception as e:
-#         logger.error("ok")
-#         session.rollback()
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             detail="An error occurred while deleting the card set"
-#         )
+    try:
+        with session.begin():
+            new_card, new_user_card, new_card_identity = create_card(
+                session, 
+                payload.data.card, 
+                payload.user_id,
+                payload.node_id,
+                payload.set_id
+            )
+        return {
+            "card_id": new_card.id,
+            "user_card_id": new_user_card.id,
+            "card_identity_id": new_card_identity.id
+        }
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        raise HTTPException(status_code=500, detail="Server error during card creation.")
 
-# # @router.delete(
-# #     "/node/{node_id}",
-# #     status_code=status.HTTP_200_OK,
-# #     summary="Delete an existing node"
-# # )
-# # def delete_node_endpoint(
-# #     node_id: str,
-# #     session: Session = Depends(get_session)
-# # ):
-# #     try:
-# #         result = delete_node(session, node_id)
-# #         return result
-# #     except ValueError as ve:
-# #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(ve))
-# #     except Exception as e:
-# #         session.rollback()
-# #         raise HTTPException(
-# #             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-# #             detail="An error occurred while deleting the node"
-# #         )
+@router.put(
+    "/card/{card_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Update an existing DekuSet"
+)
+def put_card(
+    card_id: uuid.UUID,
+    payload: UpdateCardPayload,
+    session: Session = Depends(get_session),
+    token: TokenData = Depends(validate_token)
+):
+    token_user_id = uuid.UUID(token.sub)
+    if payload.user_id != token_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to fetch this user's data"
+        )
+
+    try:
+        with session.begin():
+            card_id = update_card(
+                session, 
+                payload.data.card, 
+                payload.user_id
+            )
+        return {
+            "card_id": card_id
+        }
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        raise HTTPException(status_code=500, detail="Server error during card update.")
+    
+@router.delete(
+    "/card/{card_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Delete an existing DekuSet"
+)
+def delete_card(
+    set_id: uuid.UUID,
+    payload: DeleteCardPayload,
+    session: Session = Depends(get_session),
+    token: TokenData = Depends(validate_token)
+):
+    token_user_id = uuid.UUID(token.sub)
+    if payload.user_id != token_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to fetch this user's data"
+        )
+
+    try:
+        with session.begin():
+            set_id = delete_deku_card(
+                session, 
+                payload.set_id, 
+                payload.user_id
+            )
+        return {
+            "set_id": set_id
+        }
+    except Exception as e:
+        logger.error("Unexpected error: %s", e)
+        raise HTTPException(status_code=500, detail="Server error during delete dekuSet")
+

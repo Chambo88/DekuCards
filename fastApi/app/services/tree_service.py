@@ -72,27 +72,30 @@ def tree_service(session: Session, user_id: uuid.UUID):
 
   stmt = (
     select(Card, UserCard, CardIdentity)
-    .join(CardIdentity, CardIdentity.id == UserCard.card_identity_id)
+    .join(CardIdentity, CardIdentity.id == Card.card_identity_id)
+    .join(UserCard, CardIdentity.id == UserCard.card_identity_id)
     .join(UserNode, UserNode.id == UserCard.user_node_id)
     .where(UserNode.node_version_id == Card.node_version_id)
-    .where(UserNode.user_id == user_id)
+    .where(UserCard.user_id == user_id)
   )
 
   sets_to_cards_mapped: Dict[uuid.UUID, Dict[uuid.UUID, CardBase]] = {result[0].id: {} for result in set_results}
 
   card_results: List[Tuple[Card, UserCard, CardIdentity]] = session.exec(stmt).all()
 
-  for card in card_results:
-    sets_to_cards_mapped[card[0].parent_set_id][card[0].id] = CardBase(
-      id=card[0].id,
-      times_correct=card[1].times_correct,
-      set_id=card[0].parent_set_id,
-      available_date=card[1].available_date,
-      created_at_date=card[0].created_at,
-      enabled=card[1].enabled,
-      last_shown_at_date=card[1].last_shown_at_date,
-      streak_start_date=card[1].streak_start_date
-    )
+  for card, user_card, _identity in card_results:
+      sets_to_cards_mapped[card.parent_set_id][card.id] = CardBase(
+        id=card.id,
+        times_correct=user_card.times_correct,
+        set_id=card.parent_set_id,
+        available_date=user_card.available_date,
+        created_at_date=card.created_at,
+        enabled=user_card.enabled,
+        last_shown_at_date=user_card.last_shown_at_date,
+        streak_start_date=user_card.streak_start_date,
+        front=card.front,
+        back=card.back
+  )
 
 
   return {

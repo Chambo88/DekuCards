@@ -15,6 +15,7 @@ import {
 } from "../ui/tooltip";
 import CancelConfirmDialog from "../common/CancelConfirmDialog";
 import useTreeStore from "@/stores/useTreeStore";
+import useSetService from "@/services/useSetService";
 
 interface CardTagsProps extends EditorProps {
   card: FlashCard;
@@ -29,17 +30,22 @@ interface TagProps {
 const CardTags: React.FC<CardTagsProps> = ({ card, dekuSetId }) => {
   const updateCard = useTreeStore((state) => state.updateCard);
   const deleteCards = useTreeStore((state) => state.deleteCards);
+  const { updateCardDB } = useSetService();
 
-  const handleSelect = () => {
+
+  const handleSelect = async () => {
     updateCard(dekuSetId, card.id, { selected: !card.selected });
+    await updateCardDB(card.id, dekuSetId);
   };
 
-  const handleEnable = () => {
+  const handleEnable = async () => {
     updateCard(dekuSetId, card.id, { enabled: !card.enabled });
+    await updateCardDB(card.id, dekuSetId);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     deleteCards(dekuSetId, new Set([card.id]));
+    await updateCardDB(card.id, dekuSetId);
   };
 
   return (

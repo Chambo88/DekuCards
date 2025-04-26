@@ -49,8 +49,6 @@ def create_deku_set(
         user_node_id=user_node_id
     )
     session.add(new_user_set)
-    session.flush()
-    session.refresh(new_user_set)
 
     return new_set, new_user_set, new_set_identity
 
@@ -120,5 +118,4 @@ def delete_deku_set(session: Session, deku_set_id: str, user_id: str):
 
     session.delete(set_identity)
 
-    session.commit()
     return {"message": "Cardset deleted successfully"}

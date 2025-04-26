@@ -34,6 +34,7 @@ class DekuSet(SQLModel, table=True):
             name='fk_deku_set_node_version_id', 
             ondelete='CASCADE'
         ),
+        ForeignKeyConstraint(['created_by'], ['deku_user.id'], name='fk_node_created_by'),
     )
 
     id: uuid.UUID = Field(

@@ -7,11 +7,11 @@ export interface FlashCard {
   id: string;
   times_correct: number;
   set_id: string;
-  available: Date;
-  created_at: Date;
+  available_date: Date;
+  created_at_date: Date;
   enabled: boolean;
-  last_shown_at: Date | null;
-  streak_start: Date | null;
+  last_shown_at_date: Date | null;
+  streak_start_date: Date | null;
   front: string;
   back: string;
   selected: boolean;
@@ -21,11 +21,11 @@ export interface FlashCardParams {
   id?: string;
   times_correct?: number;
   set_id: string;
-  available?: Date;
-  created_at?: Date;
+  available_date?: Date;
+  created_at_date?: Date;
   enabled?: boolean;
-  last_shown_at?: Date | null;
-  streak_start?: Date | null;
+  last_shown_at_date?: Date | null;
+  streak_start_date?: Date | null;
   front?: string;
   back?: string;
   selected?: boolean;
@@ -35,11 +35,11 @@ export const createFlashCard = ({
   id = uuidv4(),
   times_correct = 0,
   set_id,
-  available = new Date(),
-  created_at = new Date(),
+  available_date = new Date(),
+  created_at_date = new Date(),
   enabled = true,
-  last_shown_at = null,
-  streak_start = null,
+  last_shown_at_date = null,
+  streak_start_date = null,
   front = "",
   back = "",
   selected = false
@@ -47,11 +47,11 @@ export const createFlashCard = ({
   id,
   times_correct,
   set_id,
-  available,
-  created_at,
+  available_date,
+  created_at_date,
   enabled,
-  last_shown_at,
-  streak_start,
+  last_shown_at_date,
+  streak_start_date,
   front,
   back,
   selected

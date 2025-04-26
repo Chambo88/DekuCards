@@ -8,25 +8,25 @@ export interface FlashCardDTO {
   id: string; 
   times_correct: number;
   set_id: string; 
-  available: string;
-  created_at: string; 
+  available_date: string;
+  created_at_date: string; 
   enabled: boolean;
-  last_shown_at: string | null; 
-  streak_start: string | null;
+  last_shown_at_date: string | null; 
+  streak_start_date: string | null;
   front: string;
   back: string;
 }
 
 
-function parseFlashCard(dto : Record<string, FlashCard>): Record<string, FlashCard> {
+function parseFlashCard(dto : Record<string, FlashCardDTO>): Record<string, FlashCard> {
   let parsedCards : Record<string, FlashCard> = {};
   for (let unParsedcard of Object.values(dto) ) {
     parsedCards[unParsedcard.id] = {
       ...unParsedcard,
-      available: new Date(unParsedcard.available),
-      created_at: new Date(unParsedcard.created_at),
-      last_shown_at: unParsedcard.last_shown_at ? new Date(unParsedcard.last_shown_at) : null,
-      streak_start: unParsedcard.streak_start ? new Date(unParsedcard.streak_start) : null,
+      available_date: new Date(unParsedcard.available_date),
+      created_at_date: new Date(unParsedcard.created_at_date),
+      last_shown_at_date: unParsedcard.last_shown_at_date ? new Date(unParsedcard.last_shown_at_date) : null,
+      streak_start_date: unParsedcard.streak_start_date ? new Date(unParsedcard.streak_start_date) : null,
       selected: false
     }
   }
@@ -57,13 +57,15 @@ export async function getTree(): Promise<{nodes: Record<string, DekuNode>, sets:
 
       // Create Date fields from strings
       const newCards: Record<string, Record<string, FlashCard>> = {};
-      for (const [setId, dtoList] of Object.entries(data.cards as Record<string, Record<string, FlashCard>>)) {
+      for (const [setId, dtoList] of Object.entries(data.cards as Record<string, Record<string, FlashCardDTO>>)) {
         newCards[setId] = parseFlashCard(dtoList);
       }
 
-
-
-      return data;
+      return {
+        nodes: data.nodes,
+        sets:  data.sets,
+        cards: newCards,
+      };
     } catch (error) {
       console.error("Error fetching user tree data", error);
       throw error;

@@ -13,6 +13,7 @@ import JsonDialog from "./JsonDialog";
 import { MAX_FLASHCARD_CHAR } from "@/constants";
 import useTreeStore from "@/stores/useTreeStore";
 import CardEditorItem from "./CardEditorItem";
+import useSetService from "@/services/useSetService";
 
 
 export interface CardEditorProps {
@@ -29,6 +30,7 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
   ));
   const prevNumOfCards = useRef(cardIds.length);
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+  const {updateCardDB, createCardDB, createCardLocal} = useSetService();
 
   const filteredCardIds = useMemo(() => {
     const cardRecord: Record<string, FlashCard> =
@@ -37,7 +39,7 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
     let entries = Object.entries(cardRecord);
   
     entries.sort(([, cardA], [, cardB]) => {
-      return cardA.created_at.getTime() - cardB.created_at.getTime();
+      return cardA.created_at_date.getTime() - cardB.created_at_date.getTime();
     });
   
     if (!searchTerm.trim()) {
@@ -52,9 +54,11 @@ const CardEditor: React.FC<CardEditorProps> = ({ dekuSetId, selectedCards }) => 
   }, [dekuSetId, searchTerm, cardIds.join(",")]);
 
 
-  const handleAddCard = () => {
-    const newCard = createFlashCard({set_id: dekuSetId});
-    useTreeStore.getState().updateCard(dekuSetId, newCard.id, newCard);
+  const handleAddCard = async () => {
+    const newCard = createCardLocal(dekuSetId);
+    const nodeId = useTreeStore.getState().dekuSets[dekuSetId].parent_node_id;
+    console.log("testing")
+    await createCardDB(newCard, dekuSetId, nodeId);
   };
 
   // useEffect(() => {

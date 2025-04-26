@@ -4,6 +4,8 @@ import { createFlashCard, FlashCard } from "@/models/models";
 import { MAX_FLASHCARD_CHAR } from "@/constants";
 import CardTags from "./CardTags";
 import useTreeStore from "@/stores/useTreeStore";
+import useSetService from "@/services/useSetService";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export interface CardEditorItemProps {
   dekuSetId: string;
@@ -13,16 +15,28 @@ export interface CardEditorItemProps {
 
 const CardEditorItem: React.FC<CardEditorItemProps> = ({ dekuSetId, cardId }) => {
   const card = useTreeStore((state) =>
-      state.setToCards[dekuSetId][cardId] || createFlashCard({set_id: dekuSetId})
+      state.setToCards[dekuSetId][cardId]
   );
   const updateCard = useTreeStore((state) => state.updateCard);
   const frontRef = useRef<HTMLTextAreaElement>(null);
   const backRef = useRef<HTMLTextAreaElement>(null);
+  const { updateCardDB } = useSetService();
 
   const isFrontFocused = document.activeElement === frontRef.current;
   const isBackFocused = document.activeElement === backRef.current;
   const displayFrontEmpty = !isFrontFocused && card.front.trim().length === 0;
   const displayBackEmpty = !isFrontFocused && !isBackFocused && card.back.trim().length === 0;
+
+  const debouncedUpdateDB = useDebounce(
+    (id: string, setId: string) => updateCardDB(id, setId),
+    700
+  );
+
+  const handleCardChange = (changes: Partial<FlashCard>) => {
+    updateCard(dekuSetId, card.id, changes);
+    debouncedUpdateDB(card.id, dekuSetId);
+  };
+
 
   return (
     <div className={`pb-7 pt-3 ${card.selected ? "bg-popover" : card.enabled ? "" : "bg-code"}`}>
@@ -32,7 +46,7 @@ const CardEditorItem: React.FC<CardEditorItemProps> = ({ dekuSetId, cardId }) =>
           <Textarea
             className={`h-full resize-none border ${displayFrontEmpty ? "border-destructive" : ""} p-2`}
             value={card.front}
-            onChange={(e) => updateCard(dekuSetId, card.id, {front: e.target.value})}
+            onChange={(e) => handleCardChange({front: e.target.value})}
             placeholder="Front of the card"
             ref={frontRef}
             maxLength={MAX_FLASHCARD_CHAR}
@@ -52,7 +66,7 @@ const CardEditorItem: React.FC<CardEditorItemProps> = ({ dekuSetId, cardId }) =>
           <Textarea
             className={`h-full resize-none border ${displayBackEmpty ? "border-destructive" : ""} p-2`}
             value={card.back}
-            onChange={(e) =>  updateCard(dekuSetId, card.id, {back: e.target.value})}
+            onChange={(e) => handleCardChange({back: e.target.value})}
             placeholder="Back of the card"
             ref={backRef}
             maxLength={MAX_FLASHCARD_CHAR}

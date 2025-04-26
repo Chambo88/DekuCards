@@ -11,9 +11,9 @@ class Card(SQLModel, table=True):
     __table_args__ = (
         PrimaryKeyConstraint('id', name='card_pkey'),
         ForeignKeyConstraint(
-            ['card_identity'],
+            ['card_identity_id'],
             ['card_identity.id'],
-            name='fk_card_card_identity',
+            name='fk_card_card_identity_id',
             ondelete='CASCADE'
         ),
         ForeignKeyConstraint(
@@ -28,6 +28,7 @@ class Card(SQLModel, table=True):
             name='fk_card_set_id',
             ondelete='CASCADE'
         ),
+        ForeignKeyConstraint(['created_by'], ['deku_user.id'], name='fk_node_created_by'),
     )
 
     id: uuid.UUID = Field(
@@ -51,7 +52,7 @@ class Card(SQLModel, table=True):
             server_default=text('gen_random_uuid()')
         )
     )
-    card_identity: uuid.UUID = Field(
+    card_identity_id: uuid.UUID = Field(
         sa_column=mapped_column(
             PG_UUID(as_uuid=True),
             nullable=False,
@@ -65,10 +66,24 @@ class Card(SQLModel, table=True):
             server_default=text("now()")
         )
     )
+    updated_at: datetime = Field(
+        sa_column=Column(
+            SADateTime(timezone=True),
+            nullable=False,
+            server_default=text("now()")
+        )
+    )
     node_version_id: uuid.UUID = Field(
         sa_column=mapped_column(
             PG_UUID(as_uuid=True),
             nullable=False,
             server_default=text('gen_random_uuid()')
+        )
+    )
+    created_by: uuid.UUID = Field(
+        sa_column=mapped_column(
+            PG_UUID(as_uuid=True),
+            nullable=False,
+            server_default=text('auth.uid()')
         )
     )

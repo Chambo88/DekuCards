@@ -30,9 +30,6 @@ app.include_router(treeApi.router, prefix="/api")
 app.include_router(dekuNodeApi.router, prefix="/api")
 app.include_router(dekuSetApi.router, prefix="/api")
 
-for route in app.routes:
-    print(route.path)
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(

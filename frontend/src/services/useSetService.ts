@@ -1,7 +1,7 @@
 import { cardPost, cardPut } from "@/api/cardApi";
 import { nodeAndSetPost } from "@/api/nodeApi";
 import { setInfoPut, setPost } from "@/api/setApi";
-import { getTree } from "@/api/treeApi"
+import { getTree } from "@/api/treeApi";
 import { useToast } from "@/hooks/use-toast";
 import {
   createSetModel,
@@ -12,6 +12,10 @@ import {
   createFlashCard,
 } from "@/models/models";
 import useTreeStore from "@/stores/useTreeStore";
+import {
+  updateFlashCardOnCorrect,
+  updateFlashCardOnIncorrect,
+} from "./cardResultHandling";
 
 const useCardEditService = () => {
   const { toast } = useToast();
@@ -88,25 +92,22 @@ const useCardEditService = () => {
 
   const initTree = async () => {
     try {
-      let tree = await getTree()
+      let tree = await getTree();
 
-      initNodeState(tree.nodes)
-      initSetState(tree.sets)
-      initCardState(tree.cards)
+      initNodeState(tree.nodes);
+      initSetState(tree.sets);
+      initCardState(tree.cards);
 
-      console.log(JSON.stringify(tree))
-
+      console.log(JSON.stringify(tree));
     } catch (e) {
       console.error("Error in getTree:", e);
       toast({
         variant: "destructive",
         title: "Error",
-        description:
-          "There was an error fetching tree data.",
+        description: "There was an error fetching tree data.",
       });
     }
-  }
-
+  };
 
   // const createNode = async (x: number, y: number, title: string) => {
   //   let node: DekuNode = createNodeModel({
@@ -125,18 +126,30 @@ const useCardEditService = () => {
 
   const createCardLocal = (setId: string) => {
     let newCard: FlashCard = createFlashCard({
-      set_id: setId
+      set_id: setId,
     });
-    
+
     updateCardState(setId, newCard.id, newCard);
 
-    return newCard
-  }
+    return newCard;
+  };
+
+  const handleCardCorrect = async (setId: string, card: FlashCard) => {
+    let updatedCard = updateFlashCardOnCorrect(card);
+    updateCardState(setId, updatedCard.id, updatedCard);
+    await updateCardDB(updatedCard.id, setId);
+  };
+
+  const handleCardWrong = async (setId: string, card: FlashCard) => {
+    let updatedCard = updateFlashCardOnIncorrect(card);
+    updateCardState(setId, updatedCard.id, updatedCard);
+    await updateCardDB(updatedCard.id, setId);
+  };
 
   const createCardDB = async (
     card: FlashCard,
     setId: string,
-    nodeId: string
+    nodeId: string,
   ) => {
     try {
       await cardPost(card, nodeId, setId);
@@ -148,14 +161,11 @@ const useCardEditService = () => {
           "There was an error creating the card. Changes will remain on this device until internet is restored.",
       });
     }
-  }
+  };
 
-  const updateCardDB = async (
-    cardId: string,
-    setId: string
-  ) => {
+  const updateCardDB = async (cardId: string, setId: string) => {
     try {
-      let card = useTreeStore.getState().setToCards[setId][cardId]
+      let card = useTreeStore.getState().setToCards[setId][cardId];
       await cardPut(card);
     } catch (e) {
       toast({
@@ -165,13 +175,11 @@ const useCardEditService = () => {
           "There was an error updating the card. Changes will remain on this device until internet is restored.",
       });
     }
-  }
+  };
 
-  const updateDekuSetDB = async (
-    dekuSetId: string
-  ) => {
+  const updateDekuSetDB = async (dekuSetId: string) => {
     try {
-      let dekuSet = useTreeStore.getState().dekuSets[dekuSetId]
+      let dekuSet = useTreeStore.getState().dekuSets[dekuSetId];
       await setInfoPut(dekuSet);
     } catch (e) {
       toast({
@@ -182,35 +190,28 @@ const useCardEditService = () => {
       });
       throw e;
     }
-  }
+  };
 
-  const createSetAndNodeLocal = (
-    nodeX: number,
-    nodeY: number
-  ) => {
+  const createSetAndNodeLocal = (nodeX: number, nodeY: number) => {
     let newNode = createNodeModel({
       position_x: nodeX,
       position_y: nodeY,
     });
-    
+
     let newSet: DekuSet = createSetModel({
       parent_set_id: null,
       parent_node_id: newNode.id,
       relative_x: 0,
       relative_y: 0,
     });
-    
+
     updateNodeState(newNode.id, newNode);
-    updateSetState(newSet.id, newSet)
+    updateSetState(newSet.id, newSet);
 
-    return {newNode, newSet}
-  }
+    return { newNode, newSet };
+  };
 
-  const createSetAndNodeDB = async (
-    newSet: DekuSet,
-    newNode: DekuNode
-  ) => {
-
+  const createSetAndNodeDB = async (newSet: DekuSet, newNode: DekuNode) => {
     try {
       await nodeAndSetPost(newNode, newSet);
     } catch (e) {
@@ -234,7 +235,7 @@ const useCardEditService = () => {
   //   set.relative_x = 0;
   //   set.relative_y = 0;
 
-  //   node.sets[set.id] = set; 
+  //   node.sets[set.id] = set;
   //   updateNodeState(node.id, node);
 
   //   try {
@@ -282,10 +283,12 @@ const useCardEditService = () => {
   //   return getCurrentState();
   // };
 
-  return { 
-    // moveCards, 
-    // updateSet, 
-    // createSet, 
+  return {
+    // moveCards,
+    // updateSet,
+    // createSet,
+    handleCardCorrect,
+    handleCardWrong,
     updateCardDB,
     createCardDB,
     createCardLocal,
@@ -293,7 +296,7 @@ const useCardEditService = () => {
     createSetAndNodeDB,
     createSetAndNodeLocal,
     initTree,
-    // deleteSet 
+    // deleteSet
   };
 };
 

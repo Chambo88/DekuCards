@@ -1,6 +1,9 @@
-import useUserStore from "../stores/useUserStore"
+import useUserStore from "../stores/useUserStore";
 
-const authFetch = async (url : string, options: RequestInit = {}): Promise<Response> => {
+const authFetch = async (
+  url: string,
+  options: RequestInit = {},
+): Promise<Response> => {
   const token = useUserStore.getState().token;
 
   const headers = {

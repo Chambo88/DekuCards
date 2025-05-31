@@ -20,6 +20,7 @@ def verify_jwt(token: str) -> TokenData:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"], audience="authenticated")
         token_data = TokenData(**payload)
+        
         return token_data
     except ExpiredSignatureError:
         logger.info("expired signature")

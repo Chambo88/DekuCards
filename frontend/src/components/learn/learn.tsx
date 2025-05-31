@@ -1,203 +1,150 @@
-import React, { memo, useState, useEffect, useCallback, useRef } from "react";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog";
+import React, { memo, useState, useCallback } from "react";
+import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import useTreeStore from "@/stores/useTreeStore";
-import { shallow, useShallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 import { FlashCard } from "@/models/models";
-import { PieChart, Pie, Cell, Legend } from "recharts";
 import { X } from "lucide-react";
+import ReactCardFlip from "react-card-flip";
 
-interface LearnDialogProps {
-  // close: () => void;
+interface LearnDialogProps {}
+
+interface PanelProps {
+  flashCard: FlashCard;
+  indexInStack: number;
+  isFrontTwo: boolean;
+  onAdvance?: () => void;
 }
 
-const CARD_MODE = {
-  LEARN: "learn",
-  PRACTICE: "practice",
-  RESULT: "result",
-} as const;
+const Panel: React.FC<PanelProps> = ({
+  flashCard,
+  indexInStack,
+  isFrontTwo,
+  onAdvance,
+}) => {
+  const [isFlipped, setIsFlipped] = useState(false);
 
-type CardMode = (typeof CARD_MODE)[keyof typeof CARD_MODE];
+  return (
+    <div
+      className="absolute h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2"
+      style={{
+        zIndex: 500 - indexInStack * 10,
+        top: `calc(50% + ${indexInStack * 7}px)`,
+        left: `calc(50% + ${indexInStack * 7}px)`,
+      }}
+    >
+      {isFrontTwo ? (
+        <ReactCardFlip
+          isFlipped={isFlipped}
+          flipDirection="horizontal"
+          flipSpeedBackToFront={0.2}
+          flipSpeedFrontToBack={0.2}
+        >
+          <div className="flex h-[700px] w-[700px] flex-col rounded-lg border-4 border-solid border-muted bg-background">
+            <p className="m-4">Question: {flashCard.front}</p>
+
+            <Button
+              onClick={() => setIsFlipped(true)}
+              variant="outline"
+              className="absolute bottom-3 left-3 bg-blue-500 text-white hover:bg-blue-700"
+            >
+              Answer
+            </Button>
+
+            <DialogClose asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1 text-muted-foreground hover:bg-slate-700"
+              >
+                <X size={20} />
+              </Button>
+            </DialogClose>
+          </div>
+
+          <div className="flex h-[700px] w-[700px] flex-col rounded-lg border-4 border-solid border-muted bg-background">
+            <p className="m-4">Answer: {flashCard.back}</p>
+
+            {onAdvance && (
+              <Button
+                onClick={onAdvance}
+                variant="outline"
+                className="absolute bottom-3 left-3 bg-blue-500 text-white hover:bg-blue-700"
+              >
+                Next Card
+              </Button>
+            )}
+
+            <DialogClose asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1 text-muted-foreground hover:bg-slate-700"
+              >
+                <X size={20} />
+              </Button>
+            </DialogClose>
+          </div>
+        </ReactCardFlip>
+      ) : (
+        <div className="flex h-[700px] w-[700px] flex-col rounded-lg border-4 border-solid border-muted bg-background"></div>
+      )}
+    </div>
+  );
+};
 
 const LearnDialog: React.FC<LearnDialogProps> = () => {
   const nowMs = Date.now();
+  const maxVisibleCards = 5;
 
-  const learnCards = useTreeStore(
+  const allLearnCards = useTreeStore(
     useShallow((s) => {
       const out: FlashCard[] = [];
-      for (const setMap of Object.values(s.setToCards)) {
-        for (const card of Object.values(setMap)) {
-          if (card.available_date.getTime() <= nowMs) {
-            out.push(card);
+      for (const set of Object.values(s.dekuSets)) {
+        if (set.enabled) {
+          for (const card of Object.values(s.setToCards[set.id])) {
+            if (card.available_date.getTime() <= nowMs && card.enabled) {
+              out.push(card);
+            }
           }
         }
       }
-      return out;
+      return out.sort(
+        (a, b) => a.available_date.getTime() - b.available_date.getTime(),
+      );
     }),
   );
 
-  const practiceCards = useTreeStore(
-    useShallow((s) => {
-      const out: FlashCard[] = [];
-      for (const setMap of Object.values(s.setToCards)) {
-        for (const card of Object.values(setMap)) {
-          if (card.available_date.getTime() > nowMs) {
-            out.push(card);
-          }
-        }
-      }
-      return out;
-    }),
-  );
-  const learnCardTotal = useRef<number>(learnCards.length);
+  const [showGreenFlashInstant, setShowGreenFlashInstant] = useState(false);
 
-  const [mode, setMode] = useState<CardMode>(CARD_MODE.LEARN);
-  const [fromLearn, setFromLearn] = useState(false);
-  const [index, setIndex] = useState(0);
-  const [flipped, setFlipped] = useState(false);
-  const [correctCount, setCorrectCount] = useState(0);
-
-  const currentList = mode === CARD_MODE.LEARN ? learnCards : practiceCards;
-  const currentCard = currentList[index];
-  console.log(JSON.stringify(currentCard));
-  const total = currentList.length;
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (!currentCard) return;
-      if (!flipped && e.key === "Enter") {
-        setFlipped(true);
-      } else if (flipped) {
-        if (e.key === "Enter") {
-          mark(true);
-        } else if (e.key === "Backspace") {
-          mark(false);
-        }
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [flipped, currentCard, index, mode, correctCount]);
-
-  const mark = (isCorrect: boolean) => {
-    if (isCorrect) setCorrectCount((c) => c + 1);
-    setFlipped(false);
-    const nextIndex = index + 1;
-    if (nextIndex >= total) {
-      setMode(CARD_MODE.RESULT);
-    } else {
-      setIndex(nextIndex);
-    }
-  };
-
-  const handleFlip = () => setFlipped((f) => !f);
-
-  const handleContinue = () => {
-    setMode(CARD_MODE.PRACTICE);
-    setIndex(0);
-    setCorrectCount(0);
-    setFlipped(false);
-  };
-
-  const handleClose = () => {
-    close();
-  };
-
-  const pieData = [
-    { name: "Correct", value: correctCount },
-    { name: "Wrong", value: total - correctCount },
-  ];
-  const COLORS = ["#4ADE80", "#F87171"];
+  const handleAdvanceCard = useCallback(() => {
+    if (allLearnCards.length === 0) return;
+    setShowGreenFlashInstant(true);
+    setTimeout(() => {
+      setShowGreenFlashInstant(false);
+    }, 0);
+  }, [allLearnCards]);
 
   return (
-    <DialogContent
-      tabIndex={-1}
-      className="flex flex-col bg-background p-4 sm:max-h-[80vh] sm:max-w-[600px] sm:rounded-lg sm:shadow-lg"
-    >
-      <div className="flex flex-col min-w-[700px] min-h-[500px]">
-        <DialogHeader className="relative w-full">
-          <DialogTitle asChild>
-            <div className="relative flex w-full items-center justify-center px-0">
-              <h6 className="absolute left-0 text-muted-foreground">
-                {mode === CARD_MODE.LEARN ? "Learn" : "Practice"}
-              </h6>
-              <h2 className="text-xl font-semibold">
-                {`${index + 1}/${learnCardTotal.current}`}
-              </h2>
-              <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 text-muted-foreground"
-                >
-                  <X />
-                </Button>
-              </DialogClose>
-            </div>
-          </DialogTitle>
-        </DialogHeader>
-
-        {mode === CARD_MODE.RESULT ? (
-          <div className="flex flex-col h-full w-full items-center justify-center p-4">
-            <PieChart width={200} height={200}>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                label
-              >
-                {pieData.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i]} />
-                ))}
-              </Pie>
-              <Legend verticalAlign="bottom" />
-            </PieChart>
-            <Button
-              className="mt-4"
-              onClick={fromLearn ? handleContinue : handleClose}
-            >
-              {fromLearn ? "Continue Practicing" : "Done"}
-            </Button>
-          </div>
-        ) : (
-          currentCard && (
-            <div className="flex flex-col items-center justify-center p-4">
-              <div className="w-full rounded-md border p-6 text-center shadow-md">
-                <p className="text-lg">
-                  {flipped ? currentCard.back : currentCard.front}
-                </p>
-              </div>
-            </div>
-          )
-        )}
+    <DialogContent className="flex items-center justify-center border-0 p-0">
+      <div className="relative">
+        <div
+          className={`left-[calc(50% + 0*7px)] top-[calc(50% + 0*7px)] pointer-events-none absolute h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-chart-2 ${
+            showGreenFlashInstant
+              ? "opacity-45 transition-none"
+              : "opacity-0 transition-opacity duration-500 ease-out"
+          }`}
+        />
+        {allLearnCards.slice(0, maxVisibleCards).map((flashCard, index) => (
+          <Panel
+            key={flashCard.id}
+            flashCard={flashCard}
+            indexInStack={index}
+            isFrontTwo={index === 0 || index == 1}
+            onAdvance={handleAdvanceCard}
+          />
+        ))}
       </div>
-
-      <DialogFooter className="p-4">
-        <div className="mt-4 flex space-x-4">
-          {!flipped ? (
-            <Button onClick={handleFlip}>Flip Card</Button>
-          ) : (
-            <>
-              <Button onClick={() => mark(true)}>Correct</Button>
-              <Button variant="destructive" onClick={() => mark(false)}>
-                Incorrect
-              </Button>
-            </>
-          )}
-        </div>
-      </DialogFooter>
     </DialogContent>
   );
 };

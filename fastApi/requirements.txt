@@ -4,3 +4,4 @@ sqlmodel
 pydantic-settings
 alembic
 python-jose
+psycopg2

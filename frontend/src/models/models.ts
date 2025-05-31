@@ -1,11 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
 import useUserStore from "@/stores/useUserStore";
 import useCardSetStore from "@/stores/useTreeStore";
-
+import { DEFAULT_EASE_FACTOR } from "@/services/cardResultHandling";
 
 export interface FlashCard {
   id: string;
+  ease_factor: number;
+  learning_step_index: number;
+  is_graduated: boolean;
+  current_interval_days: number;
   times_correct: number;
+  health: number;
   set_id: string;
   available_date: Date;
   created_at_date: Date;
@@ -19,7 +24,12 @@ export interface FlashCard {
 
 export interface FlashCardParams {
   id?: string;
+  ease_factor?: number;
   times_correct?: number;
+  learning_step_index?: number;
+  is_graduated?: boolean;
+  current_interval_days?: number;
+  health?: number;
   set_id: string;
   available_date?: Date;
   created_at_date?: Date;
@@ -33,7 +43,12 @@ export interface FlashCardParams {
 
 export const createFlashCard = ({
   id = uuidv4(),
+  ease_factor = DEFAULT_EASE_FACTOR,
   times_correct = 0,
+  learning_step_index = 0,
+  is_graduated = false,
+  current_interval_days = 0,
+  health = 0,
   set_id,
   available_date = new Date(),
   created_at_date = new Date(),
@@ -42,10 +57,15 @@ export const createFlashCard = ({
   streak_start_date = null,
   front = "",
   back = "",
-  selected = false
-}: FlashCardParams) : FlashCard => ({
+  selected = false,
+}: FlashCardParams): FlashCard => ({
   id,
+  ease_factor,
   times_correct,
+  learning_step_index,
+  is_graduated,
+  current_interval_days,
+  health,
   set_id,
   available_date,
   created_at_date,
@@ -54,7 +74,7 @@ export const createFlashCard = ({
   streak_start_date,
   front,
   back,
-  selected
+  selected,
 });
 
 export interface DekuSet {
@@ -90,7 +110,7 @@ export const createSetModel = ({
   parent_node_id,
   description = null,
   prerequisites = [],
-  enabled = true
+  enabled = true,
 }: DekuSetParams): DekuSet => ({
   id,
   title,
@@ -100,7 +120,7 @@ export const createSetModel = ({
   parent_node_id,
   description,
   prerequisites,
-  enabled
+  enabled,
 });
 
 export interface Prerequisite {

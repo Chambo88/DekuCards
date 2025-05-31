@@ -3,7 +3,7 @@
 ## Description / Design info
 
 As of 8/3/2025 this API is very overkill, a solution more appropriate to this project and scope
-is to just use server functions, or just directly fetch from SUPABASE(DB) from the fronted. There is no need 
+is to just use server functions, or just directly fetch from SUPABASE(DB) from the fronted. There is no need
 for a dedicated api, the buisness logic isn't complex enough and all the backend services that would typically managed by an API
 are automated by services such as cloudfare or supabase.
 
@@ -16,14 +16,22 @@ in python backends. Probably not a bad thing to seperate some of the buisness lo
 ## Starting locally
 
 For port 8000
-```python main ```
+`python main `
 
-else 
-```uvicorn main:app --host 0.0.0.0 --port 8000```
+else
+`uvicorn main:app --host 0.0.0.0 --port 8000`
+
+## Setup
+
+Project requires .env.production and .env.development with fields
+DATABASE_PASSWORD=
+ECHO_SQL=
+ALLOWED_ORIGINS=
+SECRET_KEY=
 
 ## Deploying
 
-Make sure to set ENVIRONMENT=production
+Make sure to set ENVIRONMENT=production in .env
 
 ## Gen local certs for local dev
 

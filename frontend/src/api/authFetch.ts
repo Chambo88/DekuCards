@@ -6,8 +6,11 @@ const authFetch = async (
 ): Promise<Response> => {
   const token = useUserStore.getState().token;
 
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const headers = {
     "Content-Type": "application/json",
+    "X-Timezone": userTimezone,
     ...options.headers,
     ...(token && { Authorization: `Bearer ${token}` }),
   };

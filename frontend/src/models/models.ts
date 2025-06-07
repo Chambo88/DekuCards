@@ -193,3 +193,9 @@ export const createNodeModel = ({
   owner_id,
   parent_node_id,
 });
+
+export interface SessionInfo {
+  correct: number;
+  wrong: number;
+  date: Date;
+}

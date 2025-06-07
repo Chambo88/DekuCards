@@ -5,6 +5,7 @@ from api import cardApi
 from api import treeApi
 from api import dekuNodeApi
 from api import dekuSetApi
+from api import userSessionsApi
 from core.config import settings
 from core.database import engine
 from contextlib import asynccontextmanager
@@ -29,6 +30,7 @@ app.include_router(cardApi.router, prefix="/api")
 app.include_router(treeApi.router, prefix="/api")
 app.include_router(dekuNodeApi.router, prefix="/api")
 app.include_router(dekuSetApi.router, prefix="/api")
+app.include_router(userSessionsApi.router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn

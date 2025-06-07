@@ -21,10 +21,6 @@ def get_tree_structure(
     session: Session = Depends(get_session),
     token: TokenData = Depends(validate_token)
 ):
-    logger.error("Fetching tree data") # todo change the log level
-    logger.error(user_id)
-    logger.error(token.sub)
-
     token_user_id = uuid.UUID(token.sub)
     if user_id != token_user_id:
         raise HTTPException(

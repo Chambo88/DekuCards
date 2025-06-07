@@ -4,7 +4,7 @@ Run these in `fastApi/`
 
 # Generate a New Migration:
 
-`alembic revision --autogenerate -m "Your migration message"`
+`python alembic revision --autogenerate -m "Your migration message"`
 
 # Apply Migrations in Online Mode:
 

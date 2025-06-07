@@ -14,8 +14,6 @@ from core.auth import validate_token, TokenData
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# Create cardset button - creates a node and a child set
-
 @router.put(
     "/set/{set_id}",
     status_code=status.HTTP_200_OK,

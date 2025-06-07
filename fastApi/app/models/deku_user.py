@@ -1,9 +1,10 @@
+from datetime import datetime
 from typing import Optional
 import uuid
 
-from sqlalchemy import Boolean, ForeignKeyConstraint, PrimaryKeyConstraint, text
+from sqlalchemy import Boolean, Column, ForeignKeyConstraint, PrimaryKeyConstraint, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlmodel import Field, SQLModel
+from sqlmodel import DateTime, Field, SQLModel
 from sqlalchemy.orm import mapped_column
 
 

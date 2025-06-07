@@ -16,6 +16,8 @@ import {
   updateFlashCardOnCorrect,
   updateFlashCardOnIncorrect,
 } from "./cardResultHandling";
+import { P } from "pino";
+import { postUserSessions } from "@/api/userSessionApi";
 
 const useCardEditService = () => {
   const { toast } = useToast();
@@ -138,12 +140,14 @@ const useCardEditService = () => {
     let updatedCard = updateFlashCardOnCorrect(card);
     updateCardState(setId, updatedCard.id, updatedCard);
     await updateCardDB(updatedCard.id, setId);
+    await postUserSessions(true);
   };
 
   const handleCardWrong = async (setId: string, card: FlashCard) => {
     let updatedCard = updateFlashCardOnIncorrect(card);
     updateCardState(setId, updatedCard.id, updatedCard);
     await updateCardDB(updatedCard.id, setId);
+    await postUserSessions(false);
   };
 
   const createCardDB = async (

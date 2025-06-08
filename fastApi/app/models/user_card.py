@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import Optional
 import uuid
 
-from sqlalchemy import Boolean, DateTime, PrimaryKeyConstraint, SmallInteger, ForeignKeyConstraint, text, func
+from sqlalchemy import Boolean, DateTime, Float, PrimaryKeyConstraint, SmallInteger, ForeignKeyConstraint, text, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlmodel import Field, SQLModel, Column
+from sqlmodel import Field, Integer, SQLModel, Column
 from sqlalchemy.orm import mapped_column
 
 class UserCard(SQLModel, table=True):
@@ -94,3 +94,24 @@ class UserCard(SQLModel, table=True):
             server_default=text("now()")
         )
     )
+    ease_factor: float = Field(
+        default=2.5,
+        sa_column=mapped_column(Float, nullable=False, server_default=text('2.5')) 
+    )
+    learning_step_index: int = Field(
+        default=0,
+        sa_column=mapped_column(SmallInteger, nullable=False, server_default=text('0'))
+    )
+    is_graduated: bool = Field(
+        default=False,
+        sa_column=mapped_column(Boolean, nullable=False, server_default=text('false'))
+    )
+    current_interval_days: int = Field(
+        default=0,
+        sa_column=mapped_column(Integer, nullable=False, server_default=text('0'))
+    )
+    health: float = Field(
+        default=1.0,
+        sa_column=mapped_column(Float, nullable=False, server_default=text('1.0'))
+    )
+

@@ -1,6 +1,7 @@
 import { DekuSet, SessionInfo } from "@/models/models";
 import useUserStore from "@/stores/useUserStore";
 import authFetch from "./authFetch";
+import { calcLevel, formatDateToYYYYMMDD } from "@/helper/helperFunctions";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -51,16 +52,29 @@ export async function getSessionData(): Promise<SessionInfo[]> {
       wrong: number;
       date: string;
     }[]) {
+      const dateObj = new Date(item.date);
+
+      if (isNaN(dateObj.getTime())) {
+        console.error(
+          `Invalid date string from Supabase: ${item.date}. Skipping this entry.`,
+        );
+        continue;
+      }
+
+      const formattedDateString = formatDateToYYYYMMDD(dateObj);
+
       newSessionData.push({
         correct: item.correct,
         wrong: item.wrong,
-        date: new Date(item.date),
+        date: formattedDateString,
+        level: calcLevel(item.correct, item.wrong),
+        count: item.correct + item.wrong,
       });
     }
 
     return newSessionData;
   } catch (error) {
-    console.error("Error fetching user tree data", error);
+    console.error("Error fetching user session data", error);
     throw error;
   }
 }

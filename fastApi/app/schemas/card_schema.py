@@ -13,6 +13,11 @@ class CardBase(BaseModel):
     last_shown_at_date: Optional[datetime]
     front: str
     back: str
+    ease_factor: float
+    learning_step_index: int
+    is_graduated: bool
+    current_interval_days: int
+    health: float
 
 class UpdateCardData(BaseModel):
     card: CardBase

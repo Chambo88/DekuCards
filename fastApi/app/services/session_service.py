@@ -43,7 +43,7 @@ def get_user_session_history(session: Session, user_id: uuid.UUID) -> List[Dict[
         UserSessions.date_modified >= one_year_ago
     ).order_by(UserSessions.date_modified)
 
-    user_sessions_db = session.exec(statement).all()
+    user_sessions_db = session.exec(statement).scalars().all()
 
     formatted_session_data: List[Dict[str, Any]] = []
     for session_record in user_sessions_db:

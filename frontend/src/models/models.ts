@@ -197,5 +197,7 @@ export const createNodeModel = ({
 export interface SessionInfo {
   correct: number;
   wrong: number;
-  date: Date;
+  date: string;
+  count: number;
+  level: number;
 }

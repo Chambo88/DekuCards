@@ -6,6 +6,8 @@ import React, {
   useRef,
   MutableRefObject,
   useEffect,
+  SetStateAction,
+  Dispatch,
 } from "react";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
@@ -17,6 +19,8 @@ import ReactCardFlip from "react-card-flip";
 import useCardEditService from "@/services/useSetService";
 import { result } from "lodash";
 import { getSessionData } from "@/api/userSessionApi";
+import { calcLevel, formatDateToYYYYMMDD } from "@/helper/helperFunctions";
+import { ActivityCalendar } from "react-activity-calendar";
 
 const MAX_CARDS = 5;
 
@@ -28,7 +32,8 @@ interface PanelProps {
   isFrontTwo: boolean;
   results: MutableRefObject<{ Correct: number; Wrong: number }>;
   onAdvance?: () => void;
-  sessionData: SessionInfo;
+  sessionData: SessionInfo[];
+  setSessionData: Dispatch<SetStateAction<SessionInfo[]>>;
 }
 const Panel: React.FC<PanelProps> = ({
   flashCard,
@@ -37,6 +42,7 @@ const Panel: React.FC<PanelProps> = ({
   results,
   onAdvance,
   sessionData,
+  setSessionData,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const {
@@ -45,14 +51,86 @@ const Panel: React.FC<PanelProps> = ({
   } = useCardEditService();
 
   const onCorrect = async () => {
-    results.current.Correct++;
+    const todaysFormattedDate = formatDateToYYYYMMDD(new Date());
+    const lastSessionDate = sessionData[sessionData.length - 1]?.date;
+
+    if (
+      lastSessionDate &&
+      lastSessionDate == formatDateToYYYYMMDD(new Date())
+    ) {
+      setSessionData((prevSessionData) => {
+        const newSessionData = [...prevSessionData];
+        newSessionData[prevSessionData.length - 1] = {
+          ...newSessionData[prevSessionData.length - 1],
+          correct: newSessionData[prevSessionData.length - 1].correct + 1,
+          level: calcLevel(
+            newSessionData[prevSessionData.length - 1].correct + 1,
+            newSessionData[prevSessionData.length - 1].wrong,
+          ),
+          count:
+            newSessionData[prevSessionData.length - 1].correct +
+            newSessionData[prevSessionData.length - 1].wrong +
+            1,
+        };
+        return newSessionData;
+      });
+    } else {
+      setSessionData((prevSessionData) => {
+        return [
+          ...prevSessionData,
+          {
+            date: todaysFormattedDate,
+            correct: 1,
+            wrong: 0,
+            level: calcLevel(1, 0),
+            count: 1,
+          },
+        ];
+      });
+    }
     if (onAdvance) onAdvance();
     await serviceHandleCardCorrect(flashCard.set_id, flashCard);
     setIsFlipped(false);
   };
 
   const onWrong = async () => {
-    results.current.Wrong++;
+    const todaysFormattedDate = formatDateToYYYYMMDD(new Date());
+    const lastSessionDate = sessionData[sessionData.length - 1]?.date;
+
+    if (
+      lastSessionDate &&
+      lastSessionDate == formatDateToYYYYMMDD(new Date())
+    ) {
+      setSessionData((prevSessionData) => {
+        const newSessionData = [...prevSessionData];
+        newSessionData[prevSessionData.length - 1] = {
+          ...newSessionData[prevSessionData.length - 1],
+          correct: newSessionData[prevSessionData.length - 1].wrong + 1,
+          level: calcLevel(
+            newSessionData[prevSessionData.length - 1].correct + 1,
+            newSessionData[prevSessionData.length - 1].wrong,
+          ),
+          count:
+            newSessionData[prevSessionData.length - 1].correct +
+            newSessionData[prevSessionData.length - 1].wrong +
+            1,
+        };
+        return newSessionData;
+      });
+    } else {
+      setSessionData((prevSessionData) => {
+        return [
+          ...prevSessionData,
+          {
+            date: todaysFormattedDate,
+            correct: 0,
+            wrong: 1,
+            level: calcLevel(0, 1),
+            count: 1,
+          },
+        ];
+      });
+    }
     await serviceHandleCardWrong(flashCard.set_id, flashCard);
     setIsFlipped(false);
   };
@@ -73,6 +151,7 @@ const Panel: React.FC<PanelProps> = ({
             <p className="m-4 mt-12 text-center text-lg">
               {results.current.Correct}
             </p>
+            <ActivityCalendar data={sessionData} />
           </div>
         </div>
       ) : isFrontTwo ? (
@@ -220,6 +299,7 @@ const LearnDialog: React.FC<LearnDialogProps> = () => {
             results={results}
             onAdvance={handleAdvanceCard}
             sessionData={sessionData}
+            setSessionData={setSessionData}
           />
         ))}
       </div>

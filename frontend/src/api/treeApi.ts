@@ -15,6 +15,11 @@ export interface FlashCardDTO {
   streak_start_date: string | null;
   front: string;
   back: string;
+  ease_factor: number;
+  learning_step_index: number;
+  is_graduated: boolean;
+  current_interval_days: number;
+  health: number;
 }
 
 function parseFlashCard(

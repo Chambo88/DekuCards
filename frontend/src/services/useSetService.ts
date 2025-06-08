@@ -17,7 +17,7 @@ import {
   updateFlashCardOnIncorrect,
 } from "./cardResultHandling";
 import { P } from "pino";
-import { postUserSessions } from "@/api/userSessionApi";
+import { postUserSessions, getSessionData } from "@/api/userSessionApi";
 
 const useCardEditService = () => {
   const { toast } = useToast();
@@ -99,8 +99,19 @@ const useCardEditService = () => {
       initNodeState(tree.nodes);
       initSetState(tree.sets);
       initCardState(tree.cards);
+    } catch (e) {
+      console.error("Error in getTree:", e);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "There was an error fetching tree data.",
+      });
+    }
+  };
 
-      console.log(JSON.stringify(tree));
+  const getUserSessionsData = async () => {
+    try {
+      let data = await getSessionData();
     } catch (e) {
       console.error("Error in getTree:", e);
       toast({

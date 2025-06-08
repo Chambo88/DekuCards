@@ -75,6 +75,11 @@ def create_card(
         enabled=card.enabled,
         last_shown_at_date=card.last_shown_at_date,
         streak_start_date=now,
+        health = card.health,
+        current_interval_days = card.current_interval_days,
+        ease_factor = card.ease_factor,
+        is_graduated = card.is_graduated,
+        learning_step_index = card.learning_step_index
     )
 
     session.add_all([new_card, new_user_card])
@@ -119,6 +124,11 @@ def update_card(
     user_card_db.available_date = card_data.available_date
     user_card_db.last_shown_at_date = card_data.last_shown_at_date
     user_card_db.times_correct = card_data.times_correct
+    user_card_db.health = card_data.health
+    user_card_db.current_interval_days = card_data.current_interval_days
+    user_card_db.ease_factor = card_data.ease_factor
+    user_card_db.is_graduated = card_data.is_graduated
+    user_card_db.learning_step_index = card_data.learning_step_index
 
     return card_data.id
 

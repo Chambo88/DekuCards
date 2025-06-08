@@ -94,9 +94,13 @@ def tree_service(session: Session, user_id: uuid.UUID):
         last_shown_at_date=user_card.last_shown_at_date,
         streak_start_date=user_card.streak_start_date,
         front=card.front,
-        back=card.back
+        back=card.back,
+        ease_factor=user_card.ease_factor,
+        learning_step_index=user_card.learning_step_index,
+        is_graduated=user_card.is_graduated,
+        current_interval_days=user_card.current_interval_days,
+        health=user_card.health
   )
-
 
   return {
     "sets" : set_results_mapped,

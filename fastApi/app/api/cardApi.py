@@ -50,7 +50,7 @@ def post_card(
 @router.put(
     "/card/{card_id}",
     status_code=status.HTTP_200_OK,
-    summary="Update an existing DekuSet"
+    summary="Update an existing Card"
 )
 def put_card(
     card_id: uuid.UUID,

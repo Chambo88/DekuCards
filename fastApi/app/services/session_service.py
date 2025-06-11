@@ -4,17 +4,22 @@ import uuid
 from sqlalchemy import select, func, cast, Date
 from sqlmodel import Session
 from models import UserSessions 
+import logging
+
+logger = logging.getLogger(__name__)
 
 def update_user_session(user_id: uuid.UUID, is_right: bool, session: Session, user_timezone: str):
     user_current_date = cast(func.now().op('AT TIME ZONE')(user_timezone), Date)
     stored_user_date = cast(UserSessions.date_modified.op('AT TIME ZONE')(user_timezone), Date)
+
+    logger.error(is_right)
 
     statement = select(UserSessions).where(
         UserSessions.user_id == user_id,
         stored_user_date == user_current_date
     )
     
-    user_session_db = session.exec(statement).one_or_none()
+    user_session_db = session.exec(statement).scalars().one_or_none()
 
     if user_session_db:
         if is_right:
@@ -30,13 +35,13 @@ def update_user_session(user_id: uuid.UUID, is_right: bool, session: Session, us
         )
 
     session.add(user_session_db)
-    session.commit()
+    
+    session.flush()
     session.refresh(user_session_db)
 
     return user_session_db
-
 def get_user_session_history(session: Session, user_id: uuid.UUID) -> List[Dict[str, Any]]:
-    one_year_ago = datetime.now(timezone.utc) - timedelta(days=366)
+    one_year_ago = datetime.now(timezone.utc) - timedelta(days=250)
 
     statement = select(UserSessions).where(
         UserSessions.user_id == user_id,

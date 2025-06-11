@@ -15,5 +15,9 @@ export const calcLevel = (correct: number, wrong: number) => {
   }
 
   level = Math.max(0, level);
+
+  if (correct + wrong >= 1) {
+    level = Math.max(1, level);
+  }
   return level;
 };

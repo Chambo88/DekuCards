@@ -33,6 +33,7 @@ import {
   RadialBar,
   RadialBarChart,
 } from "recharts";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const MAX_CARDS = 5;
 const BLOCK_DAYS = 250;
@@ -121,10 +122,10 @@ const Panel: React.FC<PanelProps> = ({
       const newSessionData = [...prevSessionData];
       newSessionData[prevSessionData.length - 1] = {
         ...newSessionData[prevSessionData.length - 1],
-        correct: newSessionData[prevSessionData.length - 1].wrong + 1,
+        wrong: newSessionData[prevSessionData.length - 1].wrong + 1,
         level: calcLevel(
-          newSessionData[prevSessionData.length - 1].correct + 1,
-          newSessionData[prevSessionData.length - 1].wrong,
+          newSessionData[prevSessionData.length - 1].correct,
+          newSessionData[prevSessionData.length - 1].wrong + 1,
         ),
         count:
           newSessionData[prevSessionData.length - 1].correct +
@@ -222,6 +223,13 @@ const Panel: React.FC<PanelProps> = ({
                 theme={theme}
                 hideColorLegend={true}
                 hideTotalCount={true}
+                renderBlock={(block, activity) =>
+                  React.cloneElement(block, {
+                    "data-tooltip-id": "react-tooltip",
+                    "data-tooltip-content": "",
+                    "data-tooltip-place": "top",
+                  })
+                }
               />
             ) : (
               <ActivityCalendar
@@ -233,8 +241,27 @@ const Panel: React.FC<PanelProps> = ({
                 theme={theme}
                 hideColorLegend={true}
                 hideTotalCount={true}
+                renderBlock={(block, activity) =>
+                  React.cloneElement(block, {
+                    "data-tooltip-id": "react-tooltip",
+                    "data-tooltip-content": "",
+                    "data-tooltip-place": "top",
+                  })
+                }
               />
             )}
+            <ReactTooltip
+              id="react-tooltip"
+              render={() => (
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    backgroundColor: "red",
+                  }}
+                />
+              )}
+            />
           </div>
         </div>
       ) : isFrontTwo ? (

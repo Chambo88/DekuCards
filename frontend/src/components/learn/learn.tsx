@@ -36,7 +36,7 @@ import {
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const MAX_CARDS = 5;
-const BLOCK_DAYS = 250;
+const BLOCK_DAYS = 320;
 
 const labels = {
   totalCount: `{{count}} cards answered in the last ${BLOCK_DAYS} days.`,
@@ -94,6 +94,15 @@ const Panel: React.FC<PanelProps> = ({
     endAngle = total > 0 ? (lastSession.correct / total) * 360 : 0;
   }
 
+  const scrollContainerRef = useRef(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.scrollLeft = container.scrollWidth;
+    }
+  }, [sessionData]);
+
   const onCorrect = async () => {
     setSessionData((prevSessionData) => {
       const newSessionData = [...prevSessionData];
@@ -150,7 +159,7 @@ const Panel: React.FC<PanelProps> = ({
     >
       {flashCard.id === "analytics" ? (
         <div>
-          <div className="relative flex h-[600px] w-[700px] flex-col items-center rounded-lg border-2 border-solid border-muted bg-background p-0 shadow-[5px_5px_20px_0px_rgba(0,0,0,0.5)]">
+          <div className="relative flex h-[600px] w-[700px] flex-col items-center rounded-lg border-2 border-solid border-muted bg-background p-4 shadow-[5px_5px_20px_0px_rgba(0,0,0,0.5)]">
             <div className="flex h-full w-full">
               <ChartContainer
                 config={{}}
@@ -212,56 +221,66 @@ const Panel: React.FC<PanelProps> = ({
                 </RadialBarChart>
               </ChartContainer>
             </div>
-            {sessionData.length == 0 ? (
-              <ActivityCalendar
-                data={sessionData}
-                loading
-                blockMargin={4}
-                blockRadius={5}
-                blockSize={13}
-                labels={labels}
-                theme={theme}
-                hideColorLegend={true}
-                hideTotalCount={true}
-                renderBlock={(block, activity) =>
-                  React.cloneElement(block, {
-                    "data-tooltip-id": "react-tooltip",
-                    "data-tooltip-content": "",
-                    "data-tooltip-place": "top",
-                  })
-                }
+            <div
+              ref={scrollContainerRef}
+              className="min-h-max w-full overflow-x-auto scrollbar-thin scrollbar-track-background scrollbar-thumb-secondary"
+            >
+              <div className="m-4 min-h-max min-w-max">
+                {sessionData.length == 0 ? (
+                  <ActivityCalendar
+                    data={sessionData}
+                    loading
+                    blockMargin={4}
+                    blockRadius={5}
+                    blockSize={13}
+                    labels={labels}
+                    theme={theme}
+                    hideColorLegend={true}
+                    hideTotalCount={true}
+                    renderBlock={(block, activity) => {
+                      return React.cloneElement(block, {
+                        "data-tooltip-id": "react-tooltip",
+                        "data-tooltip-content": `${activity.date}`,
+                        "data-tooltip-place": "top",
+                      });
+                    }}
+                  />
+                ) : (
+                  <ActivityCalendar
+                    data={sessionData}
+                    blockMargin={4}
+                    blockRadius={5}
+                    blockSize={13}
+                    labels={labels}
+                    theme={theme}
+                    hideColorLegend={true}
+                    hideTotalCount={true}
+                    renderBlock={(block, activity) =>
+                      React.cloneElement(block, {
+                        "data-tooltip-id": "react-tooltip",
+                        "data-tooltip-content": `${activity.date}`,
+                        "data-tooltip-place": "top",
+                      })
+                    }
+                  />
+                )}
+              </div>
+              <ReactTooltip
+                id="react-tooltip"
+                render={({ content }) => (
+                  <div
+                    style={{
+                      padding: "8px 12px",
+                      backgroundColor: "red",
+                      color: "white",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    <strong>Date:</strong> {content}
+                  </div>
+                )}
               />
-            ) : (
-              <ActivityCalendar
-                data={sessionData}
-                blockMargin={4}
-                blockRadius={5}
-                blockSize={13}
-                labels={labels}
-                theme={theme}
-                hideColorLegend={true}
-                hideTotalCount={true}
-                renderBlock={(block, activity) =>
-                  React.cloneElement(block, {
-                    "data-tooltip-id": "react-tooltip",
-                    "data-tooltip-content": "",
-                    "data-tooltip-place": "top",
-                  })
-                }
-              />
-            )}
-            <ReactTooltip
-              id="react-tooltip"
-              render={() => (
-                <div
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    backgroundColor: "red",
-                  }}
-                />
-              )}
-            />
+            </div>
           </div>
         </div>
       ) : isFrontTwo ? (

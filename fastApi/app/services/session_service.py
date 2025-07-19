@@ -41,7 +41,7 @@ def update_user_session(user_id: uuid.UUID, is_right: bool, session: Session, us
 
     return user_session_db
 def get_user_session_history(session: Session, user_id: uuid.UUID) -> List[Dict[str, Any]]:
-    one_year_ago = datetime.now(timezone.utc) - timedelta(days=250)
+    one_year_ago = datetime.now(timezone.utc) - timedelta(days=365)
 
     statement = select(UserSessions).where(
         UserSessions.user_id == user_id,

@@ -36,7 +36,7 @@ import {
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const MAX_CARDS = 5;
-const BLOCK_DAYS = 320;
+const BLOCK_DAYS = 365;
 
 const labels = {
   totalCount: `{{count}} cards answered in the last ${BLOCK_DAYS} days.`,
@@ -94,14 +94,14 @@ const Panel: React.FC<PanelProps> = ({
     endAngle = total > 0 ? (lastSession.correct / total) * 360 : 0;
   }
 
-  const scrollContainerRef = useRef(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (container) {
       container.scrollLeft = container.scrollWidth;
     }
-  }, [sessionData]);
+  }, [scrollContainerRef.current]);
 
   const onCorrect = async () => {
     setSessionData((prevSessionData) => {
@@ -267,18 +267,98 @@ const Panel: React.FC<PanelProps> = ({
               </div>
               <ReactTooltip
                 id="react-tooltip"
-                render={({ content }) => (
-                  <div
-                    style={{
-                      padding: "8px 12px",
-                      backgroundColor: "red",
-                      color: "white",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    <strong>Date:</strong> {content}
-                  </div>
-                )}
+                className="flex flex-col content-center justify-center"
+                // Have to hard code styles as the className tailwind isnt resolving
+                style={{
+                  background: "hsl(0, 0%, 9%)",
+                  border: "1px solid red",
+                  borderRadius: "1.2rem",
+                }}
+                opacity={1}
+                render={({ content }) => {
+                  let session = sessionData.find(
+                    (session) => session.date == content,
+                  );
+                  const chartDateData = [
+                    {
+                      name: "CardResults",
+                      correct: session?.correct ?? 0,
+                      fill: "#1a941a",
+                    },
+                  ];
+                  let dateObj = new Date(content ?? "2021-01-02"); //content should never be undefined
+                  const total = (session?.correct ?? 0) + (session?.wrong ?? 0);
+                  let chartEndAngle =
+                    total > 0 ? ((session?.correct ?? 0) / total) * 360 : 0;
+                  return (
+                    <>
+                      <ChartContainer
+                        config={{}}
+                        className="m-0 aspect-square h-[90px] w-[90px] p-0"
+                      >
+                        <RadialBarChart
+                          data={chartDateData}
+                          startAngle={0}
+                          endAngle={chartEndAngle}
+                          innerRadius={40}
+                          outerRadius={55}
+                        >
+                          <PolarGrid
+                            gridType="circle"
+                            radialLines={false}
+                            stroke="none"
+                            className="first:fill-muted last:fill-background"
+                            polarRadius={[43, 37]}
+                          />
+                          <RadialBar
+                            dataKey="correct"
+                            background
+                            cornerRadius={10}
+                            isAnimationActive={false}
+                          />
+                          <PolarRadiusAxis
+                            tick={false}
+                            tickLine={false}
+                            axisLine={false}
+                          >
+                            <Label
+                              content={({ viewBox }) => {
+                                if (
+                                  viewBox &&
+                                  "cx" in viewBox &&
+                                  "cy" in viewBox
+                                ) {
+                                  return (
+                                    <text
+                                      x={viewBox.cx}
+                                      y={viewBox.cy}
+                                      textAnchor="middle"
+                                      dominantBaseline="middle"
+                                    >
+                                      <tspan
+                                        x={viewBox.cx}
+                                        y={viewBox.cy}
+                                        className="fill-foreground text-lg font-bold"
+                                      >
+                                        {`${session?.correct ?? 0}`}
+                                      </tspan>
+                                      <tspan className="fill-foreground text-xl">
+                                        {` / ${(session?.wrong ?? 0) + (session?.correct ?? 0)}`}
+                                      </tspan>
+                                    </text>
+                                  );
+                                }
+                              }}
+                            />
+                          </PolarRadiusAxis>
+                        </RadialBarChart>
+                      </ChartContainer>
+                      <p className="mt-1 w-full text-center">
+                        {dateObj.toLocaleDateString()}
+                      </p>
+                    </>
+                  );
+                }}
               />
             </div>
           </div>

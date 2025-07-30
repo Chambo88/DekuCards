@@ -12,7 +12,7 @@ const GRADUATING_INTERVAL_DAYS = 1;
 const LAPSE_INTERVAL_MINUTES = 60;
 
 // Health Calculation
-const HEALTH_MAX = 8;
+const HEALTH_MAX = 5;
 const HEALTH_MIN = 1;
 const MAX_EASE_FACTOR = 3.05;
 const STREAK_HEALTH_BONUS_FACTOR = 0.1;

@@ -49,23 +49,6 @@ const ResultsCard: React.FC<{ sessionData: SessionInfo[] }> = ({
   sessionData,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const treeData = useTreeStore(
-    useShallow((state) => {
-      let newCardData: { [score: number]: number } = {};
-      for (const setValue of Object.values(state.setToCards)) {
-        for (const card of Object.values(setValue)) {
-          const score = card.health;
-
-          if (newCardData[score]) {
-            newCardData[score]++;
-          } else {
-            newCardData[score] = 1;
-          }
-        }
-      }
-      return newCardData;
-    }),
-  );
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -280,45 +263,72 @@ const CalendarTooltipContent: React.FC<{
   );
 };
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
-];
+interface ChartLevelData {
+  level: number;
+  cardsAtLevel: number;
+  fill: string;
+}
+
+interface InitialChartDataType {
+  [key: number]: ChartLevelData;
+}
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "var(--chart-1)",
-  },
-  safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "var(--chart-3)",
-  },
-  edge: {
-    label: "Edge",
-    color: "var(--chart-4)",
-  },
-  other: {
-    label: "Other",
-    color: "var(--chart-5)",
-  },
+  level0: { label: "Level 0", color: "hsl(var(--level-0))" },
+  level1: { label: "Level 1", color: "hsl(var(--level-1))" },
+  level2: { label: "Level 2", color: "hsl(var(--level-2))" },
+  level3: { label: "Level 3", color: "hsl(var(--level-3))" },
+  level4: { label: "Level 4", color: "hsl(var(--level-4))" },
+  level5: { label: "Level 5", color: "hsl(var(--level-5))" },
 } satisfies ChartConfig;
 
-const ChartPieLabel = () => {
+const ChartPieLabel = React.memo(() => {
+  // Function to get computed style value for a CSS variable
+  // This needs to be done on the client side where the DOM and styles are available
+  const getCssVariableValue = (varName: string): string => {
+    if (typeof window !== "undefined") {
+      return getComputedStyle(document.documentElement)
+        .getPropertyValue(varName)
+        .trim();
+    }
+    return ""; // Return empty string or a fallback color if not in browser env
+  };
+
+  // Prepare a mapping of level number to actual HSL color string
+  // This should ideally also be memoized if chartConfig itself isn't completely static.
+  const levelColors = {
+    0: getCssVariableValue("--level-0"),
+    1: getCssVariableValue("--level-1"),
+    2: getCssVariableValue("--level-2"),
+    3: getCssVariableValue("--level-3"),
+    4: getCssVariableValue("--level-4"),
+    5: getCssVariableValue("--level-5"),
+  };
+
+  // Initialize data with actual HSL color values
+  const currentChartData: InitialChartDataType = {
+    0: { level: 0, cardsAtLevel: 0, fill: `hsl(${levelColors[0]})` },
+    1: { level: 1, cardsAtLevel: 0, fill: `hsl(${levelColors[1]})` },
+    2: { level: 2, cardsAtLevel: 0, fill: `hsl(${levelColors[2]})` },
+    3: { level: 3, cardsAtLevel: 0, fill: `hsl(${levelColors[3]})` },
+    4: { level: 4, cardsAtLevel: 0, fill: `hsl(${levelColors[4]})` },
+    5: { level: 5, cardsAtLevel: 0, fill: `hsl(${levelColors[5]})` },
+  };
+
+  const treeData = useTreeStore(
+    useShallow((state) => {
+      for (const setValue of Object.values(state.setToCards)) {
+        for (const card of Object.values(setValue)) {
+          if (card.health <= 5) currentChartData[card.health].cardsAtLevel++;
+        }
+      }
+      return Object.values(currentChartData);
+    }),
+  );
+
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Deku cards</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -327,18 +337,15 @@ const ChartPieLabel = () => {
         >
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-            <Pie data={chartData} dataKey="visitors" label nameKey="browser" />
+            <Pie data={treeData} dataKey="cardsAtLevel" nameKey="level" />
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
+      {/* <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          Deku cards
         </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
-};
+});

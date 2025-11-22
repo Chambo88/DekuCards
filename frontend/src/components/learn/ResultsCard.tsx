@@ -90,63 +90,65 @@ const ResultsCard: React.FC<{ sessionData: SessionInfo[] }> = ({
 
   return (
     <CardTemplate>
-      <div className="flex w-full flex-row items-center">
-        <div className="flex w-1/2 justify-center">
-          <ChartContainer
-            config={{}}
-            className="mx-auto aspect-square h-[250px]"
-          >
-            <RadialBarChart
-              data={chartData}
-              startAngle={0}
-              endAngle={endAngle}
-              innerRadius={80}
-              outerRadius={110}
+      <div className="flex h-full w-full flex-row items-center bg-yellow-300">
+        <div className="flex h-full w-1/2 justify-center bg-red-400">
+          <Card className="flex h-full w-full bg-transparent">
+            <ChartContainer
+              config={{}}
+              className="mx-auto aspect-square max-h-[250px] pb-0"
             >
-              <PolarGrid
-                gridType="circle"
-                radialLines={false}
-                stroke="none"
-                className="first:fill-muted last:fill-background"
-                polarRadius={[86, 74]}
-              />
-              <RadialBar dataKey="correct" background cornerRadius={10} />
-              <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-                <Label
-                  content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                      return (
-                        <text
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                        >
-                          <tspan
+              <RadialBarChart
+                data={chartData}
+                startAngle={0}
+                endAngle={endAngle}
+                innerRadius={80}
+                outerRadius={110}
+              >
+                <PolarGrid
+                  gridType="circle"
+                  radialLines={false}
+                  stroke="none"
+                  className="first:fill-muted last:fill-background"
+                  polarRadius={[86, 74]}
+                />
+                <RadialBar dataKey="correct" background cornerRadius={10} />
+                <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+                  <Label
+                    content={({ viewBox }) => {
+                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        return (
+                          <text
                             x={viewBox.cx}
                             y={viewBox.cy}
-                            className="fill-foreground text-4xl font-bold"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
                           >
-                            {`${correct}`}
-                          </tspan>
-                          <tspan className="fill-foreground text-xl">{` / ${correct + wrong}`}</tspan>
-                          <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 24}
-                            className="fill-muted-foreground"
-                          >
-                            Today
-                          </tspan>
-                        </text>
-                      );
-                    }
-                  }}
-                />
-              </PolarRadiusAxis>
-            </RadialBarChart>
-          </ChartContainer>
+                            <tspan
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              className="fill-foreground text-4xl font-bold"
+                            >
+                              {`${correct}`}
+                            </tspan>
+                            <tspan className="fill-foreground text-xl">{` / ${correct + wrong}`}</tspan>
+                            <tspan
+                              x={viewBox.cx}
+                              y={(viewBox.cy || 0) + 24}
+                              className="fill-muted-foreground"
+                            >
+                              Today
+                            </tspan>
+                          </text>
+                        );
+                      }
+                    }}
+                  />
+                </PolarRadiusAxis>
+              </RadialBarChart>
+            </ChartContainer>
+          </Card>
         </div>
-        <div className="flex w-1/2 justify-center">
+        <div className="flex h-full w-1/2 justify-center bg-green-400">
           <ChartPieLabel />
         </div>
       </div>
@@ -326,10 +328,7 @@ const ChartPieLabel = React.memo(() => {
   );
 
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Deku cards</CardTitle>
-      </CardHeader>
+    <Card className="flex h-full w-full flex-col bg-transparent">
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}

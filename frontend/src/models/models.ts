@@ -14,6 +14,7 @@ export interface FlashCard {
   set_id: string;
   available_date: Date;
   created_at_date: Date;
+  updated_at: Date;
   enabled: boolean;
   last_shown_at_date: Date | null;
   streak_start_date: Date | null;
@@ -33,6 +34,7 @@ export interface FlashCardParams {
   set_id: string;
   available_date?: Date;
   created_at_date?: Date;
+  updated_at?: Date;
   enabled?: boolean;
   last_shown_at_date?: Date | null;
   streak_start_date?: Date | null;
@@ -52,6 +54,7 @@ export const createFlashCard = ({
   set_id,
   available_date = new Date(),
   created_at_date = new Date(),
+  updated_at = new Date(),
   enabled = true,
   last_shown_at_date = null,
   streak_start_date = null,
@@ -69,6 +72,7 @@ export const createFlashCard = ({
   set_id,
   available_date,
   created_at_date,
+  updated_at,
   enabled,
   last_shown_at_date,
   streak_start_date,
@@ -87,6 +91,7 @@ export interface DekuSet {
   parent_set_id: string | null;
   parent_node_id: string;
   enabled: boolean;
+  updated_at: Date;
 }
 
 interface DekuSetParams {
@@ -99,6 +104,7 @@ interface DekuSetParams {
   description?: string | null;
   prerequisites?: Prerequisite[];
   enabled?: boolean;
+  updated_at?: Date;
 }
 
 export const createSetModel = ({
@@ -111,6 +117,7 @@ export const createSetModel = ({
   description = null,
   prerequisites = [],
   enabled = true,
+  updated_at = new Date(),
 }: DekuSetParams): DekuSet => ({
   id,
   title,
@@ -121,6 +128,7 @@ export const createSetModel = ({
   description,
   prerequisites,
   enabled,
+  updated_at,
 });
 
 export interface Prerequisite {
@@ -143,6 +151,7 @@ export interface DekuNode {
   owner_name: string | null;
   owner_id: string;
   parent_node_id: string | null;
+  updated_at: Date;
 }
 
 interface CreateNodeParams {
@@ -160,6 +169,7 @@ interface CreateNodeParams {
   owner_name?: string | null;
   owner_id?: string;
   parent_node_id?: string | null;
+  updated_at?: Date;
 }
 
 export const createNodeModel = ({
@@ -177,6 +187,7 @@ export const createNodeModel = ({
   owner_name = null,
   owner_id = useUserStore.getState().user!.id,
   parent_node_id = null,
+  updated_at = new Date(),
 }: CreateNodeParams): DekuNode => ({
   id,
   enabled,
@@ -192,6 +203,7 @@ export const createNodeModel = ({
   owner_name,
   owner_id,
   parent_node_id,
+  updated_at,
 });
 
 export interface SessionInfo {

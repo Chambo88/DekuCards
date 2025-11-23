@@ -16,7 +16,7 @@ in python backends. Probably not a bad thing to seperate some of the buisness lo
 ## Starting locally
 
 For port 8000
-`python main `
+`python .\fastApi\app\main.py`
 
 else
 `uvicorn main:app --host 0.0.0.0 --port 8000`

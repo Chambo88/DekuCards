@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL(self) -> str:
         return (
-            f"postgresql://postgres.epygdolkqugietwkwjjl:{self.DATABASE_PASSWORD}"
-            "@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+            f"postgresql://postgres.jgjcojpbtdhmrxsatpkg:{self.DATABASE_PASSWORD}"
+            "@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres"
         )
 
     model_config = {

@@ -114,4 +114,11 @@ class UserCard(SQLModel, table=True):
         default=1.0,
         sa_column=mapped_column(Float, nullable=False, server_default=text('1.0'))
     )
+    updated_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            server_default=text("now()")
+        )
+    )
 

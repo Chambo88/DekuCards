@@ -10,6 +10,9 @@ from core.auth import validate_token, TokenData
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+from datetime import datetime
+from typing import Optional
+
 # Fetch tree strucutre, 
 @router.get(
     "/tree/{user_id}",
@@ -18,6 +21,7 @@ router = APIRouter()
 )
 def get_tree_structure(
     user_id: uuid.UUID,
+    since: Optional[datetime] = None,
     session: Session = Depends(get_session),
     token: TokenData = Depends(validate_token)
 ):
@@ -29,7 +33,7 @@ def get_tree_structure(
         )
 
     try:
-        tree_data = tree_service(session, user_id)
+        tree_data = tree_service(session, user_id, since)
         print(tree_data)
         return tree_data
     except Exception as e:

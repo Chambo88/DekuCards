@@ -1,4 +1,5 @@
 from typing import Dict, List, Tuple
+from datetime import datetime
 import uuid
 from sqlalchemy import select
 from sqlmodel import Session
@@ -10,8 +11,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def tree_service(session: Session, user_id: uuid.UUID):
+def tree_service(session: Session, user_id: uuid.UUID, since: datetime = None):
 
+  # Nodes
   stmt = (
     select(DekuNode, UserNode, NodeVersion, PublicNode)
     .join(UserNode, DekuNode.id == UserNode.node_id)
@@ -19,6 +21,11 @@ def tree_service(session: Session, user_id: uuid.UUID):
     .outerjoin(PublicNode, PublicNode.node_id == DekuNode.id)
     .where(UserNode.user_id == user_id)
   )
+
+  if since:
+      # Filter nodes that have been updated since 'since'
+      # We check both DekuNode (content) and UserNode (user state)
+      stmt = stmt.where((DekuNode.updated_at > since) | (UserNode.updated_at > since))
 
   node_results: List[Tuple[DekuNode, UserNode, NodeVersion, PublicNode]] = session.exec(stmt).all()
 
@@ -42,6 +49,7 @@ def tree_service(session: Session, user_id: uuid.UUID):
       for result in node_results
   }
 
+  # Sets
   stmt = (
     select(DekuSet, UserSet, SetIdentity)
     .join(SetIdentity, SetIdentity.id == UserSet.set_identity_id)
@@ -50,6 +58,10 @@ def tree_service(session: Session, user_id: uuid.UUID):
     .where(UserNode.node_version_id == DekuSet.node_version_id)
     .where(UserNode.user_id == user_id)
   )
+
+  if since:
+      # Check both DekuSet (content) and UserSet (user state)
+      stmt = stmt.where((DekuSet.updated_at > since) | (UserSet.updated_at > since))
 
   set_results : List[Tuple[DekuSet, UserSet, SetIdentity]] = session.exec(stmt).all()
 
@@ -70,6 +82,7 @@ def tree_service(session: Session, user_id: uuid.UUID):
     for result in set_results
   }
 
+  # Cards
   stmt = (
     select(Card, UserCard, CardIdentity)
     .join(CardIdentity, CardIdentity.id == Card.card_identity_id)
@@ -79,11 +92,28 @@ def tree_service(session: Session, user_id: uuid.UUID):
     .where(UserCard.user_id == user_id)
   )
 
-  sets_to_cards_mapped: Dict[uuid.UUID, Dict[uuid.UUID, CardBase]] = {result[0].id: {} for result in set_results}
+  if since:
+      # Check both Card (content) and UserCard (user state/progress)
+      stmt = stmt.where((Card.updated_at > since) | (UserCard.updated_at > since))
 
+  # We need to initialize the map for ALL sets that we are returning, 
+  # BUT if we are in delta sync, we might return cards for sets that didn't change (so aren't in set_results_mapped).
+  # However, the frontend expects a structure. 
+  # If we only return changed cards, we need to make sure the structure supports it.
+  # The current return structure is:
+  # { "sets": ..., "nodes": ..., "cards": { set_id: { card_id: ... } } }
+  
+  # If we return a card whose set is NOT in "sets", the frontend might need to handle that.
+  # But for now, let's just return the cards mapped by their set_id.
+  
   card_results: List[Tuple[Card, UserCard, CardIdentity]] = session.exec(stmt).all()
+  
+  sets_to_cards_mapped: Dict[uuid.UUID, Dict[uuid.UUID, CardBase]] = {}
 
   for card, user_card, _identity in card_results:
+      if card.parent_set_id not in sets_to_cards_mapped:
+          sets_to_cards_mapped[card.parent_set_id] = {}
+          
       sets_to_cards_mapped[card.parent_set_id][card.id] = CardBase(
         id=card.id,
         times_correct=user_card.times_correct,

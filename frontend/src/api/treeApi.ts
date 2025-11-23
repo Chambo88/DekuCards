@@ -10,6 +10,7 @@ export interface FlashCardDTO {
   set_id: string;
   available_date: string;
   created_at_date: string;
+  updated_at: string;
   enabled: boolean;
   last_shown_at_date: string | null;
   streak_start_date: string | null;
@@ -31,6 +32,7 @@ function parseFlashCard(
       ...unParsedcard,
       available_date: new Date(unParsedcard.available_date),
       created_at_date: new Date(unParsedcard.created_at_date),
+      updated_at: new Date(unParsedcard.updated_at),
       last_shown_at_date: unParsedcard.last_shown_at_date
         ? new Date(unParsedcard.last_shown_at_date)
         : null,
@@ -43,15 +45,28 @@ function parseFlashCard(
   return parsedCards;
 }
 
-export async function getTree(): Promise<{
+export async function getTree(since?: number): Promise<{
   nodes: Record<string, DekuNode>;
   sets: Record<string, DekuSet>;
   cards: Record<string, Record<string, FlashCard>>;
 }> {
   const userId = useUserStore.getState().user?.id;
 
+  if (!navigator.onLine) {
+    console.log("Offline: Skipping tree fetch");
+    // Return empty structure or throw specific error?
+    // Throwing error allows caller to know fetch failed but we have local data.
+    throw new Error("Offline");
+  }
+
   try {
-    const response = await authFetch(`${API_BASE_URL}/api/tree/${userId}`, {
+    let url = `${API_BASE_URL}/api/tree/${userId}`;
+    if (since) {
+      const sinceDate = new Date(since).toISOString();
+      url += `?since=${sinceDate}`;
+    }
+
+    const response = await authFetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -72,9 +87,25 @@ export async function getTree(): Promise<{
       newCards[setId] = parseFlashCard(dtoList);
     }
 
+    const parsedNodes: Record<string, DekuNode> = {};
+    for (const [id, node] of Object.entries(data.nodes as Record<string, any>)) {
+        parsedNodes[id] = {
+            ...node,
+            updated_at: new Date(node.updated_at || new Date()) 
+        };
+    }
+
+    const parsedSets: Record<string, DekuSet> = {};
+    for (const [id, set] of Object.entries(data.sets as Record<string, any>)) {
+        parsedSets[id] = {
+            ...set,
+            updated_at: new Date(set.updated_at || new Date()) 
+        };
+    }
+
     return {
-      nodes: data.nodes,
-      sets: data.sets,
+      nodes: parsedNodes,
+      sets: parsedSets,
       cards: newCards,
     };
   } catch (error) {

@@ -1,7 +1,8 @@
 from typing import Optional
 import uuid
+from datetime import datetime
 
-from sqlalchemy import Boolean, PrimaryKeyConstraint, ForeignKeyConstraint, text
+from sqlalchemy import Boolean, PrimaryKeyConstraint, ForeignKeyConstraint, text, Column, DateTime
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlmodel import Field, SQLModel
 from sqlalchemy.orm import mapped_column
@@ -45,4 +46,11 @@ class UserSet(SQLModel, table=True):
     )
     enabled: bool = Field(
         sa_column=mapped_column(Boolean, nullable=False, server_default=text('false'))
+    )
+    updated_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            server_default=text("now()")
+        )
     )

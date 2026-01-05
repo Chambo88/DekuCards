@@ -1,7 +1,8 @@
 import uuid
 from typing import Optional
+from datetime import datetime
 from sqlmodel import Float, SQLModel, Field
-from sqlalchemy import PrimaryKeyConstraint, ForeignKeyConstraint, text
+from sqlalchemy import PrimaryKeyConstraint, ForeignKeyConstraint, text, Column, DateTime
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import mapped_column
 
@@ -56,4 +57,11 @@ class UserNode(SQLModel, table=True):
     )
     position_y: float = Field(
         sa_column=mapped_column(Float, nullable=False)
+    )
+    updated_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            server_default=text("now()")
+        )
     )
